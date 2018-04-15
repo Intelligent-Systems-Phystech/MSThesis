@@ -6,3 +6,4 @@
 *.out
 untracked/
 code/__pycache__
+data/
