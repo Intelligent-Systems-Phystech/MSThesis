@@ -1,0 +1,325 @@
+\documentclass[12pt,twoside]{article}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext,amsthm}
+\usepackage{a4wide}
+\usepackage[T2A]{fontenc}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\newcommand{\hdir}{.}
+\usepackage{hyperref}       % clickable links
+\usepackage{lineno}
+\usepackage{graphicx,multicol}
+\usepackage{epstopdf}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,shadows}
+\newtheorem{theorem}{Theorem}
+\newtheorem{statement}{Statement}
+\usepackage{algorithm}
+\usepackage[noend]{algcompatible}
+
+%\renewcommand{\baselinestretch}{1.4}
+
+
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bB}{\mathbf{B}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bC}{\mathbf{C}}
+\newcommand{\bE}{\mathbf{E}}
+\newcommand{\bF}{\mathbf{F}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\bchi}{\boldsymbol{\chi}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bTheta}{\boldsymbol{\Theta}}
+\newcommand{\argmin}{\mathop{\arg \min}\limits}
+\newcommand{\argmax}{\mathop{\arg \max}\limits}
+
+\newcommand\undermat[2]{%
+	\makebox[0pt][l]{$\smash{\underbrace{\phantom{%
+					\begin{matrix}#2\end{matrix}}}_{\text{$#1$}}}$}#2}
+
+
+\begin{document}
+
+\linenumbers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem statement}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The goal is to forecast a dependent variable $\by \in \bbR^r$ with $r$ targets from an independent input object $\bx \in \bbR^n$ with $n$ features.
+We assume there is a linear dependence 
+\begin{equation}
+	\by = \bTheta \bx+ \boldsymbol{\varepsilon}
+	\label{eq:model}
+\end{equation}
+between the objects $\bx$ and the target variable $\by$,
+where $\bTheta \in \bbR^{r \times n}$ is the matrix of model parameters, $\boldsymbol{\varepsilon} \in \bbR^{r}$ is the residual vector.
+The task is to find the matrix of the model parameters $\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
+\[
+	\bX = [\bx_1, \dots, \bx_m]^{T} =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^{T} =  [\bphi_1, \dots, \bphi_r].
+\]
+The columns~$\bchi_j$ of the matrix~$\bX$ respond to object features. 
+The examples of how to construct the dataset for a particular application task are described in Section \hyperref[sec:exper]{Computational experiment}.
+
+The optimal parameters are determined by minimization of an error function. 
+Define the quadratic error function:
+\begin{equation}
+	S(\bTheta | \bX, \bY) = {\left\| \underset{m \times r}{\mathbf{Y}}  - \underset{m \times n}{\bX} \cdot \underset{r \times n}{\bTheta}^T \right\| }_2^2 \rightarrow\min_{\bTheta}.
+\label{eq:error_function}
+\end{equation}
+ 
+ The solution of the problem~\eqref{eq:error_function} is given by
+ \[
+ 	\bTheta = (\bX^{T} \bX)^{-1} \bX^{T} \bY.
+ \]
+ 
+ The linear dependent columns of the matrix $\bX$ leads to an instable solution for the optimization problem~\eqref{eq:error_function}. 
+ If there is a vector $\boldsymbol{\alpha} \neq 0$ such that $\bX \boldsymbol{\alpha}= 0$, then adding the vector~$\boldsymbol{\alpha}$ to any column of the matrix~$\bTheta$ does not change the error function $S(\bTheta | \bX, \bY)$.
+ In this case the matrix $\bX^{T} \bX$ is not invertible.
+ To avoid the strong linear dependence, feature selection and dimensionality reduction techniques are used.
+ 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \section{Feature selection}
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ The feature selection goal is to find the index set~$\cA = \{1, \dots, n\}$ of the matrix $\bX$ columns. To select the set~$\cA$ among all possible $2^n - 1$ subsets, introduce the feature selection quality criteria
+\begin{equation}
+	\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bY).
+	\label{eq:subset_selection}
+\end{equation}
+
+Once the solution~$\cA$ for the problem~\eqref{eq:subset_selection} is known, the problem~\eqref{eq:error_function} becomes
+\begin{equation}
+S(\bTheta_{\cA} | \bX_{\cA}, \bY) = {\left\| \mathbf{Y} - \bX_{\cA}\bTheta^T_{\cA} \right\| }_2^2 = \rightarrow\min_{\bTheta_{\cA}},
+\end{equation}
+where the subscript~$\cA$ indicates columns with indices from the set~$\cA$.
+
+\subsection{Quadratic Programming Feature Selection}
+One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy.
+The QPFS algorithm selects non-correlated features, which are relevant to the target vector~$\bphi$ for the linear regression problem ($r=1$)
+\begin{equation*}
+	\| \bphi - \bX \btheta\|_2^2 \rightarrow\min_{\btheta \in \bbR^{n}}.
+\end{equation*}
+Introduce two functions: $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bphi)$. 
+The $\text{Sim}(\bX)$ measures the redundancy between features, the $\text{Rel}(\bX, \bphi)$ contains relevances between each feature and the target vector~$\bphi$. 
+We want to minimize the function Sim and maximize the Rel simultaneously.
+
+QPFS offers the explicit way to construct the functions Sim and Rel. 
+The method minimizes the following functional
+\begin{equation}
+	(1 - \alpha) \cdot \underbrace{\ba^{T} \bQ \ba}_{\text{Sim}} - \alpha \cdot \underbrace{\vphantom{()} \mathbf{b}^{T} \ba}_{\text{Rel}} \rightarrow \min_{\substack{\ba \in \bbR^n_+ \\ \|\ba\|_1=1}}.
+	\label{eq:quadratic_problem}
+\end{equation}
+The matrix $\bQ \in \bbR^{n \times n}$ entries measure the pairwise similarities between features. 
+The vector $\mathbf{b} \in \bbR^n$ expresses the similarities between each feature and the target matrix~$\bb$.
+The normalized vector~$\ba$ shows the importance of each feature. 
+The functional~\eqref{eq:quadratic_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel. 
+The parameter~$\alpha$ allows to control the trade-off between the functions Sim and the Rel.
+The authors of the original QPFS paper suggested the way to select~$\alpha$ and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bphi)$ impact the same
+\begin{equation*}
+	\alpha = \frac{\overline{\bQ}}{\overline{\bQ} + \overline{\bb}},
+\end{equation*}
+where $\overline{\bQ}$, $\overline{\bb}$ are the mean values of~$\bQ$ and $\bb$ respectively.
+Apply the thresholding for~$\ba$ to find the optimal feature subset:
+\[
+	j \in \mathcal{A} \Leftrightarrow a_j > \tau.
+\]
+
+To measure similarity the authors use the absolute value of sample correlation coefficient between pairs of features for the function Sim, and between features and the target vector~$\bphi$ for the function Rel
+\begin{equation}
+	\bQ = \left\{\left|\text{corr}(\bchi_i, \bchi_j)\right|\right\}_{i,j=1}^n, \quad \bb = \left\{\left|\text{corr}(\bchi_i, \bphi)\right|\right\}_{i=1}^n.
+	\label{eq:qpfs_1d_qb}
+\end{equation}
+The problem~\eqref{eq:quadratic_problem} is convex if the matrix~$\bQ$ is positive semidefinite. In general it is not always true. 
+To satisfy this condition, the matrix~$\bQ$ spectrum is shifted and the matrix~$\bQ$ is replaced by $\bQ - \lambda_{\text{min}} \mathbf{I}$, where $\lambda_{\text{min}} $ is a $\bQ$ minimal eigenvalue.
+
+The functional~\eqref{eq:quadratic_problem} corresponds to the quality criteria~$Q(\cA | \bX, \bphi)$
+\begin{equation}
+\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bphi) \Leftrightarrow \argmin_{\ba  \in \bbR^n_+, \, \|\ba\|_1=1} \bigl[\ba^{T} \bQ \ba - \alpha \cdot \mathbf{b}^{T} \ba \bigr].
+\end{equation}
+
+\subsection{Multivariate QPFS}
+First approach to apply the QPFS algorithm to the multivariate case ($r > 1$) is to aggregate feature relevances through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, and the matrix $\bQ$ and the vector $\bb$ are equal to
+\begin{equation*}
+\bQ = \left\{\left|\text{corr}(\bchi_i, \bchi_j)\right|\right\}_{i,j=1}^n, \quad \bb = \left\{\sum_{k=1}^r\left|\text{corr}(\bchi_i, \bphi_k)\right|\right\}_{i=1}^n.
+\end{equation*}
+
+This approach does not use the dependencies in the columns of the matrix $\bY$. Let consider the following example:
+\[
+	\bX = [\bchi_1, \bchi_2, \bchi_3], \quad \bY = [\underbrace{\bphi_1, \bphi_1, \dots, \bphi_1}_{r-1}, \bphi_2],
+\]
+We have three features and $r$ targets, where first $r-1$ target are the identical. 
+The pairwise features similarities are given by the matrix $\bQ$. 
+Matrix $\bB$ entries shows pairwise relevances features to the targets. 
+The vector $\bb$ is obtained by summation of the matrix $\bB$ over columns.
+\[
+	\bQ = \begin{bmatrix} 1 & 0 & 0\\ 0 & 1 & 0.8 \\ 0 & 0.8 & 1 \end{bmatrix}, \quad 
+	\bB = \begin{bmatrix} 0.4 & \dots & 0.4 & 0 \\ 0.5 & \dots & 0.5 & 0.8 \\ \undermat{r-1}{0.8 & \dots & 0.8} & 0.1 \end{bmatrix}, \quad
+	\bb = \begin{bmatrix} (r-1) \cdot 0.4 + 0 \\ (r-1) \cdot 0.5 + 0.8 \\ (r-1) \cdot 0.8 + 0.1 \end{bmatrix}
+\]
+	\vspace{0.5cm}
+
+We would like to select only two features.
+For such configuration the best feature subset is~$[\bchi_1, \bchi_2]$. 
+The feature~$\bchi_2$ predicts the second target~$\bphi_2$ and the combination of features~$\bchi_1, \bchi_2$ predicts the first component. 
+The QPFS algorithm for~$r=2$ gives the solution~$\ba = [0.37,	0.61,	0.02]$. It coincides with our knowledge. 
+However, if we add the collinear columns to the matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\ba = [0.40,	0.17, 0.43]$. 
+Here we lost the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
+
+To take into account the dependencies in the columns of the matrix $\bY$ we extend the QPFS functional~\eqref{eq:quadratic_problem} to the multivariate case. 
+We add the term~$\text{Sim}(\bY)$ and extend the term $\text{Rel}(\bX, \bY)$:
+\begin{equation}
+	\alpha_1 \cdot \underbrace{\ba_x^{T} \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^{T} \bB \ba_y}_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\ba_y^{T} \bQ_y \ba_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\ba_x \in \bbR^n_+ \, \|\ba_x\|_1=1 \\ \ba_y \in \bbR^r _+ \, \|\ba_y\|_1=1}}.
+	\label{eq:multivariate_quadratic_problem}
+\end{equation}
+Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR^{r \times r}$, $\bB \in \bbR^{n \times r}$ in the following way
+\begin{equation*}
+	\bQ_x = \left\{ \left| \text{corr}(\bchi_i, \bchi_j) \right| \right\}_{i,j=1}^n, \quad 
+	\bQ_y = \left\{ \left| \text{corr}(\bphi_i, \bphi_j) \right| \right\}_{i,j=1}^r, \quad
+	\bB =  \left\{ \left| \text{corr}(\bchi_i, \bphi_j) \right| \right\}_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
+\end{equation*}
+The vector~$\ba_x$ shows the feature importances, while $\ba_y$ is a vector with the importance of each target. 
+The targets which are correlated will be penalized by $\text{Sim} (\bY)$ and have the lower importances.  
+
+\begin{statement}
+For the case $r=1$ the proposed functional~\eqref{eq:multivariate_quadratic_problem} coincides with the original QPFS algorithm~\eqref{eq:quadratic_problem}.
+
+\begin{proof}
+	If $r$ is equal to 1, then $\bQ_y = 1$, $\ba_y = 1$, $\bB = \bb$. It reduces the problem~\eqref{eq:multivariate_quadratic_problem} to 
+	\[
+	\alpha_1 \cdot \ba_x^{T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{T} \bb \rightarrow \min_{\ba_x \in \bbR^n_+ \, \|\ba_x\|_1=1} .
+	\]
+	Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ brings to the original QPFS problem~\eqref{eq:quadratic_problem}.
+\end{proof}
+\end{statement}
+
+The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term to the functional~\eqref{eq:multivariate_quadratic_problem} and satisfy the conditions:
+\[
+\alpha_1 + \alpha_2 + \alpha_3 = 1 \quad \alpha_i \geq 0, \, i = 1, 2, 3.
+\] 
+We balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the proportion between $\alpha_1$ and $\alpha_2$.
+
+\begin{statement}
+	Balance between the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:multivariate_quadratic_problem} is achieved by the following coefficients:
+	\[
+		\alpha_1 = \frac{(1 - \alpha_3)\overline{\bB}}{\overline{\bQ}_x + \overline{\bB}}; \quad
+		\alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}; \quad
+		\alpha_3 \in [0, 1],
+	\]
+	where $\overline{\bQ}_x$, $\overline{\bB}$ are the mean values of~$\bQ_x$ and $\bB$ respectively.
+\begin{proof}
+	The impact of these terms are equal if $\alpha_1 \cdot \text{Sim}(\bX)= \alpha_2 \cdot \text{Rel}(\bX, \bY)$. 
+	The mean values of the terms~$\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ are given by the mean values~$\overline{\bQ}_x$ and $\overline{\bB}$ of the corresponding matrices $\bQ_x$ and $\bB$.
+	Since $\alpha_1 + \alpha_2 + \alpha_3 = 1$, we obtain $(1 - \alpha_3 - \alpha_2) \overline{\bQ}_x = \alpha_2 \overline{\bB}$. 
+	Express $\alpha_2$ to get
+	\[
+		\alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}.
+	\]
+	The value for $\alpha_1$ is derived from the $\alpha_1 + \alpha_2 + \alpha_3 = 1$.
+\end{proof}
+\end{statement}
+
+We apply the proposed algorithm to the discussed example.
+The given matrix~$\bQ$ corresponds to the matrix~$\bQ_x$. 
+We additionally define the matrix $\bQ_y$ by setting $\text{corr}(\bphi_1, \bphi_2) = 0.2$ and all others entries to one. 
+Figure~\ref{fig:features_vs_alpha} shows the importances of features~$\ba_x$ and targets~$\ba_y$ with respect to~$\alpha_3$ coefficient. 
+If~$\alpha_3$ is small, the impact of all targets are almost equal and the feature~$\bchi_3$ dominates the feature~$\bchi_2$. When~$\alpha_3$ becomes larger than~$0.2$, the importance~$(\ba_y)_5$ of the target~$\phi_5$ grows up along with the importance of the feature~$\bchi_2$. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figs/features_vs_alpha.pdf}
+	\caption{Feature importances $\ba_x$ and $\ba_y$ with respect to the $\alpha_3$ coefficient}
+	\label{fig:features_vs_alpha}
+\end{figure}
+
+\section{Feature categorization}
+Feature selection algorithms eliminate features which are not relevant to the target variable. 
+To determine whether the feature is relevant the t-test could be applied for the correlation coefficient.
+\[
+	r = \text{corr} (\bchi, \bphi), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2).
+\]
+\begin{align*}
+&H_0: r = 0 \\
+&H_1: r \neq 0
+\end{align*}
+If features are relevant, but correlated, feature selection methods pick the subset of them to reduce the multicollinearity and redundancy.
+The goal is to find relevant, non-correlated features. 
+However, in this case the correlations between targets in matrix~$\bY$ are crucial.
+To measure the dependence of each feature or target, the Variance Inflation Factor is computed
+\[
+	\text{VIF}(\bchi_j) = \frac{1}{1 - R_j^2}, \quad \text{VIF}(\bphi_k) = \frac{1}{1 - R_k^2},
+\]
+where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $\bchi_j$($\bphi_k$) on the other features(targets).
+
+On that basis, we categorize features into 5 disjoint groups:
+\begin{enumerate}
+	\item non-relevant features
+	\[
+		\left\{j: \text{corr}(\bchi_j, \bphi_k) = 0, \, \forall k \in \{1, \dots, r\}\right\};
+	\]
+	\item non-$\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
+	\[
+		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left(\text{VIF}(\bphi_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bphi_k) \neq 0 \right)\right\};
+	\]
+	\item non-$\bX$-correlated features, which are relevant to $\bY$-correlated targets
+	\[
+		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bphi_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bphi_k) \neq 0 \right)\right\};
+	\]
+	\item $\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
+	\[
+		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left(\text{VIF}(\bphi_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bphi_k) \neq 0 \right)\right\};
+	\]
+	\item $\bX$-correlated features, which are relevant to $\bY$-correlated targets
+	\[
+		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bphi_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bphi_k) \neq 0 \right)\right\}.
+	\]
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figs/feature_scores_ex.eps}
+	\caption{Sorted feature importances for the QPFS algorithm}
+	\label{fig:feature_scores_ex}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figs/train_test_qpfs.eps}
+	\caption{RMSE with respect to size of active set, features are ranked by QPFS algorithm}
+	\label{fig:feature_scores_ex}
+\end{figure}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figs/features_vs_alpha_ecog_3.pdf}
+	\caption{Targets importances for ECoG data, each component is related to one of the axis}
+	\label{fig:features_vs_alpha_ecog_3}
+\end{figure}
+
+\end{document}
