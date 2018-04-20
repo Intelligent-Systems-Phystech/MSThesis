@@ -24,6 +24,8 @@
 \usepackage{algorithm}
 \usepackage[noend]{algcompatible}
 
+\usepackage{caption}
+
 %\renewcommand{\baselinestretch}{1.4}
 
 
@@ -297,29 +299,70 @@ On that basis, we categorize features into 5 disjoint groups:
 	\]
 \end{enumerate}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiment}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{figure}
+	\begin{minipage}{.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{figs/feature_scores_ex.eps}
+		\caption{Sorted feature importances for \\ the QPFS algorithm}
+		\label{fig:feature_scores_ex}
+	\end{minipage}%
+	\begin{minipage}{.5\linewidth}
 	\centering
-	\includegraphics[width=0.7\linewidth]{figs/feature_scores_ex.eps}
-	\caption{Sorted feature importances for the QPFS algorithm}
-	\label{fig:feature_scores_ex}
+	\includegraphics[width=\linewidth]{figs/train_test_qpfs.eps}
+	\caption{RMSE w.r.t. size of active set, features are ranked by QPFS algorithm}
+	\label{fig:train_test_qpfs}
+	\end{minipage}
 \end{figure}
 
 \begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{figs/train_test_qpfs.eps}
-	\caption{RMSE with respect to size of active set, features are ranked by QPFS algorithm}
-	\label{fig:feature_scores_ex}
+	\includegraphics[width=\linewidth]{figs/corr_matrix.eps}
+	\caption{Correlation matrices for $\bX$ and $\bY$}
+	\label{fig:corr_matrix}
 \end{figure}
-
 
 \begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{figs/features_vs_alpha_ecog_3.pdf}
-	\caption{Targets importances for ECoG data, each component is related to one of the axis}
-	\label{fig:features_vs_alpha_ecog_3}
+	\begin{minipage}{.5\linewidth}
+		\subfloat[autoregression step=1]{\label{fig:autoreg_step1}
+			\includegraphics[width=\linewidth]{figs/features_vs_alpha_ecog_3.pdf}}
+	\end{minipage}%
+	\begin{minipage}{.5\linewidth}
+		\subfloat[autoregression step=2]{\label{fig:autoreg_step2}
+			\includegraphics[width=\linewidth]{figs/features_vs_alpha_ecog_6.pdf}}
+	\end{minipage}\par\medskip
+	\subfloat[autoregression step=3]{\label{fig:autoreg_step3}
+		\includegraphics[width=\linewidth]{figs/features_vs_alpha_ecog_9.pdf}}
+	
+	\caption{Target importances $\ba_y$ for ECoG data with respect to the $\alpha_3$ coefficient}
+	\label{fig:features_vs_alpha_ecog}
 \end{figure}
 
+\begin{figure}
+	\includegraphics[width=\linewidth]{figs/features_vs_alpha_ecog_45.pdf}
+	\caption{autoregression step=45}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figs/ecog_3_metrics.eps}
+	\caption{}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figs/ecog_9_metrics.eps}
+	\caption{}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figs/ecog_45_metrics.eps}
+	\caption{}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figs/ecog_90_metrics.eps}
+	\caption{}
+\end{figure}
 \end{document}
