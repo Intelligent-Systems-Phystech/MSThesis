@@ -196,7 +196,7 @@ The QPFS algorithm for~$r=2$ gives the solution~$\ba = [0.37,	0.61,	0.02]$. It c
 However, if we add the collinear columns to the matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\ba = [0.40,	0.17, 0.43]$. 
 Here we lost the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
 
-\paragraph{Noname}
+\paragraph{Symmetric importances}
 
 To take into account the dependencies in the columns of the matrix $\bY$ we extend the QPFS functional~\eqref{eq:quadratic_problem} to the multivariate case. 
 We add the term~$\text{Sim}(\bY)$ and extend the term $\text{Rel}(\bX, \bY)$:
@@ -213,44 +213,10 @@ Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR
 The vector~$\ba_x$ shows the feature importances, while $\ba_y$ is a vector with the importance of each target. 
 The targets which are correlated will be penalized by $\text{Sim} (\bY)$ and have the lower importances.  
 
-\begin{statement}
-For the case $r=1$ the proposed functional~\eqref{eq:multivariate_quadratic_problem} coincides with the original QPFS algorithm~\eqref{eq:quadratic_problem}.
-
-\begin{proof}
-	If $r$ is equal to 1, then $\bQ_y = 1$, $\ba_y = 1$, $\bB = \bb$. It reduces the problem~\eqref{eq:multivariate_quadratic_problem} to 
-	\[
-	\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bb \rightarrow \min_{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1} .
-	\]
-	Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ brings to the original QPFS problem~\eqref{eq:quadratic_problem}.
-\end{proof}
-\end{statement}
-
 The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term to the functional~\eqref{eq:multivariate_quadratic_problem} and satisfy the conditions:
 \[
 \alpha_1 + \alpha_2 + \alpha_3 = 1 \quad \alpha_i \geq 0, \, i = 1, 2, 3.
 \] 
-We balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the proportion between $\alpha_1$ and $\alpha_2$.
-
-\begin{statement}
-	Balance between the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:multivariate_quadratic_problem} is achieved by the following coefficients:
-	\[
-		\alpha_1 = \frac{(1 - \alpha_3)\overline{\bB}}{\overline{\bQ}_x + \overline{\bB}}; \quad
-		\alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}; \quad
-		\alpha_3 \in [0, 1],
-	\]
-	where $\overline{\bQ}_x$, $\overline{\bB}$ are the mean values of~$\bQ_x$ and $\bB$ respectively.
-\begin{proof}
-	The impact of these terms are equal if $\alpha_1 \cdot \text{Sim}(\bX)= \alpha_2 \cdot \text{Rel}(\bX, \bY)$. 
-	The mean values of the terms~$\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ are given by the mean values~$\overline{\bQ}_x$ and $\overline{\bB}$ of the corresponding matrices $\bQ_x$ and $\bB$.
-	Since $\alpha_1 + \alpha_2 + \alpha_3 = 1$, we obtain $(1 - \alpha_3 - \alpha_2) \overline{\bQ}_x = \alpha_2 \overline{\bB}$. 
-	Express $\alpha_2$ to get
-	\[
-		\alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}.
-	\]
-	The value for $\alpha_1$ is derived from the $\alpha_1 + \alpha_2 + \alpha_3 = 1$.
-\end{proof}
-\end{statement}
-
 \begin{statement}
 	Balance between the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:multivariate_quadratic_problem} is achieved by the following coefficients:
 	\[
@@ -259,19 +225,26 @@ We balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the 
 	\alpha_3  = \frac{\overline{\bQ}_x \overline{\bB}}{\overline{\bQ}_y \overline{\bB} + \overline{\bQ}_x \overline{\bQ}_y + \overline{\bQ}_x \overline{\bB}},
 	\]
 	where $\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ are the mean values of~$\bQ_x$, $\bB$, and $\bQ_y$ respectively.
-	\begin{proof}
-		The mean values of the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$  are given by the mean values~$\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ of the corresponding matrices ~$\bQ_x$, $\bB$, and $\bQ_y$.
-		The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solution of the following equations
-		\begin{align*}
-			&\alpha_1 + \alpha_2 + \alpha_3 = 1; \\
-			&\alpha_1 \overline{\bQ}_x = \alpha_2 \overline{\bB} = \alpha_3 \overline{\bQ}_y.
-		\end{align*}
-	\end{proof}
+	
 \end{statement}
+\begin{proof}
+	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solution of the following equations
+	\begin{align*}
+		&\alpha_1 + \alpha_2 + \alpha_3 = 1; \\
+		&\alpha_1 \overline{\bQ}_x = \alpha_2 \overline{\bB} = \alpha_3 \overline{\bQ}_y.
+	\end{align*}
+	Here, the mean values~$\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ of the corresponding matrices ~$\bQ_x$, $\bB$, and $\bQ_y$ are the mean values of the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$.
+\end{proof}
+To investigate the impact of the term $\text{Sim}(\bY)$ on the functional~\eqref{eq:multivariate_quadratic_problem}, we balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the proportion between~$\alpha_1$ and $\alpha_2$:
+\[
+\alpha_1 = \frac{(1 - \alpha_3)\overline{\bB}}{\overline{\bQ}_x + \overline{\bB}}; \quad
+\alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}; \quad
+\alpha_3 \in [0, 1].
+\]
 
 We apply the proposed algorithm to the discussed example.
 The given matrix~$\bQ$ corresponds to the matrix~$\bQ_x$. 
-We additionally define the matrix $\bQ_y$ by setting $\text{corr}(\bnu_1, \bnu_2) = 0.2$ and all others entries to one. 
+We additionally define the matrix~$\bQ_y$ by setting $\text{corr}(\bnu_1, \bnu_2) = 0.2$ and all others entries to one. 
 Figure~\ref{fig:features_vs_alpha} shows the importances of features~$\ba_x$ and targets~$\ba_y$ with respect to~$\alpha_3$ coefficient. 
 If~$\alpha_3$ is small, the impact of all targets are almost equal and the feature~$\bchi_3$ dominates the feature~$\bchi_2$. When~$\alpha_3$ becomes larger than~$0.2$, the importance~$(\ba_y)_5$ of the target~$\phi_5$ grows up along with the importance of the feature~$\bchi_2$. 
 
@@ -282,33 +255,43 @@ If~$\alpha_3$ is small, the impact of all targets are almost equal and the featu
 	\label{fig:features_vs_alpha}
 \end{figure}
 
-\paragraph{Minimax problem}
-
+\paragraph{Minimax QPFS}
 The functional~\eqref{eq:multivariate_quadratic_problem} is symmetric with respect to~$\ba_x$ and $\ba_y$. 
 It penalizes features that are correlated and do not relevant to targets. 
 At the same time it penalizes targets that are correlated and are not sufficiently explained by the features. 
-It leads to small importances for targets which are difficult to predict by features and to large importances for targets which are strongly correlated with features. 
+It leads to small importances for targets which are difficult to predict by features and large importances for targets which are strongly correlated with features. 
 It contradicts with the intuition. 
-Our goal is to predict all targets, especially which are difficult to explain, by selected relevant and non-correlated features. We express this in the following problems
-\begin{align*}
-	\alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^T\mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \\ \bOne_n^T\ba_x=1}}; \\
+Our goal is to predict all targets, especially which are difficult to explain, by selected relevant and non-correlated features. We express this into two related problems. 
+\begin{align}
+	\alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^T\mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \\ \bOne_n^T\ba_x=1}}; 
+	\label{eq:x_qpfs}\\
 	\alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^T \mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_y \geq \bZero_r,  \\ \bOne_r^T\ba_y=1}}.
-\end{align*}
-It brings us to the min-max or max-min formulation
+	\label{eq:y_qpfs}
+\end{align}
+The difference in Rel part.
+In feature space the non-relevant components should have smaller scores. 
+Meanwhile, the targets that are not relevant to the features should have larger scores.
+The problems~\eqref{eq:x_qpfs} and \eqref{eq:y_qpfs} are merged into the joint min-max or max-min formulation
 \begin{equation}
-	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}}  \left(\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}}\right)\left[\alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^T \bB \ba_y}_{\text{Rel}(\bX, \bY)} - \alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)} \right].
-	\label{eq:maxmin}
+	\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} f(\ba_x, \ba_y), \quad \left(\text {or} \, \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} f(\ba_x, \ba_y)\right),
+	\label{eq:minmax}
 \end{equation}
-
+where
+\[
+	f(\ba_x, \ba_y) = \alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^T \bB \ba_y}_{\text{Rel}(\bX, \bY)} - \alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)}.
+\]
+The link between feature selection quality criteria~\eqref{eq:subset_selection} and the min-max problem~\eqref{eq:minmax} is the following
+\begin{equation}
+\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bY) \Leftrightarrow \argmin_{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1} \left[\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} f(\ba_x, \ba_y)\right].
+\end{equation}
 \begin{theorem}
-	For positive definite matrices $\bQ_x$ and $\bQ_y$ the max-min and min-max problems~\eqref{eq:maxmin} have the same optimal value. 
+	For positive definite matrices $\bQ_x$ and $\bQ_y$ the max-min and min-max problems~\eqref{eq:minmax} have the same optimal value. 
 \end{theorem}
 \begin{proof}
 	Denote 
-	\begin{align*}
-	\mathbb{C}^n = \{\ba : \ba \geq \bZero_n, \, \bOne_n^T\ba=1\}, \, \mathbb{C}^r = \{\ba : \ba \geq \bZero_r, \, \bOne_r^T\ba=1\}; \\ 
-	f(\ba_x, \ba_y) = \alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y.
-	\end{align*}
+	\begin{equation*}
+	\mathbb{C}^n = \{\ba : \ba \geq \bZero_n, \, \bOne_n^T\ba=1\}, \quad \mathbb{C}^r = \{\ba : \ba \geq \bZero_r, \, \bOne_r^T\ba=1\};
+	\end{equation*}
 	The sets $\mathbb{C}^n$ and $\mathbb{C}^r$ are compact and convex. The function $f: \mathbb{C}^n \times \mathbb{C}^r \rightarrow \bbR$ is a continuous function. If $\bQ_x$ and $\bQ_y$ are positive definite matrices, the function~$f$ is convex-concave, i.e.
 	$f(\cdot, \ba_y): \mathbb{C}^n \rightarrow \bbR$ is convex for fixed~$\ba_y$, and $f(\ba_x, \cdot): \mathbb{C}^r \rightarrow \bbR$ is concave for fixed~$\ba_x$. 
 	In this case Neumann's minimax theorem states
@@ -317,44 +300,55 @@ It brings us to the min-max or max-min formulation
 	\]
 \end{proof}
 
-Let solve the max-min problem~\eqref{eq:maxmin}. Fix some~$\ba_y \in \mathbb{C}^r$. For fixed vector~$\ba_y$ we solve the problem
+To solve the min-max problem~\eqref{eq:minmax}, fix some~$\ba_x \in \mathbb{C}^n$. For fixed vector~$\ba_x$ we solve the problem
 \begin{equation}
-	\min_{\ba_x \in \mathbb{C}_n} f(\ba_x, \ba_y) = \min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} \left[\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y \right].
-	\label{eq:fixed_ay}
+	\max_{\ba_y \in \mathbb{C}_r} f(\ba_x, \ba_y) = \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \bigl[\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y \bigr].
+	\label{eq:fixed_ax}
 \end{equation}
 The Lagrangian for this problem is
 \[
-	L(\ba_x, \ba_y, \lambda, \bmu) = \alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y - \lambda \cdot  (\bOne_n^T \ba_x - 1) - \bmu^T \ba_x.
+	L(\ba_x, \ba_y, \lambda, \bmu) = \alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y + \lambda \cdot  (\bOne_n^T \ba_x - 1) + \bmu^T \ba_x.
 \]
-Here the Lagrange multipliers $
-$, corresponding to the inequality constraints, are restricted to be nonnegative. 
+Here the Lagrange multipliers $\bmu$, corresponding to the inequality constraints $\ba_y \geq \bZero_r$, are restricted to be nonnegative. 
 The dual problem is
 \begin{equation}
-	\max_{\lambda, \, \bmu \geq \bZero_n} g(\ba_y, \lambda, \bmu) = \max_{\lambda, \, \bmu \geq \bZero_n}  \left[\min_{\ba_x \in \bbR^n} L(\ba_x, \ba_y, \lambda, \bmu) \right].
+	\min_{\lambda, \, \bmu \geq \bZero_r} g(\ba_y, \lambda, \bmu) = \min_{\lambda, \, \bmu \geq \bZero_r}  \left[\max_{\ba_y \in \bbR^r} L(\ba_x, \ba_y, \lambda, \bmu) \right].
 	\label{eq:dual}
 \end{equation}
-The strong duality holds for the problem~\eqref{eq:fixed_ay}. Therefore, the optimal value for~\eqref{eq:fixed_ay} equals the optimal value for~\eqref{eq:dual}. It allows to solve the problem
+The strong duality holds for the problem~\eqref{eq:fixed_ax}. Therefore, the optimal value for~\eqref{eq:fixed_ax} equals the optimal value for~\eqref{eq:dual}. It allows to solve the problem
 \begin{equation}
-	\max_{\ba_y \in \mathbb{C}^r, \, \lambda, \, \bmu \geq \bZero_n} g(\ba_y, \lambda, \bmu)
+	\min_{\ba_x \in \mathbb{C}^n, \, \lambda, \, \bmu \geq \bZero_r} g(\ba_y, \lambda, \bmu)
 	\label{eq:dual_maxmin}
 \end{equation}
-instead of~\eqref{eq:maxmin}.
+instead of~\eqref{eq:minmax}.
 
-Setting the gradient of the Langrangian $\nabla_{\ba_x} L(\ba_x, \ba_y, \lambda, \bmu)$ to zero, we obtain an optimal value~$\ba_x$:
+Setting the gradient of the Langrangian $\nabla_{\ba_y} L(\ba_x, \ba_y, \lambda, \bmu)$ to zero, we obtain an optimal value~$\ba_y$:
 \begin{equation}
-	\ba_x = \frac{1}{2\alpha_1} \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right).
+	\ba_y = \frac{1}{2\alpha_3} \bQ_y^{-1} \left( - \alpha_2 \cdot \bB^T \ba_x +\lambda \cdot \bOne_r + \bmu \right).
 	\label{eq:ax}
 \end{equation}
 The dual function is equal to
 \begin{multline*}
 	g(\ba_y, \lambda, \bmu) 
-	= \min_{\ba_x \in \bbR^n} L(\ba_x, \ba_y, \lambda, \bmu) = % \frac{1}{4\alpha_1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right)^T \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right) \\
+	= \max_{\ba_y \in \bbR^r} L(\ba_x, \ba_y, \lambda, \bmu) = % \frac{1}{4\alpha_1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right)^T \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right) \\
 	%- \frac{1}{2\alpha_1} \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right)^T \bQ_x^{-1} \bB \ba_y - \lambda \left( \frac{1}{2\alpha_1} \bOne_n ^T \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right) - 1 \right) \\
 	%- \frac{\alpha_2}{2\alpha_1} \bmu^T \bQ_x^{-1} \left( \alpha_2 \cdot \bB \ba_y +\lambda \cdot \bOne_n + \bmu \right)  - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y = 
-	\ba_y^T \left(\frac{\alpha_2^2}{4\alpha_1} \bB^T \bQ_x^{-1} \bB + \alpha_3 \cdot \bQ_y\right) \ba_y \\ - \frac{1}{2 \alpha_1} \lambda^2 \cdot \bOne_n^T \bQ_x^{-1} \bOne_n - \frac{1}{2 \alpha_1} \bmu^T \bQ_x^{-1} \bmu - \frac{\alpha_2}{2 \alpha_1} \lambda \cdot \bOne_n^T \bQ_x^{-1} \bB \by \\ - \frac{1}{2 \alpha_1} \lambda \cdot \bOne_n^T \bQ_x^{-1} \bmu - \frac{\alpha_2}{2 \alpha_1} \bmu^T \bQ_x^{-1} \bB \by + \lambda. 
+	\ba_x^T \left( - \frac{\alpha_2^2}{4\alpha_3} \bB \bQ_y^{-1} \bB^T - \alpha_1 \cdot \bQ_x\right) \ba_x \\ - \frac{1}{4 \alpha_3} \lambda^2 \cdot \bOne_r^T \bQ_y^{-1} \bOne_r - \frac{1}{4 \alpha_3} \bmu^T \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \lambda \cdot \bOne_r^T \bQ_y^{-1} \bB^T \ba_x \\ - \frac{1}{2 \alpha_3} \lambda \cdot \bOne_r^T \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \bmu^T \bQ_y^{-1} \bB^T \ba_x + \lambda. 
 \end{multline*} 
 
-It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables. We obtain the vector~$\ba_y$ by solving~\eqref{eq:dual_maxmin} and the vector~$\ba_x$ by~\eqref{eq:ax}.
+It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables. We obtain the vector~$\ba_x$ by solving~\eqref{eq:dual_maxmin} and the vector~$\ba_y$ from~\eqref{eq:ax}.
+
+\begin{statement}
+	For the case $r=1$ the proposed functionals~\eqref{eq:multivariate_quadratic_problem} and~\eqref{eq:minmax} coincide with the original QPFS algorithm~\eqref{eq:quadratic_problem}.
+	
+	\begin{proof}
+		If $r$ is equal to 1, then $\bQ_y = q_y$ is a scalar, $\ba_y = 1$, $\bB = \bb$. It reduces the problems~\eqref{eq:multivariate_quadratic_problem} and~\eqref{eq:minmax} to 
+		\[
+			\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bb \rightarrow \min_{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1} .
+		\]
+		Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ brings to the original QPFS problem~\eqref{eq:quadratic_problem}.
+	\end{proof}
+\end{statement}
 
 \section{Feature categorization}
 Feature selection algorithms eliminate features which are not relevant to the target variable. 
@@ -369,7 +363,7 @@ To determine whether the feature is relevant the t-test could be applied for the
 If features are relevant, but correlated, feature selection methods pick the subset of them to reduce the multicollinearity and redundancy.
 The goal is to find relevant, non-correlated features. 
 However, in this case the correlations between targets in matrix~$\bY$ are crucial.
-To measure the dependence of each feature or target, the Variance Inflation Factor is computed
+To measure the dependence of each feature or target, the Variance Inflation Factor (VIF) is computed
 \[
 	\text{VIF}(\bchi_j) = \frac{1}{1 - R_j^2}, \quad \text{VIF}(\bnu_k) = \frac{1}{1 - R_k^2},
 \]
