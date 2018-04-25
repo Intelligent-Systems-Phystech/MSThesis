@@ -1,9 +1,10 @@
-.DS_Store
-.ipynb_checkpoints
+*.DS_Store
+*.ipynb_checkpoints
 *.synctex.gz
 *.log
 *.aux
 *.out
-untracked/
-code/__pycache__
-data/
+*untracked/
+*__pycache__
+*/data/
+*eps-converted-to.pdf
