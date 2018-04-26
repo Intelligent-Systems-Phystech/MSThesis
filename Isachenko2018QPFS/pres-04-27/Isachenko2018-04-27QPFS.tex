@@ -64,7 +64,7 @@
 %\definecolor{beamer@blendedblue}{RGB}{15,120,80}
 %----------------------------------------------------------------------------------------------------------
 \title[\hbox to 56mm{  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
-{\\ \vspace{1.5cm} Dimensionality reduction for signal forecasting}
+{\\ \vspace{1.5cm} Signal Decoding in multicorrelated high-dimensional spaces}
 \author[Roman Isachenko]{\\ 
 	\vspace{.4cm}
 	Roman Isachenko}
@@ -81,28 +81,26 @@
 \titlepage
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{General Problem}
-	\begin{block}{Task}
-		To analyze the input signal.
-		\begin{itemize}
-			\item multicollinearity in input and target spaces;
-			\item high correlation between signals;
-			\item the covariance matrices are essentially non-diagonal.
-		\end{itemize}
-	There are two models for input and target spaces. 
-	\end{block}
+\begin{frame}{Signal decoding problem}
 	\begin{block}{Goal}
-		To adjust the models for high multicollinear spaces.
+		\begin{itemize}
+			\item Investigate input, latent, and target spaces for signal decoding problem.
+			\item Build a stable model for time series decoding in the case of multicorrelated object description.
+			\item Suggest dimensionality reduction algorithm for signal decoding problem.
+		\end{itemize}
 	\end{block}
-	\begin{block}{Problem}
-		To select structurally simple, stable, and exact model in the case of data redundancy and multiextremality of an error function.
+	\begin{block}{Challenge}
+		\begin{itemize}
+			\item Measurements of spatial-temporal data are interacted since sensors are close to each other.
+			\item Target variable is a vector whose elements are dependent.
+		\end{itemize}
 	\end{block}
 	\begin{block}{Solution}
-		Feature selection method that takes into account the input and target spaces structures and gives self-consistent model.
+		Propose to use joint description of independent and target variables. This description allows to reduce the multicorrelation and to build stable adequate model with acceptable accuracy.
 	\end{block}
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Literature}
+\begin{frame}{Related works}
 	\begin{itemize}
 		\item Katrutsa A., Strijov V. Comprehensive study of feature selection methods to solve multicollinearity problem according to evaluation criteria. // \textit{Expert Systems with Applications} 76, 2017.
 		\vfill
@@ -117,32 +115,39 @@
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Application: Brain Computer Interface (BCI)}
-\begin{minipage}{0.45\linewidth}
-	\begin{figure}
-		\includegraphics[width=0.96\linewidth]{figs/deviceClinatec} \\
-		\includegraphics[width=0.96\linewidth]{figs/brainClinatec}
-	\end{figure}
-\end{minipage}%
-\begin{minipage}{0.55\linewidth}
+	\begin{minipage}{0.58\linewidth}
+		\begin{block}{Aim}
+		Develop systems to help people with a severe motor control disability recover mobility.
+		\end{block}
+	\begin{block}{Hypothesis}
+	"When we imagine making a movement, we trigger the same electrical activity in the motor cortex of the brain as when we actually perform that activity."$^*$
+	\end{block}
+	\begin{block}{Solution}
+	Record electrical signals~-- electrocorticograms (ECoG), decode them to drive complex objects, for example, to move the limbs of an exoskeleton. 
+	\end{block}
+	$^*$ \url{http://clinatec.fr};
+	\end{minipage}%
+\begin{minipage}{0.4\linewidth}
 	\centering
-	\includegraphics[width=0.73\linewidth]{figs/electrodes}
+	\includegraphics[width=0.9\linewidth]{figs/deviceClinatec} \\
+	\vspace{0.5cm}
+	\includegraphics[width=0.9\linewidth]{figs/brainClinatec}
 \end{minipage}
-\vspace{0.1cm} \\
+\vspace{0.3cm} \\
 \hrulefill \\
-\url{http://clinatec.fr}; 
-\url{http://neurotycho.org}
+\small{Eliseyev A. et al. CLINATEC BCI platform based on the ECoG-recording implant WIMAGINE and the innovative signal-processing: preclinical results, 2014.}
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Problem Statement}
-	\begin{block}{Goal}
-	Forecast a dependent variable $\by \in \bbR^r$ from an independent input object $\bx \in \bbR^n$.
+\begin{frame}{Multivariate regression}
+	\begin{block}{Model}
+	Forecast a dependent variable $\by \in \bbR^r$ from an independent input object $\bx \in \bbR^n$
 	\[
 	\by = \bTheta \bx+ \boldsymbol{\varepsilon}, \quad \bTheta \in \bbR^{r \times n}
 	\]
 	\vspace{-0.7cm}
 	\end{block}
 	\begin{block}{Given}
-	Dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
+	Dataset $\left( \bX, \bY \right)$, design matrix~$\bX \in \bbR^{m \times n}$, target matrix~$\bY \in \bbR^{m \times r}$,
 	\[
 	\bX = [\bx_1, \dots, \bx_m]^{T} =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^{T} =  [\bnu_1, \dots, \bnu_r].
 	\]
@@ -162,7 +167,7 @@
 \end{frame}
 
 %--------------------------------------------------------------------------------
-\begin{frame}{Feature Selection}
+\begin{frame}{Feature selection problem statement}
 \begin{block}{Goal}
 Find the index set~$\cA = \{1, \dots, n\}$ of~$\bX$ columns. 
 \end{block}
@@ -391,39 +396,6 @@ Best subset: $[\bchi_1, \bchi_2]$.
 	
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Feature categorization}
-\begin{enumerate}
-	\item non-relevant features
-	\[
-	\left\{j: \text{corr}(\bchi_j, \bnu_k) = 0, \, \forall k \in \{1, \dots, r\}\right\};
-	\]
-	\item non-$\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
-	\[
-	\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item non-$\bX$-correlated features, which are relevant to $\bY$-correlated targets
-	\[
-	\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item $\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
-	\[
-	\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item $\bX$-correlated features, which are relevant to $\bY$-correlated targets
-	\[
-	\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\}.
-	\]
-\end{enumerate}
-
-\[
-r = \text{corr} (\bchi, \bnu), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2).
-\]
-\[
-\text{VIF}(\bchi_j) = \frac{1}{1 - R_j^2}, \quad \text{VIF}(\bnu_k) = \frac{1}{1 - R_k^2},
-\]
-where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $\bchi_j$($\bnu_k$) on the other features(targets).
-\end{frame}
-%--------------------------------------------------------------------------------
 \begin{frame}{Computational experiment}
 \begin{block}{Data example}
 	\begin{figure}
@@ -441,10 +413,13 @@ where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $
 	x_m \, y_m \, z_m & \dots & x_{m + k} \, y_{m + k} \, z_{m + k}
 	\end{pmatrix} \in \bbR^{m \times 3k}.
 \]
+\vspace{0.5cm}
 
+\hrulefill \\
+\url{http://neurotycho.org}
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Experiment}
+\begin{frame}{Data redundancy}
 	\begin{figure}
 		\begin{minipage}{.5\linewidth}
 			\includegraphics[width=\linewidth]{figs/feature_scores_ex.eps}
@@ -457,7 +432,7 @@ where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $
 	\end{figure}
 \end{frame}
 %--------------------------------------------------------------------------------
-\begin{frame}{Experiment}
+\begin{frame}{Target importances}
 \begin{figure}
 	\begin{minipage}{.5\linewidth}
 			\includegraphics[width=\linewidth]{figs/features_vs_alpha_ecog_3.pdf}
@@ -481,7 +456,55 @@ where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $
 	\end{figure}
 \end{frame}
 %--------------------------------------------------------------------------------
+\begin{frame}{Conclusion}
+	\begin{itemize}
+		\item BCI signal decoding problem is investigated.
+		\item Feature selection algorithms for spatio-temporal data are proposed.
+		\item Suggested algorithms are explored and compared.
+	\end{itemize}
+	\begin{block}{Publications}
+		\begin{itemize}
+			\item Isachenko~R. et al. Feature Generation for Physical Activity Classification. \emph{Artificial Intellegence and decision making}, submitted.
+			\item Isachenko~R., Strijov~V. Quadratic programming optimization for Newton method. \emph{Lobachevskii Journal of Mathematics}, submitted.
+			\item Isachenko~R., Vladimirova~M., Strijov~V. Dimensionality reduction for time series decoding and forecasting problems. Ready for submission.
+		\end{itemize}
+	\end{block}
+\end{frame}
+%--------------------------------------------------------------------------------
 \begin{frame}{}
+\end{frame}
+%--------------------------------------------------------------------------------
+\begin{frame}{Feature categorization}
+	\begin{enumerate}
+		\item non-relevant features
+		\[
+		\left\{j: \text{corr}(\bchi_j, \bnu_k) = 0, \, \forall k \in \{1, \dots, r\}\right\};
+		\]
+		\item non-$\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
+		\[
+		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
+		\]
+		\item non-$\bX$-correlated features, which are relevant to $\bY$-correlated targets
+		\[
+		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
+		\]
+		\item $\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
+		\[
+		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
+		\]
+		\item $\bX$-correlated features, which are relevant to $\bY$-correlated targets
+		\[
+		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\}.
+		\]
+	\end{enumerate}
+	
+	\[
+	r = \text{corr} (\bchi, \bnu), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2).
+	\]
+	\[
+	\text{VIF}(\bchi_j) = \frac{1}{1 - R_j^2}, \quad \text{VIF}(\bnu_k) = \frac{1}{1 - R_k^2},
+	\]
+	where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $\bchi_j$($\bnu_k$) on the other features(targets).
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Problem Statement}
@@ -609,95 +632,4 @@ where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $
 		w_j = 0 \Leftrightarrow z_j < \tau.
 	\end{equation*}
 \end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{NN-QPMS}
-	\begin{block}{Model: feed-forward neural network}
-		\[
-			f(\bx | \bw) = \sigma_2\left(\bW_2 \sigma_1(\bW_1 \bx)\right).
-		\]
-	\end{block}
-	\begin{itemize}
-		\item weights from different layers do not interact;
-		\item weight interactions $\rightarrow$ similarity between neurons;
-		\item weight relevances $\rightarrow$ model linearization
-		\begin{equation*}
-			\mathbf{f} (\bX | \bw + \Delta \bw) \approx \mathbf{f}(\bX | \bw) + \mathbf{J} \cdot \Delta \bw,
-		\end{equation*}
-		where $\mathbf{J} \in \bbR^{m \times p}$ is a Jacobian matrix
-		\begin{equation*}
-			\mathbf{J} = 
-			\begin{pmatrix}
-			\frac{\partial f(\bx_1 | \bw)}{\partial w_1} & \dots & \smash{\setlength\fboxrule{1pt}\color{red}\fbox{\color{black}\rule[-30pt]{0pt}{1pt}$\frac{\partial f(\bx_1 | \bw)}{\partial w_j}$}} & \dots & \frac{\partial f(\bx_1 | \bw)}{\partial w_p} 
-			 \\
-			\dots & \dots & \dots & \dots & \dots\\
-			\frac{\partial f(\bx_m | \bw)}{\partial w_1} & \dots & 
-			\frac{\partial f(\bx_m | \bw)}{\partial w_j}  & \dots & \frac{\partial f(\bx_m | \bw)}{\partial w_p}
-			\end{pmatrix}
-		\end{equation*}
-	\end{itemize}
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Algorithm}
-	\begin{enumerate}
-		\item Find the optimal model parameters:
-		\begin{equation*}
-			\bw^* = \argmin_{\bw \in \bbR^p} S(\bw | \bX, \by, f),
-		\end{equation*}
-		where $S(\bw | \bX, \by, f)$~--- squared error function for regression, cross-entropy for classification.
-		\item Find active weights subset $\mathcal{A}$
-		\[
-			\bz^* = \argmin_{\substack{\bz \in \bbR^{p}_{+} \| \bz \|_1 = 1}} Q(\bz | \bX, \by, f).
-		\]
-		\item Find the parameters of the reduced model:
-		\[
-			\bw^* = \argmin_{\bw \in \bbR^p} S(\bw | \bX, \by, f), \quad \text{subject to } w_j = 0 \text{ for } j \notin \mathcal{A}.
-		\]
-		\item (optional) Repeat steps (2) and (3).
-	\end{enumerate}
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Results}
-		\begin{minipage}{0.6\linewidth}
-		\begin{block}{Synthetic data}
-			\begin{itemize}
-				\item \# features: 100
-				\item \# uncorrelated features: 5
-				\item \# feature combinations: 95
-			\end{itemize}
-		\end{block}
-		\end{minipage}%
-		\begin{minipage}{0.4\linewidth}
-		\begin{figure}
-			\includegraphics[width=0.9\linewidth]{figs/corr}
-			\caption{Correlation matrix}
-		\end{figure}
-		\end{minipage}
-	\begin{block}{Results}
-		\begin{itemize}
-			\item \# parameters in the initial network: $100 \times 40 + 40 \times 2 = 4080$ (100\%);
-			\item accuracy of the initial network: train/test=83.7/78.5;
-			\item \# parameters in the reduced network: $92 + 47 = 139$ (4\%);
-			\item accuracy of the reduced network: train/test=81.6/78.4
-		\end{itemize}
-	\end{block}
-\end{frame}
-%--------------------------------------------------------------------------------
-\begin{frame}{Results}
-	\begin{block}{Initial network}
-		\vspace{-0.2cm}
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=0.9\linewidth]{figs/orig_net.eps}
-		\end{figure}
-	\end{block}
-	\vspace{-0.7cm}
-	\begin{block}{Reduced network}
-		\vspace{-0.2cm}
-		\begin{figure}
-			\includegraphics[width=0.9\linewidth]{figs/reduced_net.eps}
-		\end{figure}
-	\end{block}
-\end{frame}
-%--------------------------------------------------------------------------------
-
 \end{document} 
