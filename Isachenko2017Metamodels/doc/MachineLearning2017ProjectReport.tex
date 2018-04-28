@@ -1,0 +1,649 @@
+\documentclass[a4paper,14pt]{article} 
+% Этот шаблон документа разработан в 2014 году 
+% Данилом Фёдоровых (danil@fedorovykh.ru) 
+% для использования в курсе 
+% «Документы и презентации в \LaTeX», записанном НИУ ВШЭ 
+% для Coursera.org: http://coursera.org/course/latex . 
+% Исходная версия шаблона —- 
+% https://www.writelatex.com/coursera/latex/5.3 
+
+% В этом документе преамбула 
+
+%%% Работа с русским языком 
+\usepackage{cmap} % поиск в PDF 
+\usepackage{mathtext} % русские буквы в формулах 
+\usepackage[T2A]{fontenc} % кодировка 
+\usepackage[cp1251]{inputenc} % кодировка исходного текста 
+\usepackage[english]{babel} % локализация и переносы 
+\usepackage{indentfirst} 
+\frenchspacing
+\usepackage[shortlabels]{enumitem}
+
+\renewcommand{\epsilon}{\ensuremath{\varepsilon}} 
+\renewcommand{\phi}{\ensuremath{\varphi}} 
+\renewcommand{\kappa}{\ensuremath{\varkappa}} 
+\renewcommand{\le}{\ensuremath{\leqslant}} 
+\renewcommand{\leq}{\ensuremath{\leqslant}} 
+\renewcommand{\ge}{\ensuremath{\geqslant}} 
+\renewcommand{\geq}{\ensuremath{\geqslant}} 
+\renewcommand{\emptyset}{\varnothing} 
+\newcommand{\T}{{\text{\footnotesize\sffamily\upshape\mdseries T}}}
+
+
+%%% Дополнительная работа с математикой 
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools, bm} % AMS 
+\usepackage{icomma} % "Умная" запятая: $0,2$ —- число, $0, 2$ —- перечисление 
+
+%% Номера формул 
+%\mathtoolsset{showonlyrefs=true} % Показывать номера только у тех формул, на которые есть \eqref{} в тексте. 
+%\usepackage{leqno} % Нумереация формул слева 
+
+%% Свои команды 
+\DeclareMathOperator{\sgn}{\mathop{sgn}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%% Перенос знаков в формулах (по Львовскому) 
+%\newcommand*{\hm}[1]{#1\nobreak\discretionary{} 
+%	{\hbox{$\mathsurround=0pt #1$}}{}} 
+
+%%% Работа с картинками 
+\usepackage{graphicx} % Для вставки рисунков 
+\setlength\fboxsep{3pt} % Отступ рамки \fbox{} от рисунка 
+\setlength\fboxrule{1pt} % Толщина линий рамки \fbox{} 
+\usepackage{wrapfig} % Обтекание рисунков текстом 
+\usepackage{float}
+\usepackage{subfig}
+
+%%% Работа с таблицами 
+\usepackage{array,tabularx,tabulary,booktabs} % Дополнительная работа с таблицами 
+\usepackage{longtable} % Длинные таблицы 
+\usepackage{multirow} % Слияние строк в таблице 
+
+%%% Теоремы 
+\theoremstyle{plain} % Это стиль по умолчанию, его можно не переопределять. 
+\newtheorem{theorem}{Теорема}[section] 
+\newtheorem{proposition}[theorem]{Утверждение}
+
+\theoremstyle{definition} % "Определение" 
+\newtheorem{corollary}{Следствие}[theorem] 
+\newtheorem{problem}{Задача}[section] 
+
+\theoremstyle{remark} % "Примечание" 
+\newtheorem*{nonum}{Решение} 
+
+%%% Программирование 
+\usepackage{etoolbox} % логические операторы
+
+%%% Страница 
+\usepackage{extsizes} % Возможность сделать 14-й шрифт 
+\usepackage{geometry} % Простой способ задавать поля 
+\geometry{top=20mm} 
+\geometry{bottom=25mm} 
+\geometry{left=20mm} 
+\geometry{right=20mm} 
+% 
+%\usepackage{fancyhdr} % Колонтитулы 
+% \pagestyle{fancy} 
+%\renewcommand{\headrulewidth}{0pt} % Толщина линейки, отчеркивающей верхний колонтитул 
+% \lfoot{Нижний левый} 
+% \rfoot{Нижний правый} 
+% \rhead{Верхний правый} 
+% \chead{Верхний в центре} 
+% \lhead{Верхний левый} 
+% \cfoot{Нижний в центре} % По умолчанию здесь номер страницы 
+
+\usepackage{setspace} % Интерлиньяж 
+\onehalfspacing % Интерлиньяж 1.5 
+%\doublespacing % Интерлиньяж 2 
+%\singlespacing % Интерлиньяж 1
+\setlength{\parindent}{1cm}
+
+\usepackage{lastpage} % Узнать, сколько всего страниц в документе. 
+
+\usepackage{soul} % Модификаторы начертания 
+
+\usepackage{hyperref} 
+\usepackage[usenames,dvipsnames,svgnames,table,rgb]{xcolor} 
+\hypersetup{ % Гиперссылки 
+	unicode=true, % русские буквы в раздела PDF 
+	pdftitle={Заголовок}, % Заголовок 
+	pdfauthor={Автор}, % Автор 
+	pdfsubject={Тема}, % Тема 
+	pdfcreator={Создатель}, % Создатель 
+	pdfproducer={Производитель}, % Производитель 
+	pdfkeywords={keyword1} {key2} {key3}, % Ключевые слова 
+	colorlinks=true, % false: ссылки в рамках; true: цветные ссылки 
+	linkcolor=red, % внутренние ссылки 
+	citecolor=black, % на библиографию 
+	filecolor=magenta, % на файлы
+	urlcolor=blue % на URL 
+} 
+
+\usepackage{csquotes} % Еще инструменты для ссылок 
+
+%\usepackage[style=authoryear,maxcitenames=2,backend=biber,sorting=nty]{biblatex} 
+
+\usepackage{multicol} % Несколько колонок 
+
+\usepackage{tikz} % Работа с графикой 
+\usepackage{pgfplots} 
+\usepackage{pgfplotstable} 
+\usepackage{bbm}
+\usepackage{cite}
+
+\author
+{Ilya Zharikov, Roman Isachenko, Artem Bochkarev} 
+\title 
+{Metamodels for complex structured objects classification}
+\date{}
+
+\begin{document} 
+\maketitle
+\begin{abstract}
+	The development and proliferation of various portable sensors poses new challenges for analyzing and finding meaning in this data. In our work we investigate classification of complex structured objects. One of the main problems in this task is to generate meaningful and relatively small set of features. We compare several approaches for feature extraction such as expertly defined features, autoregression model and SSA. We propose a new feature generation algorithm, based on local spline approximation. The experiment is conducted on two datasets for human activity recognition using accelerometer.
+\end{abstract}
+
+\section*{Introduction}
+This project is dedicated to multiclass classification of complex structured objects (i.e. we don't have feature representation suitable for direct classification). The problems in this area include human activity recognition from accelerometer time series \cite{ignatov2016human, lu2016towards, wang2014human}, multimedia indexing \cite{budnik2016learned} and recognition of people activity in smart homes \cite{luactivity}.
+
+We investigate classification of accelerometer time series. New methods in this field range from topological data analysis \cite{umeda2017time} to using convolutional neural networks \cite{hammerla2016deep}. The extensive survey of methods and datasets for this problem can be found in \cite{incel2013review}. In our work the data is time series of acceleration from three axis, which is sensed by mobile phone or other portable device with accelerometer. 
+The problem is to predict the activity a person is performing. 
+List of activities includes walking, running, sitting or walking up/down stairs.
+In this setup time series are regarded as complex structured objects without explicit feature description. 
+This is reasonable because we can't operate with original features as time series might be of different size, not aligned or even multiscaled \cite{geurts2001pattern}.
+
+The problem of classifying complex structured objects is split in two distinctive procedures. 
+First, we need to extract informative features, and then we use those features as input to some classifier to obtain final model. 
+For simplicity, we assume that these two procedures can be built and analyzed separately. 
+In our project we focused mainly on comparing different methods of feature generation \cite{karasikov24feature, ivkin}. 
+
+The first approach for feature generation is calculating expertly defined functions of time series \cite{kwapisz2011activity}. 
+These functions include average value, standard deviation, mean absolute deviation and distribution for each component. 
+We consider this approach a baseline, as it is the simplest method we use.
+
+We compare baseline with more sophisticated parametric feature generation methods, in which we build approximation models and use their parameters as our final features for classification. 
+In this paper we propose using local spline approximation for feature extraction. In this setup features are knots and parameters of optimal cubic splines approximating our data. We compare this method with other well-known methods for extracting features from time series.
+One of them is autoregressive model \cite{lukashin2003adaptive}. 
+For each time series we build parametric model and use those parameters as features for classification. 
+Another approach is the model of singular spectrum analysis of time series \cite{hassani2007singular}. 
+We use eigenvalues of trajectory matrix as features for building classifier. 
+
+The experiment was conducted on two real accelerometer datasets \cite{wisdm, usc}. We compared the performance of stated feature extraction methods, as well as different classification algorithms. The latter include logistic regression, random forest and SVM.
+
+\section*{Problem Statement}
+Let $\mathcal{S}$ be a space of complex structured objects, $Y$ is a finite set of class labels. 
+We consider accelerometer time series as complex structured objects. Time series is represented as the vector with fixed length $T$:
+\begin{equation}
+s = [x_1, \dots, x_T]^{\T} \in \mathcal{S}.
+\label{eq::time_series}
+\end{equation}
+We assume that there is a hidden true dependence $f^*: \mathcal{S} \rightarrow Y$ between objects from the space $\mathcal{S}$ and their class labels from $Y$.
+Denote by $\mathfrak{D} = \{(s_i, y_i)\}_{i=1}^m$ a~given sample, where $s_i \in \mathcal{S}$ and $y_i = f^*(s_i)\in Y$.
+The problem is to recover the function~$f^*$. 
+We assume that the target function $f^*$ can be approximated by some function $\hat{f}$ from the class of function compositions $f = g \circ \bm{h}$. 
+Here $\bm{h}: \mathcal{S} \rightarrow H$ is a map from the original space $\mathcal{S}$ to the feature space $H \subset \mathbb{R}^n$,
+$g: H \times \Theta \rightarrow Y$ is a parametric map from the feature space $H$ to the set of class labels $Y$. 
+The function $\hat{g}$ corresponds to classification model which is parametrized by a vector parameter $\boldsymbol{\theta} \in \Theta$. 
+
+The determining of the function $\hat{f}$ is equivalent to determining the functions $\hat{\bm{h}}$ and  $\hat{g}$. 
+The function $\hat{\bm{h}}$ corresponds to generating the appropriate feature space $H$. 
+We consider different local approximation models as the feature generation methods. 
+In this case the features are the estimated parameters of the models.
+
+Given appropriate feature space $H$ and feature map $\hat{\bm{h}}$ we transform our original sample $\mathfrak{D} = \{s_i, y_i\}_{i=1}^m$ with complex structured objects to the new sample $\mathfrak{D}_H = \{\mathbf{h}_i, y_i\}_{i=1}^m$, where $\mathbf{h}_i = \hat{\bm{h}}(s_i) \in H$. 
+The function $\hat{g}(\mathbf{h}, \bm{\theta})$ is defined by its parameter vector $\bm{\theta} \in \Theta$. 
+The optimal parameters~$\hat{\bm{\theta}}$ are given by
+\begin{equation}
+\hat{\bm{\theta}} = \argmin_{\bm{\theta}} L(\bm{\theta}, \mathfrak{D}_H, \bm{\mu}),
+\label{eq::optimal_classification_params}
+\end{equation}
+where the function $L(\bm{\theta}, \mathfrak{D}_H, \bm{\mu})$ is the classification error function. Here the vector $\bm{\mu}$ is a external parameters of the particular classification model. Examples of these parameters for different classification models are given below.
+
+To evaluate the quality of our approximation we consider the accuracy score. 
+This choice is based on our wish to compare our results with previous articles~\cite{karasikov24feature, ivkin} and easy interpretation. 
+Accuracy score is a relation between correctly classified objects and their total number in dataset:
+\begin{equation*}
+\mathrm{accuracy} = \frac{1}{m} \sum_{i=1}^{m} [y_i = \hat{y}_i],
+\end{equation*}
+where $\hat{y}_i = \hat{f}(s_i)$ is a prediction of the classifier. 
+
+\section*{Feature generation}
+
+The main focus of this paper is to compare different approaches for feature generation. In this section we provide analysis and motivation behind each of the methods.
+
+\subsubsection*{Expert functions}
+
+We use the expert functions features as the baseline for local approximation models.
+Expert functions are based on prior knowledge of the original objects. 
+These functions can be expressed as a set of statistics $\{h_i\}_{i=1}^n$, where $h_i: \mathcal{S} \rightarrow \mathbb{R}$.
+The description $\hat{\bm{h}}(s)$ of the object $s$ is the value of these statistics on the object 
+\[
+\hat{\bm{h}}(s) = [h_1(s), \dots, h_n(s)]^{\T}.
+\]
+Given a set of complex objects $\{s_i\}_{i=1}^m$ we extract features in a non-parametric way with a set of expert functions $\{h_j\}_{j=1}^n$.
+In paper~\cite{kwapisz2011activity} the authors proposed to use the expert functions listed in table (\ref{tbl::expert_functions}).
+This feature generation procedure extracts the feature description of time series $\hat{\bm{h}}(s) \in \mathbb{R}^{40}$.
+
+\begin{table}[H]
+	\centering
+	\caption{Expert functions}
+	\begin{tabular}{|l|c|}
+		\hline
+		\textbf{Function description}    & \textbf{Formula} \\ \hline
+		Mean                    & $\bar{x} = \frac{1}{T} \sum_{t=1}^{T} x_t$    \\ \hline
+		Standard deviation      & $\sqrt{\frac{1}{T} \sum_{t=1}^{T} (x_t - \bar{x})^2}$    \\ \hline
+		Mean absolute deviation & $\frac{1}{T} \sum_{t=1}^{T} |x_t - \bar{x}|$    \\ \hline
+		Distribution            & Number of points in each histogram bin    \\ \hline
+	\end{tabular}
+	\label{tbl::expert_functions}
+\end{table}
+
+\subsubsection*{Autoregressive model}
+In this method we assume autoregressive model~\cite{lukashin2003adaptive} of the order $n$ as a hypothesis for generation of time series $s$. 
+Each component of the object $s$ from~\eqref{eq::time_series} is a linear combination of the previous $n$ components 
+\begin{equation*}
+	x_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j} + \epsilon_t,
+\end{equation*}
+where $\epsilon_t$ is a random noise. 
+Prediction of the autoregressive model is defined by
+\begin{equation}
+	\hat{x}_t = w_0 + \sum_{j=1}^{n} w_j x_{t-j}.
+	\label{eq::autoregression_prediction}
+\end{equation}
+The order of the autoregressive model $n$ is a structural parameter. 
+
+The optimal parameters of autoregressive model $\mathbf{w}^* = \{w^*_j\}_{j=0}^n$ for time series $s$ define the feature map $\hat{\bm{h}}(s)$.
+These parameters minimize the squared error between the original object $s$ and its prediction of the model~\eqref{eq::autoregression_prediction}
+
+\begin{equation}
+	\bm{h}(s) = \mathbf{w}^* = \argmin_{\mathbf{w} \in \mathbb{R}^{n+1}} \left( \sum_{t=n+1}^{T} \|x_t - \hat{x}_t\|^2\right).
+	\label{eq::autoregression_description}
+\end{equation}
+The problem~\eqref{eq::autoregression_description} is a linear regression problem. Hence, for each initial time series $s$ we have to solve linear regression problem with $n$ predictors.
+The example of approximation using autoregressive model is demonstrated on the Figure~\ref{fig::ar_example}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{pics/ar_example.png}
+	\caption{Time series approximation using autoregressive model with order $n = 20$}
+	\label{fig::ar_example}
+\end{figure}
+
+\subsubsection*{Singular spectrum decomposition}
+Alternative hypothesis for generation of time series is SSA (Singular Spectrum Analysis) model~\cite{hassani2007singular}. We construct trajectory matrix for each time series $s$ from the original sample $\mathfrak{D}$:
+\[
+	\mathbf{X} = 
+	\begin{pmatrix}
+	x_1 & x_2 & \dots & x_n \\
+	x_2 & x_3 & \dots & x_{n+1} \\
+	\dots & \dots & \dots & \dots \\
+	x_{T-n+1} & x_{T-n+2} & \dots & x_T
+	\end{pmatrix}.
+\]
+Here $n$ is a window width, which is an external structural parameter.
+The singular decomposition~\cite{golub1970singular} of the matrix $\mathbf{X}^{\T} \mathbf{X}$:
+\[
+	\mathbf{X}^{\T} \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\T},
+\]
+where $\mathbf{U}$ is a unitary matrix and $\Lambda = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$ whose entries $\lambda_i$ are eigenvalues of $\mathbf{X}^{\T} \mathbf{X}$. In this case we use the spectrum of the matrix $\mathbf{X}^{\T} \mathbf{X}$ as feature description of the object $s$
+\[
+	\hat{\bm{h}}(s) = (\lambda_1, \dots, \lambda_n).
+\]
+\subsubsection*{Splines}
+Approximation of time series can be done by splines~\cite{deboor1978splines}. The spline is defined by its parameters: knots and coefficients.
+The set of knots $\{\xi_\ell\}_{\ell=0}^M$ are uniformly distributed over time series.
+The models which are built on each the interval $[\xi_{\ell-1}; \xi_{\ell}]$ are given by the coefficients $\{\mathbf{w}_\ell\}_{\ell=1}^{M}$.
+
+In order to find optimal spline parameters $\mathbf{w}$, one need to solve system of equations with additional constraints of equality of derivatives up to second order on the edges of intervals. If we denote each spline segment as $p_i(t)$ $i = 1, \dots, M$ and spline as a whole as $S(t)$, we can write these equations in a following way:
+\begin{align*}
+	&S(t) = \begin{cases}
+	p_1(t) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, & t\in [\xi_0, \xi_1]\\
+	p_2(t) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, & t\in [\xi_1, \xi_2]\\
+	\cdots &\\
+	p_{M}(t) = w_{L0} +w_{L1}t + w_{L2}t^2 + w_{L3}t^3, & t\in [\xi_{M-1}, \xi_M]					
+	\end{cases}\\
+	&S(t) = x_t \quad t = 1, \dots, T\\
+	&p_i'(\xi_i) = p_{i+1}'(\xi_i), \quad p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1\\
+	\end{align*}
+The feature description of the time series could be assumed as a union of these parameters.
+\[
+	\hat{\bm{h}}(s) = (\mathbf{w}_1, \dots, \mathbf{w}_{M}).
+\]
+
+In the Figure~\ref{fig::spline_example} one could find the result of time series approximation given by splines. 
+Compared to the autoregressive model, the splines method gives smoother approximation using almost the same number of parameters.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{pics/spline_example.png}
+	\caption{Time series approximation using three order splines}
+	\label{fig::spline_example}
+\end{figure}
+%-------------------------------------------------------------------------------------------
+\iffalse
+\subsubsection*{Shape invariant model}
+
+All time series are shifted and have different magnitudes in time and acceleration. 
+In order to find the same structure in every time series one could apply self model regression approach~{\color{red} link}. 
+We assume that our time series $s$ is a function of time variable $t$ and this function can be represented as the shape invariant model
+\[
+	s(t) = \theta_{0} + \theta_{1} g \left(\frac{t - \theta_2}{\theta_4} \right).
+\]
+The function $g(\cdot)$ represents the general characteristic shape of the time series. 
+The coefficients $\theta_0, \theta_2$ are the corresponding shifts along acceleration and time respectively. $\theta_1, \theta_4$ scale time series on  acceleration and time axis. 
+These four parameters are different for each time series, while the function $g$ is the same.
+
+Self modelling regression is a problem of determining the optimal shape function $g$ and the coefficients $\{\theta_j\}_{j=1}^4$ for each time series.
+
+The simplest way to solve this problem is to use one of the given time series as the function $g$. 
+For example one could assume, $g(t) = s_1(t)$ and our model has the form
+\[
+	s(t) = \theta_{0} + \theta_{1} s_1 \left(\frac{t - \theta_2}{\theta_4} \right).
+\]
+
+More sophisticated way to solve the problem is to fix the family $G$ of the possible functions $g$. For example, we can find the best first order spline with fixed knots $(t_1, \dots, t_L)$. Each this spline is determined by the values at the knots $(g_1, \dots, g_L)$. Actually the spline is given by connecting the neighbouring points by straight lines. If we choose the spline knots as times given in the sample, we can formulate the iterative process. 
+
+Firstly, we initialize the vectors $\bm{\theta}_i \in \mathbb{R}^4$ for each time series $s_i$. Then we solve the linear regression problem
+\[
+	\sum_{i=1}^L \left(x_i - s(t_i)\right)^2 \rightarrow \min_{g}.
+\]
+The objective function depends on the function $g$ linearly. The output of this step is the optimal vector $(g_1, \dots, g_T)$. 
+
+Then we want to update the parameters vectors~$\bm{\theta}_i$. We minimize the same functional, but it depends on $\bm{\theta}_i$ non-linearly. To solve this problem we use non-linear regression using Newton-Raphson method. 
+
+These two steps repeat until convergence. The stopping criteria is the insignificant changes of the function $g$ between iterations.
+%-------------------------------------------------------------------------------------------
+\fi
+
+\section*{Classification}
+\subsubsection*{Multiclass classification}
+As we had numerous labels in our datasets we had to choose one of the multiclass approaches to classification. 
+We decided to use one-vs-rest classification as a simple, yet effective approach. The main idea is that we train binary classifiers for each class label and then, on the prediction step, we classify new object according to the most confident classifier.
+In this section we will describe our approach to classification of time series using newly generated features. 
+We use three different classification models: logistic regression, SVM and random forest.
+\section*{Classification methods}
+\subsubsection*{Logistic regression}
+The first approach to classification is a regularized logistic regression model. The optimal model parameters~\eqref{eq::optimal_classification_params} is determined by minimising the following error function
+
+\begin{equation*}
+	L(\bm{\theta}, \mathfrak{D}_H, \mu) = \sum_{i=1}^{m} \log\left(1 + \exp(-y_i [\bm{w}^{\T} \mathbf{h}_i + b])\right) + \frac{\mu}{2} \|\bm{w}\|^2,
+\end{equation*}
+where 
+\begin{equation*}
+\bm{\theta}  = \begin{pmatrix}
+	\bm{w} \\ b
+\end{pmatrix}.
+\end{equation*}
+Thus, 
+\begin{equation*}
+	\bm{\theta}^* = \argmin_{\mathbb{\theta}} L(\bm{\theta}, \mathfrak{D}_H, \mu).
+\end{equation*}
+
+The classification rule $g(\mathbf{h}, \bm{\theta})$ is given by sign of the linear combination for the object description $\mathbf{h}$ and parameters $\bm{\theta}^*$
+\begin{equation*}
+	\hat{y} = g(\mathbf{h}, \bm{\theta}^*) = \sgn(\mathbf{h}^{\T} \bm{w}^* + b^*).
+\end{equation*}
+
+\subsubsection*{SVM}
+The problem of SVM model can be formulated in a following way:
+
+\begin{align*}
+	\bm{\theta}^*  = \begin{pmatrix}
+	\bm{w^*} \\ b^* \\ \bm{\xi}^*
+	\end{pmatrix}= &\argmin_{\bm{w}, b, \bm{\xi}}  \frac{1}{2} \|\bm{w}\|^2 + C\sum_{i=1}^{m} \xi_i,\\
+	\mbox{subject to} \quad &y_i (\langle \bm{w}, \mathbf{h}_i \rangle + b) \geq 1 - \xi_i,\\
+	&\xi_i \geq 0, \quad 1 \leq i \leq m.
+\end{align*}
+ 
+The prediction for new object is
+
+\begin{equation*}
+\hat{y} = \sgn (\mathbf{h}^{\T} \bm{w}^* + b^*)
+\end{equation*}
+
+\subsubsection*{Random Forest}
+The random forest is an algorithm, which exploits the idea of bagging. This is an approach of building many random unstable classifiers and aggregating their predictions. This method works especially well if as base models we select models with low bias and high variance (due to aggregating variance is reduced). In case of random forest decision trees take the role of base models, also not only objects are used for bagging, but also features. In this case we make the prediction for each new object as the mean of the predictions of a single tree:
+
+\begin{equation*}
+	\hat{y} = \frac{1}{B} \sum_{i=1}^{B} g(\mathbf{h}_i),
+\end{equation*}
+
+where $B$ is an amount of trees used for bagging.
+
+\section*{Experiment}
+In this paper we considered two different smart phone based datasets: WISDM~\cite{wisdm} and USC-HAD~\cite{usc}. 
+The smart phone accelerometer measures acceleration along three axis. 
+Sample rate equals 50 ms. 
+The WISDM dataset consists of 4321 objects and each time series belongs to one of the six activities : Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 objects with one of the twelve class labels: Standing, Elevator-up,Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running.
+The distributions of time series activities for each datasets are presented in Table~\ref{tbl::activities_distributions}. 
+The length of each time series equals 200 which accounts 10 second. 
+In the Figure~\ref{fig::ts_example} the example of the time series for one activity of the specific person is given.
+
+\begin{table}[H]
+	\centering
+	\caption{Distributions of the classes}
+	\subfloat[WISDM]{
+		\begin{tabular}{r|l|rr}
+				\hline
+				&\textbf{Activity}   & \multicolumn{2}{l}{\textbf{\# objects}} \\
+				\hline
+				1&Standing            &229      &5.30  \% \\
+				2&Walking             &1917     &44.36 \% \\
+				3&Upstairs            &466      &10.78 \% \\
+				4&Sitting             &277      &6.41  \% \\
+				5&Jogging             &1075     &24.88 \% \\
+				6&Downstairs          &357      &8.26  \% \\
+				\hline
+			&Total & \multicolumn{2}{l}{4321}  \\
+			\hline
+		\end{tabular}}
+	\hspace{0.5cm}
+	\subfloat[USC-HAD]{
+		\begin{tabular}{r|l|rr}
+			\hline
+			&\textbf{Activity} & \multicolumn{2}{l}{\textbf{\# objects}} \\ \hline
+			1&Standing            &1167     &8.57  \% \\
+			2&Elevator-up         &764      &5.61  \% \\
+			3&Walking-forward     &1874     &13.76 \% \\
+			4&Sitting             &1294     &9.50  \% \\
+			5&Walking-downstairs  &951      &6.98  \% \\
+			6&Sleeping            &1860     &13.66 \% \\
+			7&Elevator-down       &763      &5.60  \% \\
+			8&Walking-upstairs    &1018     &7.47  \% \\
+			9&Jumping             &495      &3.63  \% \\
+			10&Walking-right       &1305     &9.58  \% \\
+			11&Walking-left        &1280     &9.40  \% \\
+			12&Running             &849      &6.23  \% \\
+			\hline 
+			&Total              & \multicolumn{2}{l}{13620}\\ 
+			\hline
+		\end{tabular}}
+	\label{tbl::activities_distributions}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{Presentation/ts_example.png}
+	\caption{Time series example}
+	\label{fig::ts_example}
+\end{figure}
+
+For each dataset we applied feature generation approaches described above: expert functions, autoregressive model, SSA, splines. 
+We used three classification model for each generated feature description: logistic regression, support vector machine and random forest. 
+The external structural parameters: the length $n$ for autoregression, the window width $n$ for SSA and the number of splines knots $L$, were tuned using K-fold cross validation, i.e. minimizing
+\begin{align}\label{cv}
+CV(K) = \frac{1}{K}\sum_{k=1}^{K} L(f_k, \mathfrak{D}\setminus \mathfrak{C}_k),
+\end{align}
+where $C_k$ is a $\frac{K-1}{K}$ fraction of data, used for training model $f_k$.
+The hyperparameters $\bm{\mu}$ for classification models were also tuned using the same cross validation procedure. 
+
+
+The first approach for feature generation is expert functions. The main drawback of this approach is that we are restricted by our choice of the expert functions and these functions might be impossible to derive for some types of data.
+
+The autoregressive model was tuned to find the optimal length $n$. Cross validation procedure gives optimal value $n=20$ for both dataset. 
+
+The singular spectrum analysis was tuned in the same way to find the optimal window width $n$. Similar to autoregressive model, cross validation procedure gives the same value $n=20$.
+
+We fit cubic splines~\cite{deboor1978splines} for time series using $scipy$ python library~\cite{scipy}. 
+The knots $\{\xi_{\ell}\}_{\ell = 1}^M$ for splines were distributed uniformly. 
+Value of~$M$ was chosen with cross-validation. 
+
+The feature extraction methods gives the following number of features for both datasets: expert features: 40; autoregressive model: 63; singular spectrum analysis: 60; splines: 33.
+
+The results of the experiments for the both datasets is presented in Figure~\ref{fig::accuracy_results}. For WISDM dataset the worst result was obtained with spline approximation. 
+The results for expert functions, autoregressive model and SSA is roughly identical. For USC-HAD dataset the results highly depend on the classification model. 
+For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest is almost the same.
+
+\begin{figure}[h]
+	\centering
+	\subfloat{
+	\includegraphics[width=0.49\linewidth]{presentation/wisdm_methods.png}}
+	\subfloat{
+	\includegraphics[width=0.49\linewidth]{presentation/uschad_methods.png}}
+	\caption{Multiclass accuracy score}
+	\label{fig::accuracy_results}
+\end{figure}
+
+All results with classification accuracy scores for each class are represented in Table~\ref{tbl::wisdm_methods_results} and Table~\ref{tbl::uschad_methods_results}. The first row of these tables introduces the multiclass accuracy score for each classification model and each feature extraction procedure. Next rows are related to binary accuracy scores for each class. For WISDM dataset the best scores have the least active classes such as Standing and Sitting. For USC-HAD dataset all classes have the similar accuracy scores.
+
+\begin{table}[h]
+	\centering
+	\caption{Binary accuracy scores for WISDM using different feature generation methods: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\footnotesize
+	\begin{tabular}{r|rrrr|rrrr|rrrr|}
+		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
+		& EX   & AR   & SSA   & SPL  & EX  & AR & SSA & SPL & EX & AR & SSA & SPL \\ \hline
+		All& 0.85 & 0.91 & 0.84 & 0.58 & 0.93 & 0.93 & 0.92 & 0.79 & 0.93 & 0.95 & 0.95 & 0.77 \\
+		Standing& 0.99 & 0.98 & 1.00 & 0.95 & 1.00 & 0.99 & 1.00 & 0.99 & 0.99 & 0.98 & 1.00 & 0.96 \\
+		Walking& 0.91 & 0.96 & 0.86 & 0.61 & 0.96 & 0.97 & 0.95 & 0.86 & 0.96 & 0.98 & 0.98 & 0.84 \\
+		Upstairs& 0.91 & 0.95 & 0.91 & 0.89 & 0.96 & 0.96 & 0.96 & 0.90 & 0.96 & 0.98 & 0.97 & 0.89 \\
+		Sitting& 0.99 & 0.98 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 1.00 & 0.99 & 0.98 & 1.00 & 1.00 \\
+		Jogging& 0.98 & 0.99 & 0.99 & 0.80 & 0.99 & 0.99 & 0.99 & 0.92 & 0.99 & 0.99 & 0.99 & 0.93 \\
+		Downstairs& 0.93 & 0.96 & 0.94 & 0.92 & 0.96 & 0.97 & 0.96 & 0.92 & 0.96 & 0.98 & 0.97 & 0.92 \\ \hline
+	\end{tabular}
+	\label{tbl::wisdm_methods_results}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\footnotesize
+	\caption{Binary accuracy scores for USC-HAD using different feature generation methods: EX~--- Expert, AR~--- Auto-Reg, SSA and  SPL for Splines}
+	\label{my-label}
+	\begin{tabular}{r|rrrr|rrrr|rrrr|}
+		& \multicolumn{4}{c|}{\textbf{Logistic Regression}} & \multicolumn{4}{c|}{\textbf{Random Forest}} & \multicolumn{4}{c|}{\textbf{SVM}}          \\ \cline{2-13} 
+		& EX   & AR   & SSA   & SPL  & EX  & AR & SSA & SPL & EX & AR & SSA & SPL \\ \hline
+		All& 0.67 & 0.65 & 0.64 & 0.41 & 0.87 & 0.70 & 0.84 & 0.74 & 0.80 & 0.65 & 0.82 & 0.74 \\
+		Standing& 0.94 & 0.94 & 0.92 & 0.89 & 0.98 & 0.94 & 0.97 & 0.98 & 0.95 & 0.94 & 0.97 & 0.96 \\
+		Elevator-up& 0.94 & 0.94 & 0.93 & 0.92 & 0.95 & 0.95 & 0.95 & 0.95 & 0.93 & 0.94 & 0.94 & 0.93 \\
+		Walking-forward& 0.87 & 0.87 & 0.89 & 0.70 & 0.97 & 0.89 & 0.96 & 0.88 & 0.95 & 0.87 & 0.97 & 0.91 \\
+		Sitting& 0.98 & 0.95 & 0.94 & 0.96 & 0.99 & 0.96 & 0.98 & 0.99 & 0.98 & 0.96 & 0.99 & 0.99 \\
+		Walking-downstairs& 0.95 & 0.93 & 0.93 & 0.90 & 0.99 & 0.96 & 0.98 & 0.95 & 0.98 & 0.93 & 0.98 & 0.96 \\
+		Sleeping& 1.00 & 0.98 & 0.99 & 1.00 & 1.00 & 0.98 & 1.00 & 1.00 & 1.00 & 0.98 & 1.00 & 1.00 \\
+		Elevator-down& 0.94 & 0.94 & 0.94 & 0.91 & 0.95 & 0.95 & 0.95 & 0.95 & 0.93 & 0.94 & 0.94 & 0.93 \\
+		Walking-upstairs& 0.94 & 0.95 & 0.93 & 0.92 & 0.98 & 0.95 & 0.98 & 0.96 & 0.98 & 0.95 & 0.98 & 0.96 \\
+		Jumping& 0.99 & 0.99 & 1.00 & 0.97 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 0.99 & 0.97 & 0.99 \\
+		Walking-right& 0.91 & 0.90 & 0.91 & 0.86 & 0.97 & 0.92 & 0.96 & 0.92 & 0.96 & 0.90 & 0.97 & 0.93 \\
+		Walking-left& 0.89 & 0.91 & 0.90 & 0.88 & 0.97 & 0.93 & 0.97 & 0.93 & 0.95 & 0.91 & 0.97 & 0.93 \\
+		Running& 0.99 & 0.99 & 0.99 & 0.92 & 1.00 & 0.99 & 1.00 & 0.97 & 1.00 & 1.00 & 0.95 & 0.98\\ \hline
+	\end{tabular}
+	\label{tbl::uschad_methods_results}
+\end{table}
+
+We also carried out the experiment for union of all $196$ generated features. The results are demonstrated on the Figure~\ref{fig::feature_union_results}. In the Table~\ref{tbl::activities_distributions} one can see class labels, that are represented on the corresponding histograms. As expected, the accuracy scores in this case are higher in all cases. All binary accuracy scores for WISDM datasets is larger than $97 \%$ for each classification model. These numbers for USC-HAD dataset is larger than $93 \%$.
+
+\begin{figure}[h]
+	\centering
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_lr_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_lr_all.png}}\\
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_rf_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_rf_all.png}}\\
+	\subfloat[WISDM dataset]{
+		\includegraphics[width=0.33\linewidth]{pics/hist_wisdm_svm_all.png}}
+	\subfloat[USC-HAD dataset]{
+		\includegraphics[width=0.66\linewidth]{pics/hist_uschad_svm_all.png}}\\
+	\caption{Accuracy scores of classification of each class using all features}
+	\label{fig::feature_union_results}
+\end{figure}
+
+\section*{Conclusion}
+
+The research consider the problem of complex structured objects classification.
+We investigated the different approaches of feature extraction, particularly the expert functions and data generation hypothesis. 
+The experiment on the real data from smart phone accelerometer were carried out. 
+We compared different feature descriptions and different classification models. 
+The results show that obtained features allows to recover the class label with the high quality.
+
+\bibliographystyle{unsrt}
+\bibliography{ref.bib}
+\iffalse
+\begin{thebibliography}{1}
+	\bibitem{wang2014human}
+	Wen Wang, Huaping Liu, Lianzhi Yu, and Fuchun Sun.
+	\newblock Human activity recognition using smart phone embedded sensors: A
+	linear dynamical systems method.
+	\newblock In {\em Neural Networks (IJCNN), 2014 International Joint Conference
+		on}, 1185--1190. 2014.
+	
+	\bibitem{geurts2001pattern}
+	Pierre Geurts.
+	\newblock Pattern extraction for time series classification.
+	\newblock In {\em European Conference on Principles of Data Mining and
+		Knowledge Discovery}, 115--127. 2001.
+	
+	\bibitem{karasikov24feature}
+	Karasikov~M.E. and Strijov~V.V.
+	\newblock Feature-based time-series classification.
+	\newblock {\em Intelligence}, 24(1):164--181. 2016.
+	
+	\bibitem{ivkin}
+	Kuznetsov~M.P. and Ivkin~N.P.
+	\newblock Time series classification algorithm using combined feature
+	description.
+	\newblock {\em Journal of Machine Learning and Data Analysis}, 1(11):1471--1483. 2015.
+	
+	\bibitem{kwapisz2011activity}
+	Jennifer~R Kwapisz, Gary~M Weiss, and Samuel~A Moore.
+	\newblock Activity recognition using cell phone accelerometers.
+	\newblock {\em ACM SigKDD Explorations Newsletter}, 12(2):74--82, 2011.
+	
+	\bibitem{lukashin2003adaptive}
+	Lukashin~Yu.P.
+	\newblock Adaptive methods of short-term forecasting of time series.
+	\newblock {\em Finance and statistics}, 2003.
+	
+	\bibitem{hassani2007singular}
+	Hossein Hassani.
+	\newblock Singular Spectrum Analysis: Methodology and Comparison.
+	\newblock  {\em Journal of Data Science}, 5(2):239--257. 2007.
+	
+	\bibitem{wisdm}
+	The WISDM (Wireless Sensor Data Mining) dataset.
+	\newblock \url{http://www.cis.fordham.edu/wisdm/dataset.php}.
+	
+	\bibitem{usc}
+	The USC-HAD (University of Southern California Human Activity Dataset).
+	\newblock \url{http://www-scf.usc.edu/~mizhang/datasets.html}.
+	
+	\bibitem{bishop2006pattern}
+	Bishop, Christopher M.
+	\newblock Pattern recognition.
+	\newblock {\em Machine Learning}. 2006.
+	
+	\bibitem{golub1970singular}
+	Golub, Gene H and Reinsch, Christian.
+	\newblock Singular value decomposition and least squares solutions.
+	\newblock {\em Numerische mathematik}. 14(5):403-420. 1970.
+	
+	\bibitem{deboor1978splines}
+	De Boor C. et al.
+	\newblock A practical guide to splines.
+	\newblock {\em Springer-Verlag}. 1978.
+	
+\end{thebibliography}
+\fi
+
+\end{document}

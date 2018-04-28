@@ -1,0 +1,14 @@
+.DS_Store
+code/source/*.pyc
+code/.ipynb_checkpoints/
+data/.DS_Store
+data/USC-HAD/USC-HAD_cleared.txt
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.gz
+*.toc
+*.bbl
+*.blg

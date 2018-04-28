@@ -1,0 +1,84 @@
+\documentclass[twoside]{article}
+\usepackage{mmpr2017}
+
+\begin{document}
+
+\Russian
+\title{Локальные модели для классификации объектов сложной структуры}
+\author{Исаченко~Р.\,В.}{Исаченко Роман Владимирович$^{1, 2}$}{isa-ro@yandex.ru}
+\author{Жариков~И.\,Н.}{Жариков Илья Николаевич$^{1, 2}$}{ilya250894@gmail.com}
+\author{Бочкарёв~А.\,М.}{Бочкарёв Артём Максимович$^{1, 2}$\speaker}{artem.bochkarev@phystech.edu}
+\organization{%
+    $^1$Московский физико-технический институт\par
+    $^2$Сколковский институт науки и технологий}
+\maketitle
+
+В работе рассматривается задача классификации объектов без явного признакового представления. 
+Данные содержат временные ряды ускорения, полученные с акселерометра смартфона.
+Задача состоит в предсказании вида физической активности человека по временному ряду.
+Временной ряд представляет собой объект сложной структуры без явного признакового описания.
+В работе предлагается подход к генерации признаков временных рядов, рассматривая их как объекты сложной структуры.
+В качестве признакового описания используются параметры локальных моделей.
+Сгенерированные признаки позволяют получить приемлемое качество классификации и требуют умеренных вычислительных ресурсов.
+
+Проблема классификации объектов сложной структуры разбивается на две несвязанные процедуры.
+Первая извлекает информативные признаки. 
+Вторая классифицирует объекты, используя порожденные признаки.
+
+Данная работа нацелена на сравнение различных методов генерации признаков: экспертные функции, авторегрессионная модель и анализ сингулярного спектра.
+Авторы предлагают новый метод порождения признаков.
+Сегменты временного ряда аппроксимируются кубическими сплайнами. 
+Сплайны генерируют гладкую кривую с достаточным качеством аппроксимации.
+
+Эксперимент проводился на двух датасетах с акселерометра: WISDM, USC-HAD. 
+Сравнивались качества упомянутых методов извлечения признаков и различных моделей классификации.
+
+Работа поддержана грантом РФФИ \No\,16-07-01154.
+
+\begin{thebibliography}{1}
+\bibitem{Isachenko17Local}
+    \emph{Исаченко\;Р.\,В., Жариков\;И.\,Н., Бочкарёв\;А.\,М.}
+    Локальные модели для классификации объектов сложной структуры~//
+    Journal of Machine Learning and Data Analysis, 2016.~--- \No.\,13. %\\
+    \url{http://jmlda.org/papers/doc/2016/no1/Isachenko2016MetricLearning.pdf}.
+\end{thebibliography}
+
+\English
+\title{Local models for classification of complex structured objects}
+\author{Isachenko~R.}{Roman Isachenko$^{1, 2}$}{isa-ro@yandex.ru}
+\author{Zharikov~I.}{Ilya Zharikov$^{1, 2}$}{ilya250894@gmail.com}
+\author{Bochkarev~A.}{Artem Bochkarev$^{1, 2}$\speaker}{artem.bochkarev@phystech.edu}
+\organization{%
+    $^1$Moscow Institute of Physics and Technology\par
+    $^2$Skolkovo Instutute of Science and Technology}
+\maketitle
+
+The article investigates a problem of multiclass classification of objects without explicit feature set.
+The data which were used are time series from smartphone accelerometer.
+The problem is to predict human activity, using acceleration time series.
+In this problem statement, time series is a complex structured object without explicit feature set.
+The paper proposes method of feature generation for complex structured objects.
+The features will correspond to parameters of local approximation models.
+Features generated in such way allow decent classification quality and require low computational resources.
+
+The problem of classification of complex structured objects is divided in two independent procedures.
+First, informative features are extracted and then the classification model is built on these features.
+
+This paper goal is to compare different approaches to feature generation: expert functions, autoregressive model and singular spectrum analysis.
+The new method of feature generation is proposed.
+This segments of time series are approximated with cubic splines, which generate smooth curve with sufficient quality of approximation.
+
+The experiment was conducted on two real datasets: WISDM and USC-HAD.\\
+The experiment shows comparison of different feature generation procedures and classification models.
+
+This research is funded by RFBR, grant 16-07-01154.
+
+\begin{thebibliography}{1}
+\bibitem{Isachenko17LocalEng}
+    \emph{Isachenko\;R., Zharikov\;I., Bochkarev\;A.}
+    Local models for classification of complex structured objects~//
+    Journal of Machine Learning and Data Analysis, 2016.~--- No\,13. %\\
+    \url{http://jmlda.org/papers/doc/2016/no1/Isachenko2016MetricLearning.pdf}.
+\end{thebibliography}
+
+\end{document} 

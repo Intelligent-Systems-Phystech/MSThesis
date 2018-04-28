@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="introduction">Introduction</h1>
+<p>The paper investigates multiclass classification problem of objects with no explicit feature representation. This problem arises in analysing biological data <span class="citation"></span>, human behavior and social interactions <span class="citation"></span>. It considers the problem of human activity recognition. The accelerometer time series <span class="citation"></span> from smart phones serve to recognize human physical activity on the internet of things <span class="citation"></span>. Methods to solve this problem range from topological data analysis <span class="citation"></span> to convolutional neural networks <span class="citation"></span>. An extensive survey of the methods and datasets for this problem is found in <span class="citation"></span>.</p>
+<p>In this work the dataset is comprised of time series of acceleration from three axis, which is obtained from a mobile phone or another wearable device with accelerometer. These time series are of various sizes, not aligned, and multiscaled <span class="citation"></span>. The problem is to predict physical activity of a person. The list of activities includes walking, running, sitting or walking up/down stairs. In this setup time series are treated as complex structured objects without explicit feature description. This assumption allows to propose a flexible technology for accelerometer time series modelling. The main problem to tackle is the lack of computational resources, memory, and energy in wearable devices. This investigation proposes an approach to generate features of time series as complex structured objects. The generated features bring adequate quality of classification and require moderate resources.</p>
+<p>The problem of classifying complex structured objects is split in two distinctive procedures. The first extracts informative features. The second one classifies objects of these feature descriptions. This research focuses mainly on comparison of different methods for feature generation <span class="citation"></span>: expert-defined functions, autoregressive model, and singular spectrum analysis. Expert-defined functions <span class="citation"></span> include average, standard deviation, mean absolute deviation and histogram. The autoregressive model <span class="citation"></span> builds a parametric model for each time series and uses model parameters as features for classification. The singular spectrum analysis <span class="citation"></span> uses the eigenvalues of trajectory matrix as generated features.</p>
+<p>The authors propose a new feature generation method. We approximate time series segments with cubic splines <span class="citation"></span>. The spline approximates the 3-order piecewise curve at the given knots. The additional smoothness conditions makes the curve and its first and second derivatives continuous. The splines give a smooth curve and adequate quality of approximation.</p>
+<p>The experiment was conducted on two accelerometer datasets: WISDM <span class="citation"></span>, USC-HAD <span class="citation"></span>. We compared the performance of stated feature extraction methods, as well as different classification algorithms. The latter includes logistic regression, random forest and SVM.</p>
+<h1 id="problem-statement">Problem Statement</h1>
+<p>The accelerometer time series are represented as a set <span class="math inline">𝒮</span> of segments <span class="math inline"><em>s</em></span> of fixed length <span class="math inline"><em>T</em></span>: <br /><span class="math display"><em>s</em> = [<em>x</em><sub>1</sub>, …, <em>x</em><sub><em>T</em></sub>]<sup><em>T</em></sup> ∈ ℝ<sup><em>T</em></sup>.</span><br /> One has to find a classification model <span class="math inline"><em>f</em> : ℝ<sup><em>T</em></sup> → <em>Y</em></span> between segments from the set <span class="math inline">𝒮</span> and class labels from a finite set <span class="math inline"><em>Y</em></span>. Let denote by <br /><span class="math display">𝒟 = {(<em>s</em><sub><em>i</em></sub>, <em>y</em><sub><em>i</em></sub>)}<sub><em>i</em> = 1</sub><sup><em>m</em></sup></span><br /> a given sample set, where <span class="math inline"><em>s</em><sub><em>i</em></sub> ∈ 𝒮</span> and <span class="math inline"><em>y</em><sub><em>i</em></sub> = <em>f</em>(<em>s</em><sub><em>i</em></sub>)∈<em>Y</em></span>.</p>
+<p>The authors propose to construct the model <span class="math inline"><em>f</em></span> as a superposition <span class="math inline"><em>f</em> = <em>f</em>(<strong>g</strong>)</span>. Here <span class="math inline"><strong>g</strong> :  <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup><em>T</em></sup> →  <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup><em>n</em></sup></span> is a map from the space <span class="math inline"> <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup><em>T</em></sup></span> to the feature space <span class="math inline"><em>G</em> ⊂  <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup><em>n</em></sup></span>. Given the feature map <span class="math inline"><strong>g</strong></span> transform the original sample set  to the new sample set <br /><span class="math display">𝒟<sub><em>G</em></sub> = {(<strong>g</strong><sub><em>i</em></sub>, <em>y</em><sub><em>i</em></sub>)}<sub><em>i</em> = 1</sub><sup><em>m</em></sup>,</span><br /> where <span class="math inline"><strong>g</strong><sub><em>i</em></sub> = <strong>g</strong>(<em>s</em><sub><em>i</em></sub>)∈<em>G</em></span>.</p>
+<p>The classification model <span class="math inline"><em>f</em> = <em>f</em>(<strong>g</strong>, <strong>θ</strong>)</span> has a vector of parameters <span class="math inline"><strong>θ</strong></span>. The optimal parameters <span class="math inline">$\hat{\boldsymbol{\theta}}$</span> are given by the classification error function <br /><span class="math display">$$\hat{\boldsymbol{\theta}} = {\mathop{\arg \min}\limits}_{\boldsymbol{\theta}} L(\boldsymbol{\theta}, \mathcal{D}_G, \boldsymbol{\mu}).
+\label{eq::optimal_classification_params}$$</span><br /> Here the vector <span class="math inline"><strong>μ</strong></span> represents external parameters of a particular classification model. The examples of these parameters and error functions for different classification models are given below.</p>
+<p>To compare classification quality with results from <span class="citation"></span> we use the accuracy score: <br /><span class="math display">$$\mathrm{accuracy} = \frac{1}{m} \sum_{i=1}^{m} \left[f\left(\boldsymbol{g}(s_i), \hat{\boldsymbol{\theta}} \right)= y_i\right].
+    \label{eq::accuracy}$$</span><br /></p>
+<h1 id="feature-generation-functions">Feature Generation Functions</h1>
+<p>The main focus of this paper is to compare different approaches for feature generation. In this section we provide analysis and motivation for each of the methods.</p>
+<h3 id="expert-functions.">Expert Functions.</h3>
+<p>Use the expert-given feature set as a baseline for local approximation models. These functions are statistics <span class="math inline"><em>g</em><sub><em>j</em></sub></span>, where <span class="math inline"><em>g</em><sub><em>j</em></sub> :  <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup><em>T</em></sup> →  <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em></span>. The description <span class="math inline"><strong>g</strong>(<em>s</em>)</span> of the object <span class="math inline"><em>s</em></span> is the value of these statistics on the object <br /><span class="math display"><strong>g</strong>(<em>s</em>)=[<em>g</em><sub>1</sub>(<em>s</em>),…,<em>g</em><sub><em>n</em></sub>(<em>s</em>)]<sup><em>T</em></sup>.</span><br /></p>
+<p>In the paper <span class="citation"></span> the authors proposed to use the expert functions listed in table [tbl::expert_functions]. This feature generation procedure extracts the feature description of time series <span class="math inline"><strong>g</strong>(<em>s</em>)∈ <em>m</em><em>a</em><em>t</em><em>h</em><em>b</em><em>b</em><em>R</em><sup>40</sup></span>.</p>
+<table>
+<caption>Expert functions</caption>
+<thead>
+<tr class="header">
+<th align="left"><strong>Function description</strong></th>
+<th align="center"><strong>Formula</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean</td>
+<td align="center"><span class="math inline">$\bar{x} = \frac{1}{T} \sum_{t=1}^{T} x_t$</span></td>
+</tr>
+<tr class="even">
+<td align="left">Standard deviation</td>
+<td align="center"><span class="math inline">$\sqrt{\frac{1}{T} \sum_{t=1}^{T} (x_t - \bar{x})^2}$</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Mean absolute deviation</td>
+<td align="center"><span class="math inline">$\frac{1}{T} \sum_{t=1}^{T} |x_t - \bar{x}|$</span></td>
+</tr>
+<tr class="even">
+<td align="left">Distribution</td>
+<td align="center">Histogram values with 10 bins</td>
+</tr>
+</tbody>
+</table>
+<p>[tbl::expert_functions]</p>
+<h3 id="autoregressive-model.">Autoregressive Model.</h3>
+<p>The autoregressive model <span class="citation"></span> of the order <span class="math inline"><em>n</em></span> generates features of time series <span class="math inline"><em>s</em></span> with model parameters. Each time series is approximated by a linear combination of its previous <span class="math inline"><em>n</em> − 1</span> components <br /><span class="math display">$$x_t = w_0 + \sum_{j=1}^{n-1} w_j x_{t-j} + \epsilon_t,$$</span><br /> where <span class="math inline"><em>ϵ</em><sub><em>t</em></sub></span> is a residual. The optimal parameters <span class="math inline">$\hat{\boldsymbol{w}}$</span> of the autoregressive model are the features <span class="math inline"><strong>g</strong>(<em>s</em>)</span>. These parameters minimize the squared error between time series <span class="math inline"><em>s</em></span> and its prediction</p>
+<p><br /><span class="math display">$$\boldsymbol{g}(s) = \hat{\boldsymbol{w}} = {\mathop{\arg \min}\limits}_{\boldsymbol{w} \in \ mathbb{R}^{n}} \left( \sum_{t=n}^{T} \|x_t - \hat{x}_t\|^2\right).
+\label{eq::autoregressive_description}$$</span><br /></p>
+<p>The problem  is a linear regression problem. Hence, for each initial time series <span class="math inline"><em>s</em></span> we have to solve linear regression problem with <span class="math inline"><em>n</em></span> predictors. The example of approximation using autoregressive model is demonstrated on the Fig. [fig::ar_example].</p>
+<h3 id="singular-spectrum-decomposition.">Singular Spectrum Decomposition.</h3>
+<p>Alternative hypothesis for generation of time series is Singular Spectrum Analysis (SSA) model <span class="citation"></span>. We construct trajectory matrix for each time series <span class="math inline"><em>s</em></span> from the original sample <span class="math inline">𝒟</span>: <br /><span class="math display">$$\mathbf{X} = 
+\begin{pmatrix}
+x_1 &amp; x_2 &amp; \dots &amp; x_n \\
+x_2 &amp; x_3 &amp; \dots &amp; x_{n+1} \\
+\dots &amp; \dots &amp; \dots &amp; \dots \\
+x_{T-n+1} &amp; x_{T-n+2} &amp; \dots &amp; x_T
+\end{pmatrix}.$$</span><br /> Here <span class="math inline"><em>n</em></span> is the window width, which is an external structure parameter. The singular decomposition <span class="citation"></span> of the matrix <span class="math inline"><strong>X</strong><sup><em>T</em></sup><strong>X</strong></span>: <br /><span class="math display"><strong>X</strong><sup><em>T</em></sup><strong>X</strong> = <strong>U</strong><strong>Λ</strong><strong>U</strong><sup><em>T</em></sup>,</span><br /> where <span class="math inline"><strong>U</strong></span> is a unitary matrix and <span class="math inline"><em>Λ</em> = <em>d</em><em>i</em><em>a</em><em>g</em>(<em>λ</em><sub>1</sub>, …, <em>λ</em><sub><em>n</em></sub>)</span> which entries <span class="math inline"><em>λ</em><sub><em>i</em></sub></span> are eigenvalues of <span class="math inline"><strong>X</strong><sup><em>T</em></sup><strong>X</strong></span>. The spectrum of the matrix <span class="math inline"><strong>X</strong><sup><em>T</em></sup><strong>X</strong></span> is used as feature description of the object <span class="math inline"><em>s</em></span>: <br /><span class="math display"><strong>g</strong>(<em>s</em>)=[<em>λ</em><sub>1</sub>,…,<em>λ</em><sub><em>n</em></sub>]<sup><em>T</em></sup>.</span><br /></p>
+<h3 id="spline-approximation.">Spline Approximation.</h3>
+<p>The proposed method approximates time series with splines <span class="citation"></span>. A spline is defined by its parameters: knots and coefficients. The set of knots <span class="math inline">{<em>ξ</em><sub>ℓ</sub>}<sub>ℓ = 0</sub><sup><em>M</em></sup></span> are uniformly distributed over time series. The models, which are built on each the interval <span class="math inline">[<em>ξ</em><sub>ℓ − 1</sub>; <em>ξ</em><sub>ℓ</sub>]</span>, are given by the coefficients <span class="math inline">{<strong>w</strong><sub>ℓ</sub>}<sub>ℓ = 1</sub><sup><em>M</em></sup></span>.</p>
+<p>Optimal spline parameters are solution of a system with additional constraints of derivatives equality up to second order on the interval edges. Denote each spline segment as <span class="math inline"><em>p</em><sub><em>i</em></sub>(<em>t</em>)</span> <span class="math inline"><em>i</em> = 1, …, <em>M</em></span> and spline as a whole as <span class="math inline"><em>S</em>(<em>t</em>)</span> and write these equations: <br /><span class="math display">$$\begin{aligned}
+S(t) &amp;= \begin{cases}
+p_1(t) = w_{10} +w_{11}t + w_{12}t^2 + w_{13}t^3, &amp; t\in [\xi_0, \xi_1],\\
+p_2(t) = w_{20} +w_{21}t + w_{22}t^2 + w_{23}t^3, &amp; t\in [\xi_1, \xi_2],\\
+\cdots&amp;\cdots \\
+p_{M}(t) = w_{L0} +w_{M1}t + w_{M2}t^2 + w_{M3}t^3, &amp; t\in [\xi_{M-1}, \xi_M],                  
+\end{cases}\end{aligned}$$</span><br /> For <span class="math inline"><em>S</em>(<em>t</em>)</span> to be an interpolatory cubic spline, we must also have conditions: <br /><span class="math display">$$\begin{aligned}
+S(\xi_t) &amp;= x_t, \quad t = 0, \dots, M,\\
+p_i'(\xi_i) &amp;= p_{i+1}'(\xi_i),\: p_i''(\xi_i) = p_{i+1}''(\xi_i), \quad i = 1, \dots, M-1,\\
+p_i(\xi_{i-1}) &amp;= x_{i-1},\: p_i(\xi_i) = x_i, \quad i = 1, \dots, M.\end{aligned}$$</span><br /> The feature description of the time series could be assumed as the spline parameters union: <br /><span class="math display"><strong>g</strong>(<em>s</em>)=[<strong>w</strong><sub>1</sub>,…,<strong>w</strong><sub><em>M</em></sub>]<sup><em>T</em></sup>.</span><br /></p>
+<p>Fig. [fig::spline_example] shows the time series approximation given by splines. Compared to the autoregressive model, the splines method gives smoother approximation using almost the same number of parameters.</p>
+<h1 id="time-series-classification">Time Series Classification</h1>
+<p>Multiclass classification uses one-vs-rest approach to train binary classifiers for each class label and then, on the prediction step, classify new object according to the most confident classifier. Three classification models are used: logistic regression, SVM, and random forest.</p>
+<h3 id="regularized-logistic-regression.">Regularized Logistic Regression.</h3>
+<p>The optimal model parameters  are determined by minimising error function</p>
+<p><br /><span class="math display">$$L(\boldsymbol{\theta}, \mathcal{D}_G, \mu) = \sum_{i=1}^{m} \log\bigl(1 + \exp(-y_i [\boldsymbol{w}^{T} \boldsymbol{g}_i + b])\bigl) + \frac{\mu}{2} \|\boldsymbol{w}\|^2, \:\:\mbox{where}\:\: \boldsymbol{\theta}  = \begin{bmatrix}
+\boldsymbol{w} \\ b
+\end{bmatrix}.$$</span><br /></p>
+<p>Thus, the optimal parameters <span class="math inline">$\hat{\boldsymbol{w}}, \hat{b}$</span> are given by .</p>
+<p>The classification rule <span class="math inline"><em>f</em>(<strong>g</strong>, <strong>θ</strong>)</span> is given by the sign of linear combination for the object description <span class="math inline"><strong>g</strong></span> and parameters <span class="math inline">$\hat{\boldsymbol{\theta}}$</span> <br /><span class="math display">$$\hat{y} = f(\boldsymbol{g}, \hat{\boldsymbol{\theta}}) = \text{sign}(\boldsymbol{g}^{T} \hat{\boldsymbol{w}} + \hat{b}).$$</span><br /></p>
+<h3 id="svm.">SVM.</h3>
+<p>The optimization problem is <br /><span class="math display">$$\begin{aligned}
+\hat{\boldsymbol{\theta}}  = \begin{pmatrix}
+\hat{\boldsymbol{w}} \\ \hat{b} \\ \hat{\boldsymbol{\xi}}
+\end{pmatrix}= {\mathop{\arg \min}\limits}_{\boldsymbol{w}, b, \boldsymbol{\xi}}  \frac{1}{2} \|\boldsymbol{w}\|^2 + \mu \sum_{i=1}^{m} \xi_i,\:\:
+\mbox{s.t.} \:\: &amp;y_i \left(\boldsymbol{w}^{T} \boldsymbol{g}_i + b\right) \geq 1 - \xi_i,\\
+&amp;\xi_i \geq 0, \quad 1 \leq i \leq m.\end{aligned}$$</span><br /> The objective function corresponds to the classification error function <span class="math inline"><em>L</em>(<strong>θ</strong>, 𝒟<sub><em>G</em></sub>, <em>μ</em>)</span>. The prediction for new object is <span class="math inline">$
+\hat{y} = \text{sign} (\boldsymbol{g}^{T} \hat{\boldsymbol{w}} + \hat{b})$</span>.</p>
+<h3 id="random-forest.">Random Forest.</h3>
+<p>The random forest exploits the idea of bagging. This is an approach of building many random unstable classifiers and aggregating their predictions. This method works especially well if we select models with low bias and high variance (due to aggregating variance is reduced) as base models. In case of random forest decision trees take the role of base models, not only objects are used for bagging, but also features. In this case we make a prediction for each new object by averaging of the single tree predictions:</p>
+<p><br /><span class="math display">$$\hat{y} = \frac{1}{B} \sum_{i=1}^{B} \text{pred}(\boldsymbol{g}_i),$$</span><br /></p>
+<p>where <span class="math inline"><em>B</em></span> is an amount of trees used for bagging.</p>
+<h1 id="experiment">Experiment</h1>
+<p>In this paper we considered two different smart phone based datasets: WISDM <span class="citation"></span> and USC-HAD <span class="citation"></span>. The smart phone accelerometer measures acceleration along three axis with frequencies equal to 20 and 100 Hz. The WISDM dataset consists of 4321 time series. Each time series belongs to one of the six activities: Standing, Walking, Upstairs, Sitting, Jogging, Downstairs. The USC-HAD dataset contains 13620 time series with one of the twelve class labels: Standing, Elevator-up, Walking-forward, Sitting, Walking-downstairs, Sleeping, Elevator-down, Walking-upstairs, Jumping, Walking-right, Walking-left, Running. Table [tbl::activities_distributions] shows the distributions of time series activities for each dataset. The length <span class="math inline"><em>T</em></span> of each time series equals 200. Fig. [fig::ts_example] plots the example of the time series for one activity of the specific person is given.</p>
+<p>[tbl::activities_distributions]</p>
+<p>For each dataset feature generation procedures are applied: expert functions, autoregressive model, SSA, and splines. Three classification models for each generated feature description: logistic regression, support vector machine, and random forest. The structure parameters: the length <span class="math inline"><em>n</em></span> for autoregressive model, the window width <span class="math inline"><em>n</em></span> for SSA, and the number of splines knots <span class="math inline"><em>M</em></span> were tuned using K-fold cross validation, minimizing <br /><span class="math display">$$\begin{aligned}
+\label{cv}
+CV(K) = \frac{1}{K}\sum_{k=1}^{K} L(f_k, \mathcal{D}\setminus \mathcal{C}_k),\end{aligned}$$</span><br /> where <span class="math inline"><em>C</em><sub><em>k</em></sub></span> is a <span class="math inline">$\frac{K-1}{K}$</span> fraction of data, used for training model <span class="math inline"><em>f</em><sub><em>k</em></sub></span>. The hyperparameters <span class="math inline"><strong>μ</strong></span> for classification models were also tuned using the same cross validation procedure.</p>
+<p>The first approach for feature generation is expert functions. The main drawback of this approach is a restriction by the expert functions choice and these functions might be impossible to derive for some types of data.</p>
+<p>The autoregressive model was tuned to find the optimal length <span class="math inline"><em>n</em></span>. Cross validation procedure gives optimal value <span class="math inline"><em>n</em> = 20</span> for both dataset.</p>
+<p>The singular spectrum analysis was tuned in the same way to find the optimal window width <span class="math inline"><em>n</em></span>. Similar to autoregressive model, cross validation procedure gives the same value <span class="math inline"><em>n</em> = 20</span>.</p>
+<p>Fit cubic splines <span class="citation"></span> for time series using <span class="math inline"><em>s</em><em>c</em><em>i</em><em>p</em><em>y</em></span> python library <span class="citation"></span>. The knots <span class="math inline">{<em>ξ</em><sub>ℓ</sub>}<sub>ℓ = 1</sub><sup><em>M</em></sup></span> for splines were distributed uniformly. Value of <span class="math inline"><em>M</em></span> was chosen with cross validation.</p>
+<p>The feature extraction methods give the following number of features for both datasets: expert features: 40; autoregressive model: 60; singular spectrum analysis: 60; splines: 33.</p>
+<table>
+<caption>Binary accuracy scores for WISDM using different feature generation methods: EX — Expert, AR — Auto-Reg, SSA and SPL for Splines</caption>
+<tbody>
+<tr class="odd">
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+<tr class="even">
+<td align="right"></td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+</tr>
+<tr class="odd">
+<td align="right">All</td>
+<td align="right">0.85</td>
+<td align="right">0.91</td>
+<td align="right">0.84</td>
+<td align="right">0.58</td>
+<td align="right">0.93</td>
+<td align="right">0.93</td>
+<td align="right">0.92</td>
+<td align="right">0.79</td>
+<td align="right">0.93</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.77</td>
+</tr>
+<tr class="even">
+<td align="right">Standing</td>
+<td align="right">0.99</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">0.95</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">0.96</td>
+</tr>
+<tr class="odd">
+<td align="right">Walking</td>
+<td align="right">0.91</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.61</td>
+<td align="right">0.96</td>
+<td align="right">0.97</td>
+<td align="right">0.95</td>
+<td align="right">0.86</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.98</td>
+<td align="right">0.84</td>
+</tr>
+<tr class="even">
+<td align="right">Upstairs</td>
+<td align="right">0.91</td>
+<td align="right">0.95</td>
+<td align="right">0.91</td>
+<td align="right">0.89</td>
+<td align="right">0.96</td>
+<td align="right">0.96</td>
+<td align="right">0.96</td>
+<td align="right">0.90</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.97</td>
+<td align="right">0.89</td>
+</tr>
+<tr class="odd">
+<td align="right">Sitting</td>
+<td align="right">0.99</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+</tr>
+<tr class="even">
+<td align="right">Jogging</td>
+<td align="right">0.98</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.80</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.92</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="odd">
+<td align="right">Downstairs</td>
+<td align="right">0.93</td>
+<td align="right">0.96</td>
+<td align="right">0.94</td>
+<td align="right">0.92</td>
+<td align="right">0.96</td>
+<td align="right">0.97</td>
+<td align="right">0.96</td>
+<td align="right">0.92</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.97</td>
+<td align="right">0.92</td>
+</tr>
+</tbody>
+</table>
+<p>[tbl::wisdm_methods_results]</p>
+<table>
+<caption>Binary accuracy scores for USC-HAD using different feature generation methods: EX — Expert, AR — Auto-Reg, SSA and SPL for Splines<span data-label="my-label"></span></caption>
+<tbody>
+<tr class="odd">
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+<tr class="even">
+<td align="right"></td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+<td align="right">EX</td>
+<td align="right">AR</td>
+<td align="right">SSA</td>
+<td align="right">SPL</td>
+</tr>
+<tr class="odd">
+<td align="right">All</td>
+<td align="right">0.67</td>
+<td align="right">0.65</td>
+<td align="right">0.64</td>
+<td align="right">0.41</td>
+<td align="right">0.87</td>
+<td align="right">0.70</td>
+<td align="right">0.84</td>
+<td align="right">0.74</td>
+<td align="right">0.80</td>
+<td align="right">0.65</td>
+<td align="right">0.82</td>
+<td align="right">0.74</td>
+</tr>
+<tr class="even">
+<td align="right">Standing</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.92</td>
+<td align="right">0.89</td>
+<td align="right">0.98</td>
+<td align="right">0.94</td>
+<td align="right">0.97</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.94</td>
+<td align="right">0.97</td>
+<td align="right">0.96</td>
+</tr>
+<tr class="odd">
+<td align="right">Elevator-up</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.93</td>
+<td align="right">0.92</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="even">
+<td align="right">Walking-forward</td>
+<td align="right">0.87</td>
+<td align="right">0.87</td>
+<td align="right">0.89</td>
+<td align="right">0.70</td>
+<td align="right">0.97</td>
+<td align="right">0.89</td>
+<td align="right">0.96</td>
+<td align="right">0.88</td>
+<td align="right">0.95</td>
+<td align="right">0.87</td>
+<td align="right">0.97</td>
+<td align="right">0.91</td>
+</tr>
+<tr class="odd">
+<td align="right">Sitting</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.94</td>
+<td align="right">0.96</td>
+<td align="right">0.99</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.99</td>
+<td align="right">0.98</td>
+<td align="right">0.96</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+</tr>
+<tr class="even">
+<td align="right">Walking-downstairs</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.93</td>
+<td align="right">0.90</td>
+<td align="right">0.99</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.98</td>
+<td align="right">0.93</td>
+<td align="right">0.98</td>
+<td align="right">0.96</td>
+</tr>
+<tr class="odd">
+<td align="right">Sleeping</td>
+<td align="right">1.00</td>
+<td align="right">0.98</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">0.98</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+</tr>
+<tr class="even">
+<td align="right">Elevator-down</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.91</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.94</td>
+<td align="right">0.94</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="odd">
+<td align="right">Walking-upstairs</td>
+<td align="right">0.94</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.92</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.98</td>
+<td align="right">0.96</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.98</td>
+<td align="right">0.96</td>
+</tr>
+<tr class="even">
+<td align="right">Jumping</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.97</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">0.97</td>
+<td align="right">0.99</td>
+</tr>
+<tr class="odd">
+<td align="right">Walking-right</td>
+<td align="right">0.91</td>
+<td align="right">0.90</td>
+<td align="right">0.91</td>
+<td align="right">0.86</td>
+<td align="right">0.97</td>
+<td align="right">0.92</td>
+<td align="right">0.96</td>
+<td align="right">0.92</td>
+<td align="right">0.96</td>
+<td align="right">0.90</td>
+<td align="right">0.97</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="even">
+<td align="right">Walking-left</td>
+<td align="right">0.89</td>
+<td align="right">0.91</td>
+<td align="right">0.90</td>
+<td align="right">0.88</td>
+<td align="right">0.97</td>
+<td align="right">0.93</td>
+<td align="right">0.97</td>
+<td align="right">0.93</td>
+<td align="right">0.95</td>
+<td align="right">0.91</td>
+<td align="right">0.97</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="odd">
+<td align="right">Running</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.99</td>
+<td align="right">0.92</td>
+<td align="right">1.00</td>
+<td align="right">0.99</td>
+<td align="right">1.00</td>
+<td align="right">0.97</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">0.95</td>
+<td align="right">0.98</td>
+</tr>
+</tbody>
+</table>
+<p>[tbl::uschad_methods_results]</p>
+<p>Fig. [fig::accuracy_results] presents the accuracy scores  of the experiments for the both datasets. For WISDM dataset the worst result was obtained with spline approximation. The results for expert functions, autoregressive model, and SSA are roughly identical. For USC-HAD dataset the results highly depend on the classification model. For both datasets logistic regression shows the worst quality, while the accuracy for support vector machine and random forest is almost the same. The spline approximation gives competitive result for USC-HAD dataset.</p>
+<p>Table [tbl::wisdm_methods_results] and table [tbl::uschad_methods_results] present all results with classification accuracy scores  for each class. The first rows of these tables introduce the multiclass accuracy score for each classification model and each feature extraction procedure. Next rows are related to binary accuracy scores for each class. For WISDM dataset the best scores have the least active classes such as Standing and Sitting. For USC-HAD dataset all classes have the similar accuracy scores.</p>
+<p>We also carried out the experiment for union of all 193 generated features. Fig. [fig::feature_union_results] demonstrates the results. Table [tbl::activities_distributions] shows class labels, that are represented on the corresponding histograms. As expected, the accuracy scores for feature union are higher in all cases. All binary accuracy scores for WISDM dataset are higher than <span class="math inline">97%</span> for each classification model. These numbers for USC-HAD dataset is higher than <span class="math inline">93%</span>.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>The paper investigates the problem of complex structured objects classification. The experiment compares various approaches of feature extraction, particularly the expert functions and local approximation models on data from smart phone accelerometer. The logistic regression, SVM, and random forest are used for classification. The results show that obtained features recover the class label with the high quality. The proposed spline method gives smooth approximation of time series. The number of splines parameters was lower than for the other methods. The classification quality for splines are competitive with existing stated methods for both considered datasets. Stacking of all extracted features gives better performance.</p>
+<p><span>10</span> [1]<span><code>#1</code></span></p>
+<p>Bao, L., Intille, S.S.: Activity recognition from user-annotated acceleration data. In: International Conference on Pervasive Computing. pp. 1–17. Springer (2004)</p>
+<p>Budnik, M., Gutierrez-Gomez, E.L., Safadi, B., Pellerin, D., Qu<span>é</span>not, G.: Learned features versus engineered features for multimedia indexing. Multimedia Tools and Applications 76(9), 11941–11958 (2017)</p>
+<p>De Boor, C.: A practical guide to splines, vol. 27. Springer-Verlag (1978)</p>
+<p>Geurts, P.: Pattern extraction for time series classification. In: European Conference on Principles of Data Mining and Knowledge Discovery. pp. 115–127. Springer (2001)</p>
+<p>Golub, G.H., Reinsch, C.: Singular value decomposition and least squares solutions. Numerische mathematik 14(5), 403–420 (1970)</p>
+<p>Hammerla, N.Y., Halloran, S., Ploetz, T.: Deep, convolutional, and recurrent models for human activity recognition using wearables. arXiv preprint arXiv:1604.08880 (2016)</p>
+<p>Hassani, H.: Singular spectrum analysis: methodology and comparison. Journal of Data Science 5(2), 239–257 (2007)</p>
+<p>Ignatov, A.D., Strijov, V.V.: Human activity recognition using quasiperiodic time series collected from a single tri-axial accelerometer. Multimedia tools and applications 75(12), 7257–7270 (2016)</p>
+<p>Incel, O.D., Kose, M., Ersoy, C.: A review and taxonomy of activity recognition on mobile phones. BioNanoScience 3(2), 145–171 (2013)</p>
+<p>Jones, E., Oliphant, T., Peterson, P.: <span>SciPy</span>: Open source scientific tools for <span>Python</span> (2001), <a href="http://www.scipy.org/" class="uri">http://www.scipy.org/</a>, [Online; accessed today]</p>
+<p>Karasikov, M., Strijov, V.: Feature-based time-series classification. Intelligence 24(1), 164–181 (2016)</p>
+<p>Kuznetsov, M., Ivkin, N.: Time series classification algorithm using combined feature description. Machine Learning and Data Analysis 1(11), 1471–1483 (2015)</p>
+<p>Kwapisz, J.R., Weiss, G.M., Moore, S.A.: Activity recognition using cell phone accelerometers. ACM SigKDD Explorations Newsletter 12(2), 74–82 (2011)</p>
+<p>Lu, L., Qing-ling, C., Yi-Ju, Z.: Activity recognition in smart homes. Multimedia Tools and Applications pp. 1–18 (2016)</p>
+<p>Lu, Y., Wei, Y., Liu, L., Zhong, J., Sun, L., Liu, Y.: Towards unsupervised physical activity recognition using smartphone accelerometers. Multimedia Tools and Applications 76(8)</p>
+<p>Lukashin, Y.P.: Adaptive methods of short-term forecasting of time series. M.: Finance and statistics (2003)</p>
+<p>Motrenko, A., Strijov, V.: Extracting fundamental periods to segment biomedical signals. IEEE journal of biomedical and health informatics 20(6), 1466–1476 (2016)</p>
+<p>Umeda, Y.: Time series classification via topological data analysis. Transactions of the Japanese Society for Artificial Intelligence 32(3), D–G72_1 (2017)</p>
+<p>The usc human activity dataset. <a href="http://www-scf.usc.edu/~mizhang/datasets.html" class="uri">http://www-scf.usc.edu/~mizhang/datasets.html</a></p>
+<p>Wang, W., Liu, H., Yu, L., Sun, F.: Human activity recognition using smart phone embedded sensors: A linear dynamical systems method. In: Neural Networks (IJCNN), 2014 International Joint Conference on. pp. 1185–1190. IEEE (2014)</p>
+<p>The wisdm dataset. <a href="http://www.cis.fordham.edu/wisdm/dataset.php" class="uri">http://www.cis.fordham.edu/wisdm/dataset.php</a></p>
+</body>
+</html>
