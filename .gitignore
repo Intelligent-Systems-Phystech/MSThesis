@@ -8,6 +8,8 @@
 *.toc
 *.snm
 *.nav
+*.bbl
+*.blg
 
 *untracked/
 *__pycache__
