@@ -19,10 +19,17 @@
 \usepackage{amsmath,amssymb,mathrsfs,mathtext}
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,shadows}
+
 \newtheorem{theorem}{Theorem}
-\newtheorem{statement}{Statement}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
 \usepackage{algorithm}
 \usepackage[noend]{algcompatible}
+
+\usepackage{multirow}
 
 \usepackage{caption}
 
@@ -52,6 +59,7 @@
 \newcommand{\bW}{\mathbf{W}}
 \newcommand{\bbR}{\mathbb{R}}
 \newcommand{\cA}{\mathcal{A}}
+\newcommand{\T}{\mathsf{T}}
 \newcommand{\bchi}{\boldsymbol{\chi}}
 \newcommand{\bnu}{\boldsymbol{\nu}}
 \newcommand{\bmu}{\boldsymbol{\mu}}
@@ -68,8 +76,56 @@
 
 
 \begin{document}
+	
+	\linenumbers
+	
+	\title
+{Multivariate Quadratic Programming Feature Selection for ECoG signal decoding}
+\date{}
+\maketitle
+\begin{center}
+	R.\,V.~Isachenko,
+	V.\,V.~Strijov
+\end{center}
+\textbf{Abstract:} 
+TBA
 
-\linenumbers
+\bigskip
+\textbf{Keywords}: quadratic programming feature selection, multicorrelation
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The paper investigates the problem of decoding signal for Brain Computer Interface~(BCI). 
+The BCI aims to develop systems that help people with a severe motor control disability recover mobility.
+The minimally-invasive implant records cortical signals and the model decode them on real time to move the limbs of an exoskeleton.
+The subject placed inside the exoskeleton can drive it by imagining movements as if they were making the movement themself. 
+
+The challenge is redundancy of initial data description. The features are highly multicorrelated. The correlation comes from spatial nature of the data. The brain sensors are close to each other. It leads to the redundant measurements. In this case the final model is unstable. In addition, the redundant data description requires redundant computations which leads to real-time delay. To overcome this problem feature selection methods are used.
+
+One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. This approach was proposed in the paper[].
+The Quadratic Programming Feature Selection~(QPFS) algorithm solves introduces two functions: $\text{Sim}$ and $\text{Rel}$.
+The $\text{Sim}$ measures the redundancy between features, the $\text{Rel}$ contains relevances between each feature and the target vector.
+We want to minimize the function Sim and maximize the Rel simultaneously.
+QPFS offers the explicit way to construct the functions Sim and Rel.
+The method minimizes the following functional
+\begin{equation}
+(1 - \alpha) \cdot \underbrace{\ba^{\T} \bQ \ba}_{\text{Sim}} - \alpha \cdot \underbrace{\vphantom{()} \bb^{\T} \ba}_{\text{Rel}} \rightarrow \min_{\substack{\ba \geq \bZero_n \\ \bOne_n^{\T} \ba=1}}.
+\label{eq:quadratic_problem}
+\end{equation}
+The matrix $\bQ \in \bbR^{n \times n}$ entries measure the pairwise similarities between features.
+The vector $\bb \in \bbR^n$ expresses the similarities between each feature and the target matrix~$\bb$.
+The normalized vector~$\ba$ shows the importance of each feature.
+The functional~\eqref{eq:quadratic_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel.
+The parameter~$\alpha$ controls the trade-off between the functions Sim and the Rel.
+To measure similarity the authors use the absolute value of sample correlation coefficient or sample mutual information coefficient between pairs of features for the function Sim, and between features and the target vector~$\bnu$ for the function Rel.
+
+We consider the multivariate problem, where the dependent variable is a vector. 
+It refers to the prediction of limb position for not just one moment, but for some period of time. The subsequent hand position are correlated. 
+It leads to correlations in the model output. 
+We propose methods to take into account the dependencies in both input and output spaces. 
+It allows to get the stable model with fewer variables.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Problem statement}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,76 +137,63 @@ We assume there is a linear dependence
 \end{equation}
 between the objects $\bx$ and the target variable $\by$,
 where $\bTheta \in \bbR^{r \times n}$ is the matrix of model parameters, $\boldsymbol{\varepsilon} \in \bbR^{r}$ is the residual vector.
-The task is to find the matrix of the model parameters $\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
+One has to find the matrix of the model parameters $\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
 \[
-	\bX = [\bx_1, \dots, \bx_m]^T =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^T =  [\bnu_1, \dots, \bnu_r].
+	\bX = [\bx_1, \dots, \bx_m]^{\T} =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^{\T} =  [\bnu_1, \dots, \bnu_r].
 \]
 The columns~$\bchi_j$ of the matrix~$\bX$ respond to object features.
 
 The optimal parameters are determined by minimization of an error function.
-Define the quadratic error function:
+Define the quadratic loss function:
 \begin{equation}
-	S(\bTheta | \bX, \bY) = {\left\| \underset{m \times r}{\mathbf{Y}}  - \underset{m \times n}{\bX} \cdot \underset{r \times n}{\bTheta}^T \right\| }_2^2 \rightarrow\min_{\bTheta}.
+	\mathcal{L}(\bTheta | \bX, \bY) = {\left\| \underset{m \times r}{\mathbf{Y}}  - \underset{m \times n}{\bX} \cdot \underset{r \times n}{\bTheta}^{\T} \right\| }_2^2 \rightarrow\min_{\bTheta}.
 \label{eq:error_function}
 \end{equation}
 
  The solution of the problem~\eqref{eq:error_function} is given by
  \[
- 	\bTheta = (\bX^T \bX)^{-1} \bX^T \bY.
+ 	\bTheta = (\bX^{\T} \bX)^{-1} \bX^{\T} \bY.
  \]
 
  The linear dependent columns of the matrix $\bX$ leads to an instable solution for the optimization problem~\eqref{eq:error_function}.
- If there is a vector $\boldsymbol{\alpha} \neq 0$ such that $\bX \boldsymbol{\alpha}= 0$, then adding the vector~$\boldsymbol{\alpha}$ to any column of the matrix~$\bTheta$ does not change the error function $S(\bTheta | \bX, \bY)$.
- In this case the matrix $\bX^T \bX$ is not invertible.
+ If there is a vector $\boldsymbol{\alpha} \neq \bZero_n$ such that $\bX \boldsymbol{\alpha}= \bZero_m$, then adding the vector~$\boldsymbol{\alpha}$ to any column of the matrix~$\bTheta$ does not change the error function $S(\bTheta | \bX, \bY)$.
+ In this case the matrix $\bX^{\T} \bX$ is not invertible.
  To avoid the strong linear dependence, feature selection and dimensionality reduction techniques are used.
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  \section{Feature selection}
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- The feature selection goal is to find the index set~$\cA = \{1, \dots, n\}$ of the matrix $\bX$ columns. To select the set~$\cA$ among all possible $2^n - 1$ subsets, introduce the feature selection quality criteria
+ The feature selection goal is to find the index set~$\cA = \{1, \dots, n\}$ of the matrix $\bX$ columns. To select the set~$\cA$ among all possible $2^n - 1$ subsets, introduce the feature selection error function
 \begin{equation}
-	\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bY).
+	\cA = \argmin_{\cA' \subseteq \{1, \dots, n\}} S(\cA' | \bX, \bY).
 	\label{eq:subset_selection}
 \end{equation}
 
 Once the solution~$\cA$ for the problem~\eqref{eq:subset_selection} is known, the problem~\eqref{eq:error_function} becomes
 \begin{equation}
-S(\bTheta_{\cA} | \bX_{\cA}, \bY) = {\left\| \mathbf{Y} - \bX_{\cA}\bTheta^T_{\cA} \right\| }_2^2 \rightarrow\min_{\bTheta_{\cA}},
+\mathcal{L}(\bTheta_{\cA} | \bX_{\cA}, \bY) = {\left\| \mathbf{Y} - \bX_{\cA}\bTheta^{\T}_{\cA} \right\| }_2^2 \rightarrow\min_{\bTheta_{\cA}},
 \end{equation}
-where the subscript~$\cA$ indicates columns with indices from the set~$\cA$.
+where the subscript~$\cA$ indicates the matrix columns with indices from the set~$\cA$.
 
 \subsection{Quadratic Programming Feature Selection}
-One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy.
-The QPFS algorithm selects non-correlated features, which are relevant to the target vector~$\bnu$ for the linear regression problem ($r=1$)
+The QPFS algorithm selects non-correlated features, which are relevant to the target vector~$\bnu$ for the linear regression problem with~$r=1$
 \begin{equation*}
 	\| \bnu - \bX \btheta\|_2^2 \rightarrow\min_{\btheta \in \bbR^{n}}.
 \end{equation*}
-Introduce two functions: $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$.
-The $\text{Sim}(\bX)$ measures the redundancy between features, the $\text{Rel}(\bX, \bnu)$ contains relevances between each feature and the target vector~$\bnu$.
-We want to minimize the function Sim and maximize the Rel simultaneously.
-
-QPFS offers the explicit way to construct the functions Sim and Rel.
-The method minimizes the following functional
-\begin{equation}
-	(1 - \alpha) \cdot \underbrace{\ba^T \bQ \ba}_{\text{Sim}} - \alpha \cdot \underbrace{\vphantom{()} \mathbf{b}^T \ba}_{\text{Rel}} \rightarrow \min_{\substack{\ba \geq \bZero_n \\ \bOne_n^T \ba=1}}.
-	\label{eq:quadratic_problem}
-\end{equation}
-The matrix $\bQ \in \bbR^{n \times n}$ entries measure the pairwise similarities between features.
-The vector $\mathbf{b} \in \bbR^n$ expresses the similarities between each feature and the target matrix~$\bb$.
-The normalized vector~$\ba$ shows the importance of each feature.
-The functional~\eqref{eq:quadratic_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel.
-The parameter~$\alpha$ allows to control the trade-off between the functions Sim and the Rel.
-The authors of the original QPFS paper suggested the way to select~$\alpha$ and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ impact the same
+The QPFS functional~\ref{eq:quadratic_problem} corresponds to the error function~$S(\cA | \bX, \bnu)$
+\begin{equation*}
+\cA = \argmin_{\cA' \subseteq \{1, \dots, n\}} S(\cA' | \bX, \bnu) \Leftrightarrow \argmin_{\ba \geq \bZero_n, \, \bOne_n^{\T}\ba=1} \bigl[\ba^{\T} \bQ \ba - \alpha \cdot \mathbf{b}^{\T} \ba \bigr].
+\end{equation*}
+The authors of the original QPFS paper suggested the way to select~$\alpha$ and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ impact the same:
 \begin{equation*}
 	\alpha = \frac{\overline{\bQ}}{\overline{\bQ} + \overline{\bb}},
 \end{equation*}
 where $\overline{\bQ}$, $\overline{\bb}$ are the mean values of~$\bQ$ and $\bb$ respectively.
 Apply the thresholding for~$\ba$ to find the optimal feature subset:
 \[
-	j \in \mathcal{A} \Leftrightarrow a_j > \tau.
+	\cA = \bigl\{ j \in \{1, \dots, n\}: \, (\ba)_j > \tau \bigr\}.
 \]
-
-To measure similarity the authors use the absolute value of sample correlation coefficient between pairs of features for the function Sim, and between features and the target vector~$\bnu$ for the function Rel
+We use the absolute value of sample correlation coefficient as similarity measure:
 \begin{equation}
 	\bQ = \left\{\left|\text{corr}(\bchi_i, \bchi_j)\right|\right\}_{i,j=1}^n, \quad \bb = \left\{\left|\text{corr}(\bchi_i, \bnu)\right|\right\}_{i=1}^n.
 	\label{eq:qpfs_1d_qb}
@@ -158,33 +201,30 @@ To measure similarity the authors use the absolute value of sample correlation c
 The problem~\eqref{eq:quadratic_problem} is convex if the matrix~$\bQ$ is positive semidefinite. In general it is not always true.
 To satisfy this condition, the matrix~$\bQ$ spectrum is shifted and the matrix~$\bQ$ is replaced by $\bQ - \lambda_{\text{min}} \mathbf{I}$, where $\lambda_{\text{min}} $ is a $\bQ$ minimal eigenvalue.
 
-The functional~\eqref{eq:quadratic_problem} corresponds to the quality criteria~$Q(\cA | \bX, \bnu)$
-\begin{equation}
-\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bnu) \Leftrightarrow \argmin_{\ba \geq \bZero_n, \, \bOne_n^T\ba=1} \bigl[\ba^T \bQ \ba - \alpha \cdot \mathbf{b}^T \ba \bigr].
-\end{equation}
 
 \subsection{Multivariate QPFS}
 
-\paragraph{Relevance aggregation}
+\paragraph{Relevance aggregation.}
 
 First approach to apply the QPFS algorithm to the multivariate case ($r > 1$) is to aggregate feature relevances through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, and the matrix $\bQ$ and the vector $\bb$ are equal to
 \begin{equation*}
 \bQ = \left\{\left|\text{corr}(\bchi_i, \bchi_j)\right|\right\}_{i,j=1}^n, \quad \bb = \left\{\sum_{k=1}^r\left|\text{corr}(\bchi_i, \bnu_k)\right|\right\}_{i=1}^n.
 \end{equation*}
 
-This approach does not use the dependencies in the columns of the matrix $\bY$. Let consider the following example:
+This approach does not use the dependencies in the columns of the matrix $\bY$. Observe the following example:
 \[
 	\bX = [\bchi_1, \bchi_2, \bchi_3], \quad \bY = [\underbrace{\bnu_1, \bnu_1, \dots, \bnu_1}_{r-1}, \bnu_2],
 \]
 We have three features and $r$ targets, where first $r-1$ target are the identical.
 The pairwise features similarities are given by the matrix $\bQ$.
-Matrix $\bB$ entries shows pairwise relevances features to the targets.
+The matrix $\bB$ entries shows pairwise relevances features to the targets.
 The vector $\bb$ is obtained by summation of the matrix $\bB$ over columns.
-\[
+\begin{equation}
 	\bQ = \begin{bmatrix} 1 & 0 & 0\\ 0 & 1 & 0.8 \\ 0 & 0.8 & 1 \end{bmatrix}, \quad
 	\bB = \begin{bmatrix} 0.4 & \dots & 0.4 & 0 \\ 0.5 & \dots & 0.5 & 0.8 \\ \undermat{r-1}{0.8 & \dots & 0.8} & 0.1 \end{bmatrix}, \quad
-	\bb = \begin{bmatrix} (r-1) \cdot 0.4 + 0 \\ (r-1) \cdot 0.5 + 0.8 \\ (r-1) \cdot 0.8 + 0.1 \end{bmatrix}
-\]
+	\bb = \begin{bmatrix} (r-1) \cdot 0.4 + 0 \\ (r-1) \cdot 0.5 + 0.8 \\ (r-1) \cdot 0.8 + 0.1. \end{bmatrix}
+	\label{eq:qpfs_example}
+\end{equation}
 	\vspace{0.5cm}
 
 We would like to select only two features.
@@ -194,12 +234,12 @@ The QPFS algorithm for~$r=2$ gives the solution~$\ba = [0.37,	0.61,	0.02]$. It c
 However, if we add the collinear columns to the matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\ba = [0.40,	0.17, 0.43]$.
 Here we lost the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
 
-\paragraph{Symmetric importances}
+\paragraph{Symmetric importances.}
 
 To take into account the dependencies in the columns of the matrix $\bY$ we extend the QPFS functional~\eqref{eq:quadratic_problem} to the multivariate case.
 We add the term~$\text{Sim}(\bY)$ and extend the term $\text{Rel}(\bX, \bY)$:
 \begin{equation}
-	\alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^T \bB \ba_y}_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1 \\ \ba_y \geq \bZero_r, \, \bOne_r^T\ba_y=1}}.
+	\alpha_1 \cdot \underbrace{\ba_x^{\T} \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^{\T} \bB \ba_y}_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\ba_y^{\T} \bQ_y \ba_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \, \bOne_n^{\T}\ba_x=1 \\ \ba_y \geq \bZero_r, \, \bOne_r^{\T}\ba_y=1}}.
 	\label{eq:multivariate_quadratic_problem}
 \end{equation}
 Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR^{r \times r}$, $\bB \in \bbR^{n \times r}$ in the following way
@@ -213,10 +253,10 @@ The targets which are correlated will be penalized by $\text{Sim} (\bY)$ and hav
 
 The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term to the functional~\eqref{eq:multivariate_quadratic_problem} and satisfy the conditions:
 \[
-\alpha_1 + \alpha_2 + \alpha_3 = 1 \quad \alpha_i \geq 0, \, i = 1, 2, 3.
+\alpha_1 + \alpha_2 + \alpha_3 = 1, \quad \alpha_i \geq 0, \, i = 1, 2, 3.
 \]
-\begin{statement}
-	Balance between the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:multivariate_quadratic_problem} is achieved by the following coefficients:
+\begin{proposition}
+	The balance between the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:multivariate_quadratic_problem} is achieved by the following coefficients:
 	\[
 	\alpha_1 = \frac{\overline{\bQ}_y \overline{\bB} }{\overline{\bQ}_y \overline{\bB} + \overline{\bQ}_x \overline{\bQ}_y + \overline{\bQ}_x \overline{\bB}}; \quad
 	\alpha_2 = \frac{\overline{\bQ}_x \overline{\bQ}_y}{\overline{\bQ}_y \overline{\bB} + \overline{\bQ}_x \overline{\bQ}_y + \overline{\bQ}_x \overline{\bB}}; \quad
@@ -224,7 +264,7 @@ The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of
 	\]
 	where $\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ are the mean values of~$\bQ_x$, $\bB$, and $\bQ_y$ respectively.
 
-\end{statement}
+\end{proposition}
 \begin{proof}
 	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solution of the following equations
 	\begin{align*}
@@ -241,7 +281,7 @@ To investigate the impact of the term $\text{Sim}(\bY)$ on the functional~\eqref
 \label{eq:alphas3}
 \end{equation}
 
-We apply the proposed algorithm to the discussed example.
+We apply the proposed algorithm to the discussed example~\eqref{eq:qpfs_example}.
 The given matrix~$\bQ$ corresponds to the matrix~$\bQ_x$.
 We additionally define the matrix~$\bQ_y$ by setting $\text{corr}(\bnu_1, \bnu_2) = 0.2$ and all others entries to one.
 Figure~\ref{fig:features_vs_alpha} shows the importances of features~$\ba_x$ and targets~$\ba_y$ with respect to~$\alpha_3$ coefficient.
@@ -254,7 +294,7 @@ If~$\alpha_3$ is small, the impact of all targets are almost equal and the featu
 	\label{fig:features_vs_alpha}
 \end{figure}
 
-\paragraph{Minimax QPFS}
+\paragraph{Minimax QPFS.}
 The functional~\eqref{eq:multivariate_quadratic_problem} is symmetric with respect to~$\ba_x$ and $\ba_y$.
 It penalizes features that are correlated and do not relevant to targets.
 At the same time it penalizes targets that are correlated and are not sufficiently explained by the features.
@@ -262,9 +302,9 @@ It leads to small importances for targets which are difficult to predict by feat
 It contradicts with the intuition.
 Our goal is to predict all targets, especially which are difficult to explain, by selected relevant and non-correlated features. We express this into two related problems.
 \begin{align}
-	\alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^T\mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \\ \bOne_n^T\ba_x=1}};
+	\alpha_1 \cdot \underbrace{\ba_x^{\T} \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^{\T}\mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \\ \bOne_n^{\T}\ba_x=1}};
 	\label{eq:x_qpfs}\\
-	\alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^T \mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_y \geq \bZero_r,  \\ \bOne_r^T\ba_y=1}}.
+	\alpha_3 \cdot \underbrace{\ba_y^{\T} \bQ_y \ba_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^{\T} \mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_y \geq \bZero_r,  \\ \bOne_r^{\T}\ba_y=1}}.
 	\label{eq:y_qpfs}
 \end{align}
 The difference in Rel part.
@@ -272,16 +312,16 @@ In feature space the non-relevant components should have smaller scores.
 Meanwhile, the targets that are not relevant to the features should have larger scores.
 The problems~\eqref{eq:x_qpfs} and \eqref{eq:y_qpfs} are merged into the joint min-max or max-min formulation
 \begin{equation}
-	\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} f(\ba_x, \ba_y), \quad \left(\text {or} \, \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} f(\ba_x, \ba_y)\right),
+	\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^{\T}\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} f(\ba_x, \ba_y), \quad \left(\text {or} \, \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} \min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^{\T}\ba_x=1}} f(\ba_x, \ba_y)\right),
 	\label{eq:minmax}
 \end{equation}
 where
 \[
-	f(\ba_x, \ba_y) = \alpha_1 \cdot \underbrace{\ba_x^T \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^T \bB \ba_y}_{\text{Rel}(\bX, \bY)} - \alpha_3 \cdot \underbrace{\ba_y^T \bQ_y \ba_y}_{\text{Sim}(\bY)}.
+	f(\ba_x, \ba_y) = \alpha_1 \cdot \underbrace{\ba_x^{\T} \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^{\T} \bB \ba_y}_{\text{Rel}(\bX, \bY)} - \alpha_3 \cdot \underbrace{\ba_y^{\T} \bQ_y \ba_y}_{\text{Sim}(\bY)}.
 \]
-The link between feature selection quality criteria~\eqref{eq:subset_selection} and the min-max problem~\eqref{eq:minmax} is the following
+The link between feature selection error function~\eqref{eq:subset_selection} and the min-max problem~\eqref{eq:minmax} is the following
 \begin{equation}
-\cA = \argmax_{\cA' \subseteq \{1, \dots, n\}} Q(\cA' | \bX, \bY) \Leftrightarrow \argmin_{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1} \left[\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} f(\ba_x, \ba_y)\right].
+\cA = \argmin_{\cA' \subseteq \{1, \dots, n\}} S(\cA' | \bX, \bY) \Leftrightarrow \argmin_{\ba_x \geq \bZero_n, \, \bOne_n^{\T}\ba_x=1} \left[\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} f(\ba_x, \ba_y)\right].
 \end{equation}
 \begin{theorem}
 	For positive definite matrices $\bQ_x$ and $\bQ_y$ the max-min and min-max problems~\eqref{eq:minmax} have the same optimal value.
@@ -289,7 +329,7 @@ The link between feature selection quality criteria~\eqref{eq:subset_selection} 
 \begin{proof}
 	Denote
 	\begin{equation*}
-	\mathbb{C}^n = \{\ba : \ba \geq \bZero_n, \, \bOne_n^T\ba=1\}, \quad \mathbb{C}^r = \{\ba : \ba \geq \bZero_r, \, \bOne_r^T\ba=1\};
+	\mathbb{C}^n = \{\ba : \ba \geq \bZero_n, \, \bOne_n^{\T}\ba=1\}, \quad \mathbb{C}^r = \{\ba : \ba \geq \bZero_r, \, \bOne_r^{\T}\ba=1\};
 	\end{equation*}
 	The sets $\mathbb{C}^n$ and $\mathbb{C}^r$ are compact and convex. The function $f: \mathbb{C}^n \times \mathbb{C}^r \rightarrow \bbR$ is a continuous function. If $\bQ_x$ and $\bQ_y$ are positive definite matrices, the function~$f$ is convex-concave, i.e.
 	$f(\cdot, \ba_y): \mathbb{C}^n \rightarrow \bbR$ is convex for fixed~$\ba_y$, and $f(\ba_x, \cdot): \mathbb{C}^r \rightarrow \bbR$ is concave for fixed~$\ba_x$.
@@ -301,12 +341,12 @@ The link between feature selection quality criteria~\eqref{eq:subset_selection} 
 
 To solve the min-max problem~\eqref{eq:minmax}, fix some~$\ba_x \in \mathbb{C}^n$. For fixed vector~$\ba_x$ we solve the problem
 \begin{equation}
-	\max_{\ba_y \in \mathbb{C}_r} f(\ba_x, \ba_y) = \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \bigl[\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y \bigr].
+	\max_{\ba_y \in \mathbb{C}_r} f(\ba_x, \ba_y) = \max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} \bigl[\alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y - \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y \bigr].
 	\label{eq:fixed_ax}
 \end{equation}
 The Lagrangian for this problem is
 \[
-	L(\ba_x, \ba_y, \lambda, \bmu) = \alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bB \ba_y - \alpha_3 \cdot \ba_y^T \bQ_y \ba_y + \lambda \cdot  (\bOne_r^T \ba_y - 1) + \bmu^T \ba_y.
+	L(\ba_x, \ba_y, \lambda, \bmu) = \alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y - \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y + \lambda \cdot  (\bOne_r^{\T} \ba_y - 1) + \bmu^{\T} \ba_y.
 \]
 Here the Lagrange multipliers $\bmu$, corresponding to the inequality constraints $\ba_y \geq \bZero_r$, are restricted to be nonnegative.
 The dual problem is
@@ -323,66 +363,83 @@ instead of~\eqref{eq:minmax}.
 
 Setting the gradient of the Langrangian $\nabla_{\ba_y} L(\ba_x, \ba_y, \lambda, \bmu)$ to zero, we obtain an optimal value~$\ba_y$:
 \begin{equation}
-	\ba_y = \frac{1}{2\alpha_3} \bQ_y^{-1} \left( - \alpha_2 \cdot \bB^T \ba_x +\lambda \cdot \bOne_r + \bmu \right).
+	\ba_y = \frac{1}{2\alpha_3} \bQ_y^{-1} \left( - \alpha_2 \cdot \bB^{\T} \ba_x +\lambda \cdot \bOne_r + \bmu \right).
 	\label{eq:ax}
 \end{equation}
 The dual function is equal to
 \begin{multline}
 	g(\ba_x, \lambda, \bmu)
 	= \max_{\ba_y \in \bbR^r} L(\ba_x, \ba_y, \lambda, \bmu) =
-	\ba_x^T \left( - \frac{\alpha_2^2}{4\alpha_3} \bB \bQ_y^{-1} \bB^T - \alpha_1 \cdot \bQ_x\right) \ba_x \\ - \frac{1}{4 \alpha_3} \lambda^2 \cdot \bOne_r^T \bQ_y^{-1} \bOne_r - \frac{1}{4 \alpha_3} \bmu^T \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \lambda \cdot \bOne_r^T \bQ_y^{-1} \bB^T \ba_x \\ - \frac{1}{2 \alpha_3} \lambda \cdot \bOne_r^T \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \bmu^T \bQ_y^{-1} \bB^T \ba_x + \lambda.
+	\ba_x^{\T} \left( - \frac{\alpha_2^2}{4\alpha_3} \bB \bQ_y^{-1} \bB^{\T} - \alpha_1 \cdot \bQ_x\right) \ba_x \\ - \frac{1}{4 \alpha_3} \lambda^2 \cdot \bOne_r^{\T} \bQ_y^{-1} \bOne_r - \frac{1}{4 \alpha_3} \bmu^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bB^{\T} \ba_x \\ - \frac{1}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \bmu^{\T} \bQ_y^{-1} \bB^{\T} \ba_x + \lambda.
 	 \label{eq:dual_quadratic_form}
 \end{multline}
 
 It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables.
 
-\paragraph{Minimax Relevances}
+\paragraph{Minimax Relevances.}
 
 The problem~\eqref{eq:dual_maxmin} is not convex. If we shift the spectrum for the matrix of quadratic form~\eqref{eq:dual_quadratic_form}, the optimality is lost. To overcome this problem, we drop the term~$\text{Sim}(\bY)$.
 
 \begin{equation}
-\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^T\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^T\ba_y=1}} \left[ (1 - \alpha) \cdot \ba_x^T \bQ_x \ba_x - \alpha \cdot \ba_x^T \bB \ba_y \right],
+\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^{\T}\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} \left[ (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \ba_y \right],
 \label{eq:minmax_rel}
 \end{equation}
 The Lagrangian for the problem~\eqref{eq:minmax_rel} with the fixed vector~$\ba_x$ is
 \[
-L(\ba_x, \ba_y, \lambda, \bmu) = (1 - \alpha) \cdot \ba_x^T \bQ_x \ba_x - \alpha \cdot \ba_x^T \bB \ba_y + \lambda \cdot  (\bOne_r^T \ba_y - 1) + \bmu^T \ba_y.
+L(\ba_x, \ba_y, \lambda, \bmu) = (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \ba_y + \lambda \cdot  (\bOne_r^{\T} \ba_y - 1) + \bmu^{\T} \ba_y.
 \]
 Setting the gradient of the Langrangian $\nabla_{\ba_y} L(\ba_x, \ba_y, \lambda, \bmu)$ to zero, we obtain:
 \begin{equation*}
-\alpha \cdot \bB^T \ba_x = \lambda \cdot \bOne_r + \bmu.
+\alpha \cdot \bB^{\T} \ba_x = \lambda \cdot \bOne_r + \bmu.
 \end{equation*}
 The dual function is equal to
 \begin{equation}
 g(\ba_x, \lambda, \bmu) =
 \begin{cases}
-(1 - \alpha) \cdot \ba_x^T \bQ_x \ba_x - \lambda, & \alpha \cdot \bB^T \ba_x = \lambda \cdot \bOne_r + \bmu;  \\
+(1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \lambda, & \alpha \cdot \bB^{\T} \ba_x = \lambda \cdot \bOne_r + \bmu;  \\
 + \infty, & \text{otherwise}.
 \end{cases}
 \end{equation}
 In this case the feature scores is the solution of~\eqref{eq:dual_maxmin}.
 
-\begin{statement}
+\begin{proposition}
 	For the case $r=1$ the proposed functionals~\eqref{eq:multivariate_quadratic_problem} and~\eqref{eq:minmax} coincide with the original QPFS algorithm~\eqref{eq:quadratic_problem}.
 
 	\begin{proof}
 		If $r$ is equal to 1, then $\bQ_y = q_y$ is a scalar, $\ba_y = 1$, $\bB = \bb$. It reduces the problems~\eqref{eq:multivariate_quadratic_problem} and~\eqref{eq:minmax} to
 		\[
-		\alpha_1 \cdot \ba_x^T \bQ_x \ba_x - \alpha_2 \cdot \ba_x^T \bb \rightarrow \min_{\ba_x \geq \bZero_n, \, \bOne_n^T\ba_x=1} .
+		\alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bb \rightarrow \min_{\ba_x \geq \bZero_n, \, \bOne_n^{\T}\ba_x=1} .
 		\]
 		Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ brings to the original QPFS problem~\eqref{eq:quadratic_problem}.
 	\end{proof}
-\end{statement}
+\end{proposition}
+
+\begin{table}
+	\centering
+	\begin{tabular}{c|c|c}
+		\hline
+		Algorithm & Strategy & Error function $S(\cA | \bX, \bY)$ \\
+		\hline && \\ [-.5em]
+		RelAgg & $\min \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr] $ & $\min\limits_{\ba_x} \bigl[ (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \bOne_r \bigr] $ \\ &&\\[-.5em]
+		SymImp & $\begin{aligned} \min \, \bigl[ \text{Sim}(\bX) & - \text{Rel}(\bX, \bY) \\ & + \text{Sim}(\bY) \bigr] \end{aligned}$ & $ \min\limits_{\ba_x, \, \ba_y} \left[ \alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y + \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y \right] $\\ &&\\ [-.5em]
+		MinMax & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $	\min\limits_{\ba_x} 	\max\limits_{\ba_y} \bigl[\alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y - \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y \bigr]$ \\ &&\\ 
+		MaxMin & $\begin{aligned} &\max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \\ & \min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \end{aligned}$ & $\max\limits_{\ba_y} \min\limits_{\ba_x} \bigl[\alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y - \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y \bigr]$\\ &&\\ [-.5em]
+		MinRel & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) \bigr] \end{aligned}$& $\min\limits_{\ba_x} 	\max\limits_{\ba_y} \bigl[ (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \ba_y \bigr]$ \\ 
+		\hline
+	\end{tabular}
+	\caption{Overview of proposed multivariate QPFS algorithms}
+	\label{tbl:summary}
+\end{table}
 
 \section{Feature categorization}
 Feature selection algorithms eliminate features which are not relevant to the target variable.
-To determine whether the feature is relevant the t-test could be applied for the correlation coefficient.
+To determine whether the feature is relevant the t-test could be applied for the correlation coefficient
 \[
-	r = \text{corr} (\bchi, \bnu), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2).
+	r = \text{corr} (\bchi, \bnu), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2);
 \]
 \begin{align*}
-&H_0: r = 0 \\
-&H_1: r \neq 0
+&H_0: r = 0; \\
+&H_1: r \neq 0.
 \end{align*}
 If features are relevant, but correlated, feature selection methods pick the subset of them to reduce the multicollinearity and redundancy.
 The goal is to find relevant, non-correlated features.
@@ -417,6 +474,106 @@ On that basis, we categorize features into 5 disjoint groups:
 	\]
 \end{enumerate}
 
+\hrulefill
+
+\begin{definition}
+	The vectors $\bchi_1, \bchi_2 \in \bbR^m$ are called \textit{$\delta$-correlated} if 
+	\[
+	|\text{corr} (\bchi_1, \bchi_2)| \geq \delta.
+	\]
+\end{definition}
+\begin{definition}
+	The vectors $\bchi_1, \dots, \bchi_k \in \bbR^m$ are called \textit{$\delta$-multicorrelated} if 
+	\[
+		|\text{corr} (\bchi_i, \bchi_j)| \geq \delta, \, \text{for } i, j \in \{1, \dots, k\}.
+	\]
+\end{definition}
+
+\begin{proposition}
+	The problem of extracting all $\delta$-multicorrelated subsets from the given matrix are NP-complete.
+\end{proposition}
+\begin{proof}
+	We show that the clique problem is reduced to the our problem which are NP-complete. 
+	Let consider the adjacency matrix of some graph. 
+	The vertices respond to columns of some matrix. 
+	The edges of this graph are pairs of the columns that are $\delta$-correlated.
+	The columns are $\delta$-multicorrelated if all pairs of these columns are $\delta$-correlated.
+	In terms of the adjacency matrix it corresponds to a clique.
+\end{proof}
+\begin{proposition}
+	The set of vectors which are $\delta$-correlated with a vector~$\bnu \in \bbR^m$ forms a cone:
+	\[
+	\textsf{Cone}_{\delta} (\bnu) = \{ \bchi \in \bbR^m: \, |\text{corr}(\bchi, \bnu)| \geq \delta \}.
+	\]
+\end{proposition}
+\begin{proof}
+	The proposition follows from the fact that 
+	\[
+	|\text{corr}(\bchi, \bnu)| = | \text{corr}(\alpha \bchi, \bnu)|, \, \text{for } \alpha \geq 0.
+	\]
+	Hence, the condition $\bchi \in \textsf{Cone}_{\delta} (\bnu)$ implies $\alpha \bchi \in \textsf{Cone}_{\delta} (\bnu)$.
+\end{proof}
+
+	If vectors $\bchi_1, \dots, \bchi_k$ are $\delta$-multicorrelated, then there is a vector $\bnu$ such that 
+	\[
+		\bchi_i \in \textsf{Cone}_{\delta}(\bnu), \text{for } i = 1, \dots, k.
+	\]
+	Since all vectors are pairwise $\delta$-correlated, we could take any of~$\bchi_i$ as the vector~$\bnu$.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.48\linewidth]{figs/cone_by_hand}
+	\includegraphics[width=0.48\linewidth]{figs/multicorr_by_hand} 
+	\caption{$\textsf{Cone}_{\delta}(\bnu)$ + $\delta$-multicorrelation}
+\end{figure}
+
+There is a link between QPFS matrices $\bQ_x$, $\bQ_y$ and defined $\delta$-multicorrelation.
+If we binarize the matrices and put 1's for the entries which are larger or equal to $\delta$ and 0's -- otherwise, we will get the adjacency matrices of some graphs~$G_{\bX}$ and $G_{\bY}$. The edges in these graphs are pairs of vertices which are $\delta$-correlated. The cliques in these adjacency matrices are the feature and the target subsets which are $\delta$-multicorrelated. All vertices in~$G_{\bX}$ which are connected with the vertice $i$ refer to features that lies in $\textsf{Cone}_{\delta}(\bchi_i)$. Similarly, all vertices in~$G_{\bY}$ which are connected with the vertice $k$ refer to targets that lies in $\textsf{Cone}_{\delta}(\bnu_k)$.
+
+The binarized QPFS matrix~$\bB$ defines a bipartite graph~$G_{\bX\bY}$, where first part corresponds to the features and the second -- to targets. In this notation the features that are non-relevant to targets are given by the vertices from the first part which are not connected to any vertex from the second part. We call features from the set $\textsf{Cone}(\bnu_j)$ are relevant to the target $\bnu_j$.
+
+We define two hypergraphs $H_{\bX}$ and $H_{\bY}$. The hypergraphs are given by the set of vertices and the set of edges. There are~$n$ vertices in~$H_{\bX}$ and~$r$ vertices in~$H_{\bY}$. The vertices respond to features and targets respectively. Each edge is given by a set of vertices that are $\delta$-multicorrelated.  
+
+We propose the way to categorize all given features into five disjoint categories. 
+\begin{enumerate}
+	\item Non-relevant features. These features do not belong to any of the sets
+	\[
+		\bchi_i \notin \textsf{Cone}_{\delta}(\bnu_j) \text{ for } j = 1, \dots, n.
+	\]
+	In the terms of QPFS algorithm for these features the corresponding rows of the matrix $\bB$ contain only elements less than $\delta$.
+	\item Non-correlated features, which are relevant to non-correlated targets. 
+	\begin{align*}
+		&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
+		&\bchi_{i'} \notin \textsf{Cone}_{\mu} (\bchi_i) \text{ for } i' \in \{1, \dots, n\}: i' \neq i,   \\
+		&\bnu_{j'} \notin \textsf{Cone}_{\lambda} (\bnu_j) \text{ for } j' \in \{1, \dots, n\}: j' \neq j.
+	\end{align*}
+	These features are isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are isolated in~$G_{\bY}$. 
+
+	\item Non-correlated features, which are relevant to correlated targets:
+	\begin{align*}
+	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
+	&\bchi_{i'} \notin \textsf{Cone}_{\mu} (\bchi_i) \text{ for } i' \in \{1, \dots, n\}: i' \neq i, \\
+	&\exists j' \in \{1, \dots, n\}: j' \neq j: \,\bnu_{j'} \in \textsf{Cone}_{\lambda} (\bnu_j).
+	\end{align*}
+	These features are isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are not isolated in~$G_{\bY}$. 
+	
+	\item Correlated features, which are relevant to non-correlated targets:
+	\begin{align*}
+	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
+	&\exists i' \in \{1, \dots, n\}: i' \neq i: \,\bchi_{i'} \in \textsf{Cone}_{\mu} (\bchi_i),  \\
+	&\bnu_{j'} \notin \textsf{Cone}_{\lambda} (\bnu_j) \text{ for } j' \in \{1, \dots, n\}: j' \neq j.
+	\end{align*}
+	These features are not isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are isolated in~$G_{\bY}$. 
+
+	\item Correlated features, which are relevant to correlated targets:
+	\begin{align*}
+	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
+	&\exists i' \in \{1, \dots, n\}: i' \neq i: \,\bchi_{i'} \in \textsf{Cone}_{\mu} (\bchi_i),  \\
+	&\exists j' \in \{1, \dots, n\}: j' \neq j: \,\bnu_{j'} \in \textsf{Cone}_{\lambda} (\bnu_j).
+	\end{align*}
+	These features are not isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are not isolated in~$G_{\bY}$.
+\end{enumerate}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Metrics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -426,13 +583,13 @@ Variance Inflation Factor is the measure of multicollinearity in the matrix. We 
 \[
 	\text{VIF} = \max_{j \in \cA} \text{VIF} (\bchi_j).
 \]
-The model stability is given by the logarithm of the ratio between minimal~$\lambda_{\min}$ and maximum~$\lambda_{\max}$ eigenvalue of the matrix~$\bX^T \bX$:
+The model stability is given by the logarithm of the ratio between minimal~$\lambda_{\min}$ and maximum~$\lambda_{\max}$ eigenvalue of the matrix~$\bX^{\T} \bX$:
 \[
 	R = \ln \frac{\lambda_{\min}}{\lambda_{\max}}.
 \]
 The Root Mean Squared Error (RMSE) shows the quality of the model prediction. We estimate RMSE at the train and test data.
 \[
-	\text{RMSE}(\bY, \widehat{\bY}_{\cA}) = \sqrt{\text{MSE} (\bY, \widehat{\bY}_{\cA})} =  \| \bY - \widehat{\bY}_{\cA} \|_2, \quad \text{where} \quad \widehat{\bY}_{\cA} = \bX_{\cA} \bTheta_{\cA}^T.
+	\text{RMSE}(\bY, \widehat{\bY}_{\cA}) = \sqrt{\text{MSE} (\bY, \widehat{\bY}_{\cA})} =  \| \bY - \widehat{\bY}_{\cA} \|_2, \quad \text{where} \quad \widehat{\bY}_{\cA} = \bX_{\cA} \bTheta_{\cA}^{\T}.
 \]
 Akaike Information Criteria (AIC) is a trade-off between prediction quality and the size of selected subset~$\cA$:
 \[
