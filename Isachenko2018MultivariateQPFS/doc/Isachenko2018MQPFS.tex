@@ -96,15 +96,15 @@ TBA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The paper investigates the problem of decoding signal for Brain Computer Interface~(BCI). 
+The paper investigates the problem of decoding signal for Brain Computer Interface~(BCI)~\cite{costecalde2018long}. 
 The BCI aims to develop systems that help people with a severe motor control disability recover mobility.
-The minimally-invasive implant records cortical signals and the model decode them on real time to move the limbs of an exoskeleton.
+The minimally-invasive implant records cortical signals and the model decode them on real time to move the limbs of an exoskeleton~\cite{mestais2015wimagine,eliseyev2014clinatec}.
 The subject placed inside the exoskeleton can drive it by imagining movements as if they were making the movement themself. 
 
-The challenge is redundancy of initial data description. The features are highly multicorrelated. The correlation comes from spatial nature of the data. The brain sensors are close to each other. It leads to the redundant measurements. In this case the final model is unstable. In addition, the redundant data description requires redundant computations which leads to real-time delay. To overcome this problem feature selection methods are used.
+The challenge is redundancy of initial data description. The features are highly multicorrelated. The correlation comes from spatial nature of the data. The brain sensors are close to each other. It leads to the redundant measurements. In this case the final model is unstable. In addition, the redundant data description requires redundant computations which leads to real-time delay. To overcome this problem feature selection methods are used~\cite{katrutsa2015stress,li2017feature}.
 
-One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. This approach was proposed in the paper[].
-The Quadratic Programming Feature Selection~(QPFS) algorithm solves introduces two functions: $\text{Sim}$ and $\text{Rel}$.
+One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. This approach was proposed in the paper~\cite{ding2005minimum}.
+The Quadratic Programming Feature Selection~(QPFS)~\cite{rodriguez2010quadratic,katrutsa2017comprehensive} algorithm solves introduces two functions: $\text{Sim}$ and $\text{Rel}$.
 The $\text{Sim}$ measures the redundancy between features, the $\text{Rel}$ contains relevances between each feature and the target vector.
 We want to minimize the function Sim and maximize the Rel simultaneously.
 QPFS offers the explicit way to construct the functions Sim and Rel.
@@ -118,7 +118,7 @@ The vector $\bb \in \bbR^n$ expresses the similarities between each feature and 
 The normalized vector~$\ba$ shows the importance of each feature.
 The functional~\eqref{eq:quadratic_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel.
 The parameter~$\alpha$ controls the trade-off between the functions Sim and the Rel.
-To measure similarity the authors use the absolute value of sample correlation coefficient or sample mutual information coefficient between pairs of features for the function Sim, and between features and the target vector~$\bnu$ for the function Rel.
+To measure similarity the authors use the absolute value of sample correlation coefficient or sample mutual information coefficient between pairs of features for the function Sim, and between features and the target vector for the function Rel.
 
 We consider the multivariate problem, where the dependent variable is a vector. 
 It refers to the prediction of limb position for not just one moment, but for some period of time. The subsequent hand position are correlated. 
@@ -152,7 +152,7 @@ Define the quadratic loss function:
 
  The solution of the problem~\eqref{eq:error_function} is given by
  \[
- 	\bTheta = (\bX^{\T} \bX)^{-1} \bX^{\T} \bY.
+ 	\bTheta = \bY^{\T} \bX (\bX^{\T} \bX)^{-1}.
  \]
 
  The linear dependent columns of the matrix $\bX$ leads to an instable solution for the optimization problem~\eqref{eq:error_function}.
@@ -431,149 +431,6 @@ In this case the feature scores is the solution of~\eqref{eq:dual_maxmin}.
 	\label{tbl:summary}
 \end{table}
 
-\section{Feature categorization}
-Feature selection algorithms eliminate features which are not relevant to the target variable.
-To determine whether the feature is relevant the t-test could be applied for the correlation coefficient
-\[
-	r = \text{corr} (\bchi, \bnu), \quad t = \frac{r \sqrt{m - 2}}{1 - r^2} \sim \text{St} (m - 2);
-\]
-\begin{align*}
-&H_0: r = 0; \\
-&H_1: r \neq 0.
-\end{align*}
-If features are relevant, but correlated, feature selection methods pick the subset of them to reduce the multicollinearity and redundancy.
-The goal is to find relevant, non-correlated features.
-However, in this case the correlations between targets in matrix~$\bY$ are crucial.
-To measure the dependence of each feature or target, the Variance Inflation Factor (VIF) is computed
-\[
-	\text{VIF}(\bchi_j) = \frac{1}{1 - R_j^2}, \quad \text{VIF}(\bnu_k) = \frac{1}{1 - R_k^2},
-\]
-where $R_j^2$($R_k^2$) are coefficients of determination for the regression of $\bchi_j$($\bnu_k$) on the other features(targets).
-
-On that basis, we categorize features into 5 disjoint groups:
-\begin{enumerate}
-	\item non-relevant features
-	\[
-		\left\{j: \text{corr}(\bchi_j, \bnu_k) = 0, \, \forall k \in \{1, \dots, r\}\right\};
-	\]
-	\item non-$\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
-	\[
-		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item non-$\bX$-correlated features, which are relevant to $\bY$-correlated targets
-	\[
-		\left\{j: \left(\text{VIF}(\bchi_j) < 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item $\bX$-correlated features, which are relevant to non-$\bY$-correlated targets
-	\[
-		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left(\text{VIF}(\bnu_k) < 10 , \, \forall k \in \{1, \dots, r\}: \,  \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\};
-	\]
-	\item $\bX$-correlated features, which are relevant to $\bY$-correlated targets
-	\[
-		\left\{j: \left(\text{VIF}(\bchi_j) > 10\right) \, \text{and} \, \left( \exists k \in \{1, \dots, r\}: \text{VIF}(\bnu_k) > 10 \,\, \& \,\, \text{corr}(\bchi_j, \bnu_k) \neq 0 \right)\right\}.
-	\]
-\end{enumerate}
-
-\hrulefill
-
-\begin{definition}
-	The vectors $\bchi_1, \bchi_2 \in \bbR^m$ are called \textit{$\delta$-correlated} if 
-	\[
-	|\text{corr} (\bchi_1, \bchi_2)| \geq \delta.
-	\]
-\end{definition}
-\begin{definition}
-	The vectors $\bchi_1, \dots, \bchi_k \in \bbR^m$ are called \textit{$\delta$-multicorrelated} if 
-	\[
-		|\text{corr} (\bchi_i, \bchi_j)| \geq \delta, \, \text{for } i, j \in \{1, \dots, k\}.
-	\]
-\end{definition}
-
-\begin{proposition}
-	The problem of extracting all $\delta$-multicorrelated subsets from the given matrix are NP-complete.
-\end{proposition}
-\begin{proof}
-	We show that the clique problem is reduced to the our problem which are NP-complete. 
-	Let consider the adjacency matrix of some graph. 
-	The vertices respond to columns of some matrix. 
-	The edges of this graph are pairs of the columns that are $\delta$-correlated.
-	The columns are $\delta$-multicorrelated if all pairs of these columns are $\delta$-correlated.
-	In terms of the adjacency matrix it corresponds to a clique.
-\end{proof}
-\begin{proposition}
-	The set of vectors which are $\delta$-correlated with a vector~$\bnu \in \bbR^m$ forms a cone:
-	\[
-	\textsf{Cone}_{\delta} (\bnu) = \{ \bchi \in \bbR^m: \, |\text{corr}(\bchi, \bnu)| \geq \delta \}.
-	\]
-\end{proposition}
-\begin{proof}
-	The proposition follows from the fact that 
-	\[
-	|\text{corr}(\bchi, \bnu)| = | \text{corr}(\alpha \bchi, \bnu)|, \, \text{for } \alpha \geq 0.
-	\]
-	Hence, the condition $\bchi \in \textsf{Cone}_{\delta} (\bnu)$ implies $\alpha \bchi \in \textsf{Cone}_{\delta} (\bnu)$.
-\end{proof}
-
-	If vectors $\bchi_1, \dots, \bchi_k$ are $\delta$-multicorrelated, then there is a vector $\bnu$ such that 
-	\[
-		\bchi_i \in \textsf{Cone}_{\delta}(\bnu), \text{for } i = 1, \dots, k.
-	\]
-	Since all vectors are pairwise $\delta$-correlated, we could take any of~$\bchi_i$ as the vector~$\bnu$.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.48\linewidth]{figs/cone_by_hand}
-	\includegraphics[width=0.48\linewidth]{figs/multicorr_by_hand} 
-	\caption{$\textsf{Cone}_{\delta}(\bnu)$ + $\delta$-multicorrelation}
-\end{figure}
-
-There is a link between QPFS matrices $\bQ_x$, $\bQ_y$ and defined $\delta$-multicorrelation.
-If we binarize the matrices and put 1's for the entries which are larger or equal to $\delta$ and 0's -- otherwise, we will get the adjacency matrices of some graphs~$G_{\bX}$ and $G_{\bY}$. The edges in these graphs are pairs of vertices which are $\delta$-correlated. The cliques in these adjacency matrices are the feature and the target subsets which are $\delta$-multicorrelated. All vertices in~$G_{\bX}$ which are connected with the vertice $i$ refer to features that lies in $\textsf{Cone}_{\delta}(\bchi_i)$. Similarly, all vertices in~$G_{\bY}$ which are connected with the vertice $k$ refer to targets that lies in $\textsf{Cone}_{\delta}(\bnu_k)$.
-
-The binarized QPFS matrix~$\bB$ defines a bipartite graph~$G_{\bX\bY}$, where first part corresponds to the features and the second -- to targets. In this notation the features that are non-relevant to targets are given by the vertices from the first part which are not connected to any vertex from the second part. We call features from the set $\textsf{Cone}(\bnu_j)$ are relevant to the target $\bnu_j$.
-
-We define two hypergraphs $H_{\bX}$ and $H_{\bY}$. The hypergraphs are given by the set of vertices and the set of edges. There are~$n$ vertices in~$H_{\bX}$ and~$r$ vertices in~$H_{\bY}$. The vertices respond to features and targets respectively. Each edge is given by a set of vertices that are $\delta$-multicorrelated.  
-
-We propose the way to categorize all given features into five disjoint categories. 
-\begin{enumerate}
-	\item Non-relevant features. These features do not belong to any of the sets
-	\[
-		\bchi_i \notin \textsf{Cone}_{\delta}(\bnu_j) \text{ for } j = 1, \dots, n.
-	\]
-	In the terms of QPFS algorithm for these features the corresponding rows of the matrix $\bB$ contain only elements less than $\delta$.
-	\item Non-correlated features, which are relevant to non-correlated targets. 
-	\begin{align*}
-		&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
-		&\bchi_{i'} \notin \textsf{Cone}_{\mu} (\bchi_i) \text{ for } i' \in \{1, \dots, n\}: i' \neq i,   \\
-		&\bnu_{j'} \notin \textsf{Cone}_{\lambda} (\bnu_j) \text{ for } j' \in \{1, \dots, n\}: j' \neq j.
-	\end{align*}
-	These features are isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are isolated in~$G_{\bY}$. 
-
-	\item Non-correlated features, which are relevant to correlated targets:
-	\begin{align*}
-	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
-	&\bchi_{i'} \notin \textsf{Cone}_{\mu} (\bchi_i) \text{ for } i' \in \{1, \dots, n\}: i' \neq i, \\
-	&\exists j' \in \{1, \dots, n\}: j' \neq j: \,\bnu_{j'} \in \textsf{Cone}_{\lambda} (\bnu_j).
-	\end{align*}
-	These features are isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are not isolated in~$G_{\bY}$. 
-	
-	\item Correlated features, which are relevant to non-correlated targets:
-	\begin{align*}
-	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
-	&\exists i' \in \{1, \dots, n\}: i' \neq i: \,\bchi_{i'} \in \textsf{Cone}_{\mu} (\bchi_i),  \\
-	&\bnu_{j'} \notin \textsf{Cone}_{\lambda} (\bnu_j) \text{ for } j' \in \{1, \dots, n\}: j' \neq j.
-	\end{align*}
-	These features are not isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are isolated in~$G_{\bY}$. 
-
-	\item Correlated features, which are relevant to correlated targets:
-	\begin{align*}
-	&\exists j \in \{1, \dots, n\}: \, \bchi_i \in \textsf{Cone}_{\delta} (\bnu_j), \\
-	&\exists i' \in \{1, \dots, n\}: i' \neq i: \,\bchi_{i'} \in \textsf{Cone}_{\mu} (\bchi_i),  \\
-	&\exists j' \in \{1, \dots, n\}: j' \neq j: \,\bnu_{j'} \in \textsf{Cone}_{\lambda} (\bnu_j).
-	\end{align*}
-	These features are not isolated in the graph~$G_{\bX}$. There is an edge in the graph~$G_{\bX\bY}$ from these features to targets that are not isolated in~$G_{\bY}$.
-\end{enumerate}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Metrics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -603,7 +460,7 @@ We carried out computational experiment with ECoG data from the NeuroTycho proje
 The goal is to predict 3D hand position in the next moments given the input signal.
 The example of input signals and the 3D wrist coordinates are shown in Figure~\ref{fig:ecog_data}.
 The initial voltage signals are transformed to the spatial-temporal representation using wavelet transformation.
-The procedure of extracting feature representation from the raw data are described in details in~[links].
+The procedure of extracting feature representation from the raw data are described in details in~\cite{chao2010long,eliseyev2016penalized}.
 Feature description in each time moment has dimension equals to 32 (channels) $\times$ 27 (frequencies) = 864.
 Each object is the representation of local history time segment with duration $\Delta t = 1s$. The time step between objects is $\delta t =  0.05s$.
 The final matrices are $\bX \in \bbR^{18900 \times 864}$ and $\bY \in \bbR^{18900 \times 3k}$, where $k$ is a number of moments that we predict.
@@ -682,4 +539,10 @@ We compare the proposed strategies of multivariate QPFS for the ECoG dataset.
 	\includegraphics[width=\linewidth]{figs/ecog_3_15_metrics.eps}
 	\caption{autoregression step = 15}
 \end{figure}
+
+
+\bibliographystyle{unsrt}
+\bibliography{papers_qpfs}
+
+
 \end{document}
