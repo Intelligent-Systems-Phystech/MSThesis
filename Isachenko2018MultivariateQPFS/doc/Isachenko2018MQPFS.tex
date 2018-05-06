@@ -92,7 +92,7 @@ The goal is to build a model which predicts the limb position by input brain sig
 The challenge is redundancy in data description. 
 The measurements are highly correlated. 
 It leads to correlation in both input and target spaces.
-The feature selection are used to overcome the multicorrelation in feature representation.
+The feature selection are used to overcome the multicorrelation in the feature representation.
 However, the majority of feature selection methods ignore the dependencies in the target space.
 Authors suggest the novel approach to the feature selection in the multivariate regression.
 The proposed methods extend the ideas of Quadratic Programming Feature Selection algorithm. 
@@ -105,15 +105,23 @@ The computational experiment shows the performance of the proposed algorithms in
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The paper investigates the problem of decoding signal for Brain Computer Interface~(BCI)~\cite{costecalde2018long}. 
-The BCI aims to develop systems that help people with a severe motor control disability recover mobility.
-The minimally-invasive implant records cortical signals and the model decode them on real time to move the limbs of an exoskeleton~\cite{mestais2015wimagine,eliseyev2014clinatec}.
-The subject placed inside the exoskeleton can drive it by imagining movements as if they were making the movement themself. 
+The paper investigates the problem of signal decoding for Brain Computer Interface~(BCI)~\cite{costecalde2018long}. 
+The BCI aims to develop systems that help people with a severe motor control disability to recover mobility.
+The minimally-invasive implant records cortical signals and the model decodes them on real time to predict the limb coordinates for an exoskeleton~\cite{mestais2015wimagine,eliseyev2014clinatec}.
+The subject placed inside the exoskeleton can drive it by imagining movements as if they were making the movement by themselves. 
 
-The challenge is redundancy of initial data description. The features are highly multicorrelated. The correlation comes from spatial nature of the data. The brain sensors are close to each other. It leads to the redundant measurements. In this case the final model is unstable. In addition, the redundant data description requires redundant computations which leads to real-time delay. To overcome this problem feature selection methods are used~\cite{katrutsa2015stress,li2017feature}.
+The challenge is redundancy in initial data description. 
+The features are highly multicorrelated. 
+The correlation comes from spatial nature of the data. 
+The brain sensors are close to each other. 
+It leads to the redundant measurements. 
+In this case the final model is unstable. 
+In addition, the redundant data description requires redundant computations which lead to real-time delay. 
+To overcome this problem feature selection methods are used~\cite{katrutsa2015stress,li2017feature}.
 
-One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. This approach was proposed in the paper~\cite{ding2005minimum}.
-The Quadratic Programming Feature Selection~(QPFS)~\cite{rodriguez2010quadratic,katrutsa2017comprehensive} algorithm solves introduces two functions: $\text{Sim}$ and $\text{Rel}$.
+One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. 
+This approach was proposed in the paper~\cite{ding2005minimum}.
+The Quadratic Programming Feature Selection~(QPFS)~\cite{rodriguez2010quadratic,katrutsa2017comprehensive} algorithm introduces two functions: $\text{Sim}$ and $\text{Rel}$.
 The $\text{Sim}$ measures the redundancy between features, the $\text{Rel}$ contains relevances between each feature and the target vector.
 We want to minimize the function Sim and maximize the Rel simultaneously.
 QPFS offers the explicit way to construct the functions Sim and Rel.
@@ -123,7 +131,7 @@ The method minimizes the following functional
 \label{eq:quadratic_problem}
 \end{equation}
 The matrix $\bQ \in \bbR^{n \times n}$ entries measure the pairwise similarities between features.
-The vector $\bb \in \bbR^n$ expresses the similarities between each feature and the target matrix~$\bb$.
+The vector $\bb \in \bbR^n$ expresses the similarities between each feature and the target vector.
 The normalized vector~$\ba$ shows the importance of each feature.
 The functional~\eqref{eq:quadratic_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel.
 The parameter~$\alpha$ controls the trade-off between the functions Sim and the Rel.
@@ -131,7 +139,7 @@ To measure similarity the authors use the absolute value of sample correlation c
 
 We consider the multivariate problem, where the dependent variable is a vector. 
 It refers to the prediction of limb position for not just one moment, but for some period of time. 
-The subsequent hand position are correlated. 
+The subsequent hand positions are correlated. 
 It leads to correlations in the model output. 
 In this situation feature selection algorithms do not take into account these dependencies.
 Hence, the selected feature subset is not optimal.
@@ -150,8 +158,8 @@ We assume there is a linear dependence
 	\by = \bTheta \bx+ \boldsymbol{\varepsilon}
 	\label{eq:model}
 \end{equation}
-between the objects $\bx$ and the target variable $\by$,
-where $\bTheta \in \bbR^{r \times n}$ is the matrix of model parameters, $\boldsymbol{\varepsilon} \in \bbR^{r}$ is the residual vector.
+between the object $\bx$ and the target variable $\by$,
+where $\bTheta \in \bbR^{r \times n}$ is a matrix of model parameters, $\boldsymbol{\varepsilon} \in \bbR^{r}$ is a residual vector.
 One has to find the matrix of the model parameters $\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
 \[
 	\bX = [\bx_1, \dots, \bx_m]^{\T} =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^{\T} =  [\bnu_1, \dots, \bnu_r].
@@ -165,7 +173,7 @@ Define the quadratic loss function:
 \label{eq:error_function}
 \end{equation}
 
- The solution of the problem~\eqref{eq:error_function} is given by
+ The solution of~\eqref{eq:error_function} is given by
  \[
  	\bTheta = \bY^{\T} \bX (\bX^{\T} \bX)^{-1}.
  \]
@@ -184,7 +192,7 @@ Define the quadratic loss function:
 	\label{eq:subset_selection}
 \end{equation}
 
-Once the solution~$\cA$ for the problem~\eqref{eq:subset_selection} is known, the problem~\eqref{eq:error_function} becomes
+Once the solution~$\cA$ of~\eqref{eq:subset_selection} is known, the problem~\eqref{eq:error_function} becomes
 \begin{equation}
 \mathcal{L}(\bTheta_{\cA} | \bX_{\cA}, \bY) = {\left\| \mathbf{Y} - \bX_{\cA}\bTheta^{\T}_{\cA} \right\| }_2^2 \rightarrow\min_{\bTheta_{\cA}},
 \end{equation}
@@ -195,11 +203,11 @@ The QPFS algorithm selects non-correlated features, which are relevant to the ta
 \begin{equation*}
 	\| \bnu - \bX \btheta\|_2^2 \rightarrow\min_{\btheta \in \bbR^{n}}.
 \end{equation*}
-The QPFS functional~\ref{eq:quadratic_problem} corresponds to the error function~$S(\cA | \bX, \bnu)$
+The QPFS functional~\eqref{eq:quadratic_problem} corresponds to the error function~$S(\cA | \bX, \bnu)$
 \begin{equation*}
 \cA = \argmin_{\cA' \subseteq \{1, \dots, n\}} S(\cA' | \bX, \bnu) \Leftrightarrow \argmin_{\ba \geq \bZero_n, \, \bOne_n^{\T}\ba=1} \bigl[\ba^{\T} \bQ \ba - \alpha \cdot \mathbf{b}^{\T} \ba \bigr].
 \end{equation*}
-The authors of the original QPFS paper suggested the way to select~$\alpha$ and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ impact the same:
+The authors of the original QPFS paper suggested the way to select~$\alpha$ and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ impacts the same:
 \begin{equation*}
 	\alpha = \frac{\overline{\bQ}}{\overline{\bQ} + \overline{\bb}},
 \end{equation*}
@@ -230,9 +238,9 @@ This approach does not use the dependencies in the columns of the matrix $\bY$. 
 \[
 	\bX = [\bchi_1, \bchi_2, \bchi_3], \quad \bY = [\underbrace{\bnu_1, \bnu_1, \dots, \bnu_1}_{r-1}, \bnu_2],
 \]
-We have three features and $r$ targets, where first $r-1$ target are the identical.
+We have three features and $r$ targets, where first $r-1$ target are identical.
 The pairwise features similarities are given by the matrix $\bQ$.
-The matrix $\bB$ entries shows pairwise relevances features to the targets.
+The matrix $\bB$ entries show pairwise features relevances to the targets.
 The vector $\bb$ is obtained by summation of the matrix $\bB$ over columns.
 \begin{equation}
 	\bQ = \begin{bmatrix} 1 & 0 & 0\\ 0 & 1 & 0.8 \\ 0 & 0.8 & 1 \end{bmatrix}, \quad
@@ -247,12 +255,12 @@ For such configuration the best feature subset is~$[\bchi_1, \bchi_2]$.
 The feature~$\bchi_2$ predicts the second target~$\bnu_2$ and the combination of features~$\bchi_1, \bchi_2$ predicts the first component.
 The QPFS algorithm for~$r=2$ gives the solution~$\ba = [0.37,	0.61,	0.02]$. It coincides with our knowledge.
 However, if we add the collinear columns to the matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\ba = [0.40,	0.17, 0.43]$.
-Here we lost the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
+Here we lose the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
 
 \paragraph{Symmetric importances (SymImp).}
 
 To take into account the dependencies in the columns of the matrix $\bY$ we extend the QPFS functional~\eqref{eq:quadratic_problem} to the multivariate case.
-We add the term~$\text{Sim}(\bY)$ and extend the term $\text{Rel}(\bX, \bY)$:
+We add the term~$\text{Sim}(\bY)$ and modify the term $\text{Rel}(\bX, \bY)$:
 \begin{equation}
 	\alpha_1 \cdot \underbrace{\ba_x^{\T} \bQ_x \ba_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\ba_x^{\T} \bB \ba_y}_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\ba_y^{\T} \bQ_y \ba_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\ba_x \geq \bZero_n, \, \bOne_n^{\T}\ba_x=1 \\ \ba_y \geq \bZero_r, \, \bOne_r^{\T}\ba_y=1}}.
 	\label{eq:multivariate_quadratic_problem}
@@ -264,9 +272,9 @@ Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR
 	\bB =  \left\{ \left| \text{corr}(\bchi_i, \bnu_j) \right| \right\}_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
 \end{equation*}
 The vector~$\ba_x$ shows the feature importances, while $\ba_y$ is a vector with the importance of each target.
-The targets which are correlated will be penalized by $\text{Sim} (\bY)$ and have the lower importances.
+The correlated targets will be penalized by $\text{Sim} (\bY)$ and have the lower importances.
 
-The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term to the functional~\eqref{eq:multivariate_quadratic_problem} and satisfy the conditions:
+The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term on the functional~\eqref{eq:multivariate_quadratic_problem} and satisfy the conditions:
 \[
 \alpha_1 + \alpha_2 + \alpha_3 = 1, \quad \alpha_i \geq 0, \, i = 1, 2, 3.
 \]
@@ -277,7 +285,7 @@ The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of
 	\alpha_2 = \frac{\overline{\bQ}_x \overline{\bQ}_y}{\overline{\bQ}_y \overline{\bB} + \overline{\bQ}_x \overline{\bQ}_y + \overline{\bQ}_x \overline{\bB}}; \quad
 	\alpha_3  = \frac{\overline{\bQ}_x \overline{\bB}}{\overline{\bQ}_y \overline{\bB} + \overline{\bQ}_x \overline{\bQ}_y + \overline{\bQ}_x \overline{\bB}},
 	\]
-	where $\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ are the mean values of~$\bQ_x$, $\bB$, and $\bQ_y$ respectively.
+	where $\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ are mean values of~$\bQ_x$, $\bB$, and $\bQ_y$, respectively.
 
 \end{proposition}
 \begin{proof}
@@ -309,7 +317,7 @@ If~$\alpha_3$ is small, the impact of all targets are almost equal and the featu
 	\label{fig:features_vs_alpha}
 \end{figure}
 
-\paragraph{Minimax QPFS (MinMax and Maxmin).}
+\paragraph{Minimax QPFS (MinMax and MaxMin).}
 The functional~\eqref{eq:multivariate_quadratic_problem} is symmetric with respect to~$\ba_x$ and $\ba_y$.
 It penalizes features that are correlated and do not relevant to targets.
 At the same time it penalizes targets that are correlated and are not sufficiently explained by the features.
@@ -322,7 +330,7 @@ Our goal is to predict all targets, especially which are difficult to explain, b
 	\alpha_3 \cdot \underbrace{\ba_y^{\T} \bQ_y \ba_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \ba_x^{\T} \mathbf{B} \ba_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\ba_y \geq \bZero_r,  \\ \bOne_r^{\T}\ba_y=1}}.
 	\label{eq:y_qpfs}
 \end{align}
-The difference in Rel part.
+The difference is in the term Rel.
 In feature space the non-relevant components should have smaller scores.
 Meanwhile, the targets that are not relevant to the features should have larger scores.
 The problems~\eqref{eq:x_qpfs} and \eqref{eq:y_qpfs} are merged into the joint min-max or max-min formulation
@@ -359,13 +367,13 @@ The Lagrangian for this problem is
 \[
 	L(\ba_x, \ba_y, \lambda, \bmu) = \alpha_1 \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha_2 \cdot \ba_x^{\T} \bB \ba_y - \alpha_3 \cdot \ba_y^{\T} \bQ_y \ba_y + \lambda \cdot  (\bOne_r^{\T} \ba_y - 1) + \bmu^{\T} \ba_y.
 \]
-Here the Lagrange multipliers $\bmu$, corresponding to the inequality constraints $\ba_y \geq \bZero_r$, are restricted to be nonnegative.
+Here the Lagrange multipliers $\bmu$, corresponding to the inequality constraints $\ba_y \geq \bZero_r$, are restricted to be non-negative.
 The dual problem is
 \begin{equation}
 	\min_{\lambda, \, \bmu \geq \bZero_r} g(\ba_x, \lambda, \bmu) = \min_{\lambda, \, \bmu \geq \bZero_r}  \left[\max_{\ba_y \in \bbR^r} L(\ba_x, \ba_y, \lambda, \bmu) \right].
 	\label{eq:dual}
 \end{equation}
-The strong duality holds for the problem~\eqref{eq:fixed_ax}. Therefore, the optimal value for~\eqref{eq:fixed_ax} equals the optimal value for~\eqref{eq:dual}. It allows to solve the problem
+The strong duality holds for~\eqref{eq:fixed_ax}. Therefore, the optimal value for~\eqref{eq:fixed_ax} equals the optimal value for~\eqref{eq:dual}. It allows to solve the problem
 \begin{equation}
 	\min_{\ba_x \in \mathbb{C}^n, \, \lambda, \, \bmu \geq \bZero_r} g(\ba_y, \lambda, \bmu)
 	\label{eq:dual_maxmin}
@@ -392,7 +400,7 @@ It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ varia
 The problem~\eqref{eq:dual_maxmin} is not convex. If we shift the spectrum for the matrix of quadratic form~\eqref{eq:dual_quadratic_form}, the optimality is lost. To overcome this problem, we drop the term~$\text{Sim}(\bY)$.
 
 \begin{equation}
-\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^{\T}\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} \left[ (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \ba_y \right],
+\min_{\substack{\ba_x \geq \bZero_n \\ \bOne_n^{\T}\ba_x=1}} 	\max_{\substack{\ba_y \geq \bZero_r \\ \bOne_r^{\T}\ba_y=1}} \left[ (1 - \alpha) \cdot \ba_x^{\T} \bQ_x \ba_x - \alpha \cdot \ba_x^{\T} \bB \ba_y \right].
 \label{eq:minmax_rel}
 \end{equation}
 The Lagrangian for the problem~\eqref{eq:minmax_rel} with the fixed vector~$\ba_x$ is
@@ -411,7 +419,7 @@ g(\ba_x, \lambda, \bmu) =
 + \infty, & \text{otherwise}.
 \end{cases}
 \end{equation}
-In this case the feature scores is the solution of~\eqref{eq:dual_maxmin}.
+In this case the feature scores are the solution of~\eqref{eq:dual_maxmin}.
 
 \begin{proposition}
 	For the case $r=1$ the proposed functionals~\eqref{eq:multivariate_quadratic_problem} and~\eqref{eq:minmax} coincide with the original QPFS algorithm~\eqref{eq:quadratic_problem}.
@@ -449,18 +457,18 @@ To summarize all proposed strategies for multivariate feature selection, Table~\
 \section{Metrics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To evaluate the selected subset~$\cA$ we introduce criteria that estimate the quality of feature selection procedure.
-We measure multicorrelation by mean value of miltiple correlation coefficient.
+To evaluate the selected subset~$\cA$ we introduce criteria that estimates the quality of feature selection procedure.
+We measure multicorrelation by mean value of miltiple correlation coefficient as follows
 \[
 	R^2 = \frac{1}{r} \text{tr} \left( \bC^{\T} \mathbf{R}^{-1} \bC \right); \quad \text{where }\bC = \{ \text{corr}(\bchi_i, \bnu_j)\}_{\substack{i=1, \dots, n \\ j=1, \dots, r}}, \, \mathbf{R} = \{ \text{corr}(\bchi_i, \bchi_j)\}_{i, j = 1}^n.
 \]
 This coefficient lies between 0 and 1. The bigger $R^2$ means the better feature subset we have.
 
-The model stability is given by the logarithm of the ratio between minimal~$\lambda_{\min}$ and maximum~$\lambda_{\max}$ eigenvalue of the matrix~$\bX^{\T} \bX$:
+The model stability is given by the logarithm of the ratio between minimal eigenvalue~$\lambda_{\min}$ and maximum eigenvalue~$\lambda_{\max}$ of the matrix~$\bX^{\T} \bX$:
 \[
 	\text{Stability} = \ln \frac{\lambda_{\min}}{\lambda_{\max}}.
 \]
-The Root Mean Squared Error (RMSE) shows the quality of the model prediction. We estimate RMSE at the train and test data.
+The Root Mean Squared Error (RMSE) shows the quality of the model prediction. We estimate RMSE on train and test data.
 \[
 	\text{RMSE}(\bY, \widehat{\bY}_{\cA}) = \sqrt{\text{MSE} (\bY, \widehat{\bY}_{\cA})} =  \| \bY - \widehat{\bY}_{\cA} \|_2, \quad \text{where} \quad \widehat{\bY}_{\cA} = \bX_{\cA} \bTheta_{\cA}^{\T}.
 \]
@@ -477,7 +485,7 @@ The goal is to predict 3D hand position in the next moments given the input sign
 The example of input signals and the 3D wrist coordinates are shown in Figure~\ref{fig:ecog_data}.
 The initial voltage signals are transformed to the spatial-temporal representation using wavelet transformation.
 The procedure of extracting feature representation from the raw data are described in details in~\cite{chao2010long,eliseyev2016penalized}.
-Feature description in each time moment has dimension equals to 32 (channels) $\times$ 27 (frequencies) = 864.
+Feature description at each time moment has dimension equals to 32 (channels) $\times$ 27 (frequencies) = 864.
 Each object is the representation of local history time segment with duration $\Delta t = 1s$. The time step between objects is $\delta t =  0.05s$.
 The final matrices are $\bX \in \bbR^{18900 \times 864}$ and $\bY \in \bbR^{18900 \times 3k}$, where $k$ is a number of timestamps that we predict.
 We split our data into train and test parts with the ratio 0.67.
@@ -491,7 +499,7 @@ We split our data into train and test parts with the ratio 0.67.
 
 Figures~\ref{fig:feature_scores_ex} and~\ref{fig:train_test_qpfs} show the result of the QPFS algorithm, where we use the Relevance Aggregation strategy and $k = 1$.
 QPFS scores~$\ba_x$ decrease sharply.
-Only about one hundred features have scores significantly greater that zero.
+Only about one hundred features have scores significantly greater than zero.
 The test error stops to decrease using more than this amount of features.
 It confirms that the initial data representation is highly redundant.
 \begin{figure}[h]
@@ -510,7 +518,7 @@ It confirms that the initial data representation is highly redundant.
 \end{figure}
 
 Figure~\ref{fig:corr_matrix} shows the dependencies in the matrices~$\bX$ and~$\bY$. Frequencies in the matrix~$\bX$ are highly correlated.
-The correlations between axes are not significant in comparison with correlations between consequent moments.
+The correlations between axes are not significant in comparison with the correlations between consequent moments.
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{figs/corr_matrix.eps}
 	\caption{Correlation matrices for $\bX$ and $\bY$}
@@ -521,7 +529,7 @@ We apply the QPFS algorithm with Relevance Aggregation strategy for different va
 The dependence between target scores~$\ba_y$ with respect to~$\alpha_3$ for different values of~$k$ are shown in Figure~\ref{fig:features_vs_alpha_ecog}.
 If we predict wrist coordinates only for one timestamp $k = 1$, targets scores are almost the same.
 It tells about the independence between $x$, $y$, and $z$ coordinates.
-For $k = 2$ and $k = 3$ the scores of some targets becomes zero when $\alpha_3$ increases.
+For $k = 2$ and $k = 3$ the scores of some targets become zero when $\alpha_3$ increases.
 
 \begin{figure}[h]
 	\begin{minipage}{.5\linewidth}
@@ -543,7 +551,8 @@ We compare the proposed strategies of multivariate QPFS that are given in Table~
 Firstly, we apply all methods to get feature scores. 
 Then we fit linear model with increasing number of used features. 
 For each method the features are sorted by the obtained scores. 
-We show how the described metrics are changing with increasing the size of feature set. Figure~\ref{fig:ecog_3_1_metrics} illustrates the results for $k = 1$. 
+We show how the described metrics are changed with the increasing feature set size. 
+Figure~\ref{fig:ecog_3_1_metrics} illustrates the results for $k = 1$. 
 Here all metrics values for RelAgg, SymImp, and MaxRel are quite similar. 
 However, MaxMin and MinMax algorithms show worse performance. 
 This behavious is possibly due to unreasonable penalty on the matrix~$\bY$.
@@ -553,7 +562,8 @@ This behavious is possibly due to unreasonable penalty on the matrix~$\bY$.
 	\label{fig:ecog_3_1_metrics}
 \end{figure}
 
-The situation is changing for predicting several timestamps. In this case the correlation in~$\bY$ matrix is crucial. 
+The situation changes for predicting several timestamps. 
+In this case the correlation in~$\bY$ matrix is crucial. 
 Figure~\ref{fig:ecog_3_15_metrics} shows algorithms performance for $k = 15$. 
 The test error is minimal for SymImp, MinMax, and MaxRel strategies.  
 The RelAgg strategy shows almost the worst error rate.
