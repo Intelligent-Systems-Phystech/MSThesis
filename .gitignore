@@ -12,7 +12,9 @@
 *.pyc
 
 *untracked/
-*__pycache__
+*__pycache__/
 *.DS_Store
 *.ipynb_checkpoints/
 *data/
+*res/
+*results/
