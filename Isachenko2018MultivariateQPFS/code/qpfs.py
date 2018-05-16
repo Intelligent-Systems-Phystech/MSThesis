@@ -4,7 +4,7 @@ import scipy as sc
 import cvxpy as cvx
 
 
-def corr(X, Y=None, fill=0):
+def get_corr_matrix(X, Y=None, fill=0):
     if Y is None:
         Y = X
     if len(Y.shape) == 1:
@@ -43,8 +43,8 @@ class QPFS:
     
     def get_params(self, X, y):
         if self.sim == 'corr':
-            self.Q = np.abs(corr(X, fill=1))
-            self.b = np.sum(np.abs(corr(X, y)), axis=1)[:, np.newaxis]
+            self.Q = np.abs(get_corr_matrix(X, fill=1))
+            self.b = np.sum(np.abs(get_corr_matrix(X, y)), axis=1)[:, np.newaxis]
         elif self.sim == 'info':
             self.Q = np.ones([X.shape[1], X.shape[1]])
             self.b = np.zeros((X.shape[1], 1))
@@ -84,16 +84,16 @@ class QPFS:
 
 
 class MultivariateQPFS():
-    def __init__(self, mode='RelAgg'):
+    def __init__(self, mode='SymImp'):
         self.mode = mode
     
     def get_params(self, X, Y):
         self.m, self.n = X.shape
         self.r = Y.shape[1] if len(Y.shape) > 1 else 1
         
-        self.Qx = np.abs(corr(X, fill=1))
-        self.Qy = np.abs(corr(Y, fill=1))
-        self.B = np.abs(corr(X, Y))
+        self.Qx = np.abs(get_corr_matrix(X, fill=1))
+        self.Qy = np.abs(get_corr_matrix(Y, fill=1))
+        self.B = np.abs(get_corr_matrix(X, Y))
 
     def get_alpha(self, alpha3=None):
         if alpha3 is None:
@@ -140,9 +140,10 @@ class MultivariateQPFS():
         prob.solve()
 
         # Results
+        score = np.array(z.value).flatten()
         self.status = prob.status
-        self.zx = np.array(z.value).flatten()
-        self.zy = np.ones(self.r) / self.r
+        self.zx = score[:self.n]
+        self.zy = score[-self.r:]
     
     def _minmax(self, alphas):
         # Parameters
