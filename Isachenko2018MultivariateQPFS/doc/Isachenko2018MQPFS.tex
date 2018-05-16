@@ -399,7 +399,6 @@ The dual function is equal to
 	\bz_x^{\T} \left( - \frac{\alpha_2^2}{4\alpha_3} \cdot \bB \bQ_y^{-1} \bB^{\T} - \alpha_1 \cdot \bQ_x\right) \bz_x \\ - \frac{1}{4 \alpha_3} \lambda^2 \cdot \bOne_r^{\T} \bQ_y^{-1} \bOne_r - \frac{1}{4 \alpha_3} \cdot \bmu^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bB^{\T} \bz_x \\ - \frac{1}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \cdot \bmu^{\T} \bQ_y^{-1} \bB^{\T} \bz_x + \lambda.
 	 \label{eq:dual_quadratic_form}
 \end{multline}
-
 It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables.
 
 \paragraph{Minimax Relevances (MaxRel).}
@@ -447,13 +446,13 @@ To summarize all proposed strategies for multivariate feature selection, Table~\
 	\small{
 	\begin{tabular}{c|c|c}
 		\hline
-		Algorithm & Strategy & Error function $S(\cA | \bX, \bY)$ \\
+		Algorithm & Strategy & Error function $S(\ba | \bX, \bY)$ \\
 		\hline && \\ [-.5em]
 		RelAgg & $\min \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr] $ & $\min\limits_{\bz_x} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bOne_r \bigr] $ \\ &&\\[-.5em]
 		SymImp & $\begin{aligned} \min \, \bigl[ \text{Sim}(\bX) & - \text{Rel}(\bX, \bY) \\ & + \text{Sim}(\bY) \bigr] \end{aligned}$ & $ \min\limits_{\bz_x, \, \bz_y} \left[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \right] $\\ &&\\ [-.5em]
 		MinMax & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $	\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$ \\ &&\\ 
 		MaxMin & $\begin{aligned} &\max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \\ & \min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \end{aligned}$ & $\max\limits_{\bz_y} \min\limits_{\bz_x} \bigl[\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$\\ &&\\ [-.5em]
-		MinRel & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) \bigr] \end{aligned}$& $\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bz_y \bigr]$ \\ 
+		MaxRel & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) \bigr] \end{aligned}$& $\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bz_y \bigr]$ \\ 
 		\hline
 	\end{tabular}}
 	\caption{Overview of proposed multivariate QPFS algorithms}
@@ -580,19 +579,16 @@ The RelAgg strategy shows almost the worst error rate.
 	\caption{Metrics values for ECoG data with k = 15}
 	\label{fig:ecog_3_15_metrics}
 \end{figure}
-
 \begin{table}[]
 	\centering
-	\caption{The stability measures of the feature scores for different methods}
-	\label{tbl:methods_stability}
 	\begin{tabular}{l|ccccc}
 		\hline
-		& sperman $\rho$ & $\ell_2$ dist & compexity $|\cA|$ &  &  \\ \hline
-		RelAgg & 0.939 $\pm$ 0.012 & 0.148 $\pm$ 0.021 & \textbf{28.1 $\pm$ 2.9} &  &  \\
-		SymImp & \textbf{0.944 $\pm$ 0.011} & \textbf{0.030 $\pm$ 0.003} & 189.0 $\pm$ 8.6 &  &  \\
-		MinMax & 0.852 $\pm$ 0.040& 0.117 $\pm$ 0.012 & 162.7 $\pm$ 22.2 &  &  \\
-		MaxMin & 0.913 $\pm$ 0.033 & 0.087 $\pm$ 0.015 & 100.4 $\pm$ 3.8 &  &  \\
-		MaxRel & 0.898 $\pm$ 0.013 & 0.188 $\pm$ 0.024 & 44.0 $\pm$ 7.2 &  & \\ \hline
+		& RMSE  & $\|\ba\|_0$ & Spearman $\rho$ & $\ell_2$ dist \\ \hline
+		RelAgg & 41.9 $\pm$ 0.1 & 27.0 $\pm$ 2.4 & 0.941 $\pm$ 0.005 & 0.14 $\pm$ 0.02   \\
+		SymImp & 41.1 $\pm$ 0.1 & 198.6 $\pm$ 3.8 & 0.942 $\pm$ 0.008 & 0.03 $\pm$ 0.00   \\
+		MinMax & 41.4 $\pm$ 0.2 & 92.4 $\pm$ 8.2 & 0.933 $\pm$ 0.007 & 0.10 $\pm$ 0.01   \\
+		MaxMin & 41.7 $\pm$ 0.1 & 97.0 $\pm$ 4.4 & 0.950 $\pm$ 0.004 & 0.07 $\pm$ 0.01   \\
+		MaxRel & 41.7 $\pm$ 0.0 & 37.6 $\pm$ 1.6 & 0.893 $\pm$ 0.012 & 0.17 $\pm$ 0.02  \\ \hline
 	\end{tabular}
 \end{table}
 
