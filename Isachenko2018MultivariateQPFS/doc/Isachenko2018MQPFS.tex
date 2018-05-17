@@ -91,37 +91,36 @@
 The paper is devoted to the problem of signal decoding for Brain Computer Interface. 
 The goal is to build a model which predicts a limb position by brain signals. 
 The challenge of the investigation is redundancy in data description. 
-High correlation in measurements leads to correlation in both input and target spaces.
+High correlation in measurements leads to correlation in input space. Additionally, the target space are correlated due to dependent consequent hand positions.
 To overcome multicorrelation in feature representation, feature selection are used.
 However, the majority of feature selection methods ignore the dependencies in the target space.
 The authors suggest a novel approach to feature selection in multivariate regression.
-To take into account the correlations in the target matrix, the proposed approach extend the ideas of the Quadratic Programming Feature Selection algorithm. 
-The overall algorithm select non-correlated features, which are relevant to the targets.
-The computational experiment shows performance of the proposed algorithms in the ECoG data.
+To take into account the correlations in the target matrix, the proposed approach extend the ideas of the quadratic programming feature selection~(QPFS) algorithm. 
+The QPFS algorithm select non-correlated features, which are relevant to the targets. The proposed methods weigh the targets by their importances.
+The computational experiment shows high performance of the proposed algorithms in the ECoG data.
 
 \bigskip
-\textbf{Keywords}: multivariate regression, quadratic programming feature selection, multicorrelation
+\textbf{Keywords}: multivariate regression, quadratic programming feature selection, ECoG signal decoding
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The paper investigates the problem of signal decoding for Brain Computer Interface~(BCI)~\cite{costecalde2018long}. 
 The BCI aims to develop systems that help people with a severe motor control disability to recover mobility.
-The minimally-invasive implant records cortical signals and the model decodes them on real time to predict the limb coordinates for an exoskeleton~\cite{mestais2015wimagine,eliseyev2014clinatec}.
+The minimally-invasive implant records cortical signals and the model decodes them on real time to predict the coordinates of an exoskeleton limbs~\cite{mestais2015wimagine,eliseyev2014clinatec}.
 The subject placed inside the exoskeleton can drive it by imagining movements as if they were making the movement by themselves. 
 
-The challenge is redundancy in initial data description. 
-The features are highly multicorrelated. 
-The correlation comes from spatial nature of the data. 
+The challenge to build such model is redundancy in initial data description. 
+The features are highly multicorrelated due to spatial nature of the data. 
 The brain sensors are close to each other. 
-It leads to the redundant measurements. 
-In this case the final model is unstable. 
-In addition, the redundant data description requires redundant computations which lead to real-time delay. 
+It leads to the redundant measurements and instability of the final model.
+In addition, the redundant data description requires excess computations which lead to real-time delay. 
 To overcome this problem feature selection methods are used~\cite{katrutsa2015stress,li2017feature}.
 
 One of the approach to the feature selection is to maximize feature relevances and minimize pairwise feature redundancy. 
-This approach was proposed in~\cite{ding2005minimum}.
-The Quadratic Programming Feature Selection~(QPFS)~\cite{rodriguez2010quadratic,katrutsa2017comprehensive} algorithm introduces two functions: $\text{Sim}$ and $\text{Rel}$.
+This approach was recently proposed in~\cite{ding2005minimum}.
+It was shown in~\cite{rodriguez2010quadratic,katrutsa2017comprehensive} that quadratic programming feature selection~(QPFS) outperforms many existing feature selection methods for the univariate regression problem. 
+The QPFS algorithm introduces two functions: $\text{Sim}$ and $\text{Rel}$.
 The $\text{Sim}$ measures the redundancy between features, the $\text{Rel}$ contains relevances between each feature and the target vector.
 We want to minimize the function Sim and maximize the Rel simultaneously.
 QPFS offers the explicit way to construct the functions Sim and Rel.
