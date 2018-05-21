@@ -4,45 +4,45 @@ The top-level auxiliary file: Isachenko2018QPLJM.aux
 The style file: unsrt.bst
 Database file #1: papers_qpfs.bib.bib
 Warning--can't use both volume and number fields in nesterov1983momentum
-You've used 11 entries,
+You've used 15 entries,
             1791 wiz_defined-function locations,
-            516 strings with 5411 characters,
-and the built_in function-call counts, 2620 in all, are:
-= -- 241
-> -- 98
+            542 strings with 6292 characters,
+and the built_in function-call counts, 3589 in all, are:
+= -- 318
+> -- 163
 < -- 3
-+ -- 37
-- -- 26
-* -- 166
-:= -- 397
-add.period$ -- 33
-call.type$ -- 11
-change.case$ -- 9
++ -- 60
+- -- 45
+* -- 249
+:= -- 564
+add.period$ -- 45
+call.type$ -- 15
+change.case$ -- 13
 chr.to.int$ -- 0
-cite$ -- 12
-duplicate$ -- 120
-empty$ -- 267
-format.name$ -- 26
-if$ -- 592
+cite$ -- 16
+duplicate$ -- 155
+empty$ -- 350
+format.name$ -- 45
+if$ -- 794
 int.to.chr$ -- 0
-int.to.str$ -- 11
-missing$ -- 12
-newline$ -- 58
-num.names$ -- 11
-pop$ -- 38
+int.to.str$ -- 15
+missing$ -- 16
+newline$ -- 78
+num.names$ -- 15
+pop$ -- 44
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 62
+skip$ -- 74
 stack$ -- 0
-substring$ -- 192
-swap$ -- 33
+substring$ -- 254
+swap$ -- 37
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 1
-while$ -- 27
-width$ -- 13
-write$ -- 120
+while$ -- 36
+width$ -- 17
+write$ -- 163
 (There was 1 warning)
