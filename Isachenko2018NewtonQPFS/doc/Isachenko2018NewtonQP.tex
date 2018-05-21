@@ -535,12 +535,11 @@ The active parameters selection allowed to reduce the condition number significa
 We compared the proposed algorithm with the existing methods, namely Gradient Descent~(GD), Nesterov Momentum, ADAM and the original Newton algorithm. 
 Experiments were carried out for the nonlinear regression problem. 
 The datasets were chosen from the UCI archive repository~\cite{uci2017}. 
-The results are shown in Table~\ref{tbl:nonlin_reg_results}. 
-For each dataset there are two rows which contain mean squared error for the train~(first row) and test~(second row) data. 
+The results are shown in Tables~\ref{tbl:nonlin_reg_results} and \ref{tbl:log_reg_results}. 
+For each dataset there are two rows which contain errors for the train~(first row) and test~(second row) data. 
+In Table~\ref{tbl:nonlin_reg_results} the error is mean squared error, in Table~\ref{tbl:log_reg_results} the error is cross entropy.
 We used 5-fold cross validation to find the average error and its standard deviation. 
-The proposed algorithm shows the least error among three of four datasets. 
-The generalization of the proposed algorithm is better than the generalization of the Newton method. 
-It shows the reduced difference between training and test error.
+The proposed algorithm shows the least error among three of four datasets for nonlinear regression and among two of three dataset for logistic regression. 
 \begin{table}[!h]
 	\caption{Train and test mean squared errors for all datasets and algorithms}
 	\label{tbl:nonlin_reg_results}
@@ -614,6 +613,68 @@ It shows the reduced difference between training and test error.
 		& \multicolumn{1}{c|}{ $34.1\pm19.4$}
 		& \multicolumn{1}{c|}{ $35.0\pm15.6$}
 		& \multicolumn{1}{c|}{ $\mathbf{30.9\pm5.3}$} \\ 
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[!h]
+	\caption{Train and test mean squared errors for all datasets and algorithms}
+	\label{tbl:log_reg_results}
+	\centering
+	\begin{tabular}{|l|c|c|c|c|c|c|}
+		\hline
+		Datasets & \begin{tabular}[c]{@{}c@{}}\#obj\\ \#feat\end{tabular} 
+		& GD 
+		& Nesterov 
+		& ADAM 
+		& Newton 
+		&
+		\begin{tabular}[c]{@{}c@{}}QPFS+Newton\\ (proposed)\end{tabular} \\ 
+		\hline
+		Breast
+		& 569
+		& $0.6\pm0.1$
+		& $0.4\pm0.1$
+		& $0.8\pm0.2$           
+		& $0.3\pm0.1$            
+		& $0.2\pm0.1$   \\  
+		Cancer
+		&\multicolumn{1}{c|}{30}
+		& \multicolumn{1}{c|}{$\mathbf{0.9\pm0.2}$}
+		& \multicolumn{1}{c|}{$1.0\pm0.7$}
+		& \multicolumn{1}{c|}{$1.2\pm0.2$}
+		& \multicolumn{1}{c|}{$1.0\pm0.2$}
+		& \multicolumn{1}{c|}{$1.1\pm0.3$}\\ 
+		\hline
+		Cardiotocography
+		& 2126
+		& $11.5\pm4.7$
+		& $11.5\pm4.7$
+		& $8.8\pm4.4$        
+		& $11.5\pm5.7$          
+		&  $7.7\pm4.2$  \\
+		
+		&\multicolumn{1}{c|}{21}
+		& \multicolumn{1}{c|}{$11.6\pm5.8$}
+		& \multicolumn{1}{c|}{$11.5\pm5.7$}
+		& \multicolumn{1}{c|}{$9.0\pm2.6$}
+		& \multicolumn{1}{c|}{$11.5\pm4.7$}
+		& \multicolumn{1}{c|}{$\mathbf{7.7\pm4.7}$} \\ 
+		\hline
+		Climate Model
+		& 540
+		& $1.2\pm0.1$
+		& $1.0\pm0.2$
+		& $1.5\pm0.2$             
+		& $1.0\pm0.5$             
+		& $0.8\pm0.3$   \\ 
+		Simulation Crashes
+		&\multicolumn{1}{c|}{18}
+		& \multicolumn{1}{c|}{$1.4\pm2.0$}
+		& \multicolumn{1}{c|}{ $1.3\pm0.7$}
+		& \multicolumn{1}{c|}{ $1.8\pm0.3$}
+		& \multicolumn{1}{c|}{ $1.2\pm0.5$}
+		& \multicolumn{1}{c|}{ $\mathbf{1.1\pm0.4}$} \\ 
 		\hline
 	\end{tabular}
 \end{table}
