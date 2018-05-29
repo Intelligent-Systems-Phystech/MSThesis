@@ -1,0 +1,151 @@
+\documentclass[12pt,oneside]{article}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext,amsthm}
+\usepackage{a4wide}
+\usepackage[T2A]{fontenc}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\newcommand{\hdir}{.}
+\usepackage{hyperref}       % clickable links
+\usepackage{lineno}
+\usepackage{graphicx,multicol}
+\usepackage{epstopdf}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,shadows}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage{algorithm}
+\usepackage[noend]{algcompatible}
+
+\usepackage{multirow}
+
+\usepackage{caption}
+
+\usepackage{geometry}
+\usepackage{setspace}
+%\onehalfspacing
+\geometry{verbose,a4paper,tmargin=2.5cm,bmargin=2.5cm,lmargin=1.2cm,rmargin=1.2cm}
+
+\usepackage[center]{titlesec}
+\renewcommand{\refname}{REFERENCES}
+% \renewcommand{\contentsname}{REFERENCES}
+\titlelabel{\thetitle.\quad}
+\newcommand{\sectionbreak}{\clearpage}
+\let\originalparagraph\paragraph
+\renewcommand{\paragraph}[2][.]{\originalparagraph{#2#1}}
+\titleformat{\section}[block]{\Large\bfseries\filcenter}{\thesection.\;}{0.1em}{\uppercase}
+
+\titleformat{\subsection}[block]{\large\bfseries\filcenter}{\thesubsection.\;}{0.1em}{}
+\titleformat{\subsubsection}[block]{\bfseries\filcenter}{\thesubsubsection.\;}{0.1em}{} 
+
+\newcommand\undermat[2]{%
+	\makebox[0pt][l]{$\smash{\underbrace{\phantom{%
+					\begin{matrix}#2\end{matrix}}}_{\text{$#1$}}}$}#2}
+\usepackage{tikz}
+\usepackage{tikzpagenodes}
+
+\newcommand{\borders}{\tikz[remember picture,overlay] \draw []
+	(current page text area.south west)
+	rectangle
+	(current page text area.north east)
+	;}
+
+\begin{document}
+	\borders
+	\pagestyle{empty}
+	
+	\begin{figure}
+		\vspace{1.7cm}
+		\centering
+		\includegraphics[width=0.38\linewidth]{sk_logo}
+	\end{figure}
+	\begin{center}
+		\sc
+		MASTER'S THESIS\\[5mm]
+		\bf{ \large
+		Dimensionality Reduction in Signal Analysis}\\[25mm]
+		\rm
+		Master's Educational Program: <<Data Science>>\\[3mm]
+	\end{center}
+		\begin{minipage}{0.5\linewidth}
+		\begin{flushright}
+		Student: \hphantom{1}\\[9mm]
+		Reseach Advisor: \hphantom{1}\\[9mm]
+		Co-Advisor: \hphantom{1}\\
+	\end{flushright}
+	\end{minipage}%
+	\begin{minipage}{0.48\linewidth}
+			\vspace{.55cm}
+			\begin{flushleft}
+			Roman Isachenko\\[9mm]
+			Maxim Fedorov, Full professor, \\[9mm]
+			Vadim Strijov, Research Scientist \\(Moscow Institute of Physics and Technology)
+			\\
+			\end{flushleft}
+	\end{minipage}%
+
+	\vfill
+	\begin{center}
+		Moscow, 2018 \\[9mm]
+		\scriptsize{
+		Copyright 2018 Author. All rights reserved. \\[7mm]
+		
+		The author hereby grants to Skoltech permission to reproduce and to distribute publicly paper and electronic copies \\ 
+		of this thesis document in whole and in part in any medium now known or hereafter created.\\[15mm]}
+	\end{center}
+
+	\newpage
+	\borders
+	\pagestyle{empty}
+	
+	\begin{figure}
+		\vspace{1.7cm}
+		\centering
+		\includegraphics[width=0.38\linewidth]{sk_logo}
+	\end{figure}
+	\begin{center}
+		\sc 
+			МАГИСТЕРСКАЯ ДИССЕРТАЦИЯ\\[5mm]
+		\bf {\large
+		Снижение размерности пространства \\в задачах анализа сигналов}\\[19mm]
+		\rm
+		Магистерская образовательная программа: <<Наука о данных>>\\[3mm]
+	\end{center}
+	\begin{minipage}{0.5\linewidth}
+		\begin{flushright}
+			Студент: \hphantom{1}\\[9mm]
+			Научный руководитель: \hphantom{1}\\[9mm]
+			Со-руководитель: \hphantom{1}\\
+		\end{flushright}
+	\end{minipage}%
+	\begin{minipage}{0.48\linewidth}
+		\vspace{.55cm}
+		\begin{flushleft}
+			Исаченко Роман Владимирович\\[9mm]
+			Федоров М.В., Профессор, \\[9mm]
+			Стрижов В.В., Научный сотрудник (Московский физико-технический институт)\\
+		\end{flushleft}
+	\end{minipage}%
+	
+	\vfill
+	\begin{center}
+		Москва, 2018 \\[9mm]
+		\scriptsize{
+			Авторское право 2018. Все права защищены. \\[7mm]
+			
+			Автор настоящим дает Сколковскому институту науки и технологий \\
+			pазрешение на воспроизводство и свободное распространение бумажных и электронных копий настоящей \\ диссертации в целом или частично на любом ныне существующем или созданном в будущем носителе. \\[12mm]}
+	\end{center}
+\end{document}

@@ -118,8 +118,8 @@ The proposed algorithms show high performance compared to the known strategy.
 We analyze the robustness of the predictive model and the stability of the selected feature sets.\\[5mm]
 Skoltech Research Advisor: \\
 Name: Maxim Fedorov \\
-Degree: {\color{red} TO DO} \\
-Title: {\color{red} TO DO} \\[5mm]
+Degree: Professor \\
+Title: Director, CREI CDISE \\[5mm]
 MIPT Research Advisor: \\
 Name: Vadim Strijov \\
 Degree:{\color{red} TO DO} \\
@@ -796,7 +796,7 @@ If add features to this amount the test error stops to decrease.
 	\begin{minipage}{.5\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{figs/feature_scores_ex.eps}
-		\caption{Sorted feature importances for \\ the QPFS algorithm}
+		\caption{Sorted feature importances for the \\ QPFS algorithm}
 		\label{fig:feature_scores_ex}
 	\end{minipage}%
 	\begin{minipage}{.5\linewidth}
@@ -841,49 +841,91 @@ It means that the algorithm does not distinguish the targets for $k=1, 2, 3$.
 	\label{fig:features_vs_alpha_ecog}
 \end{figure}
 
-\hrulefill
-
 We compare the proposed strategies of multivariate QPFS that are given in Table~\ref{tbl:summary} for the ECoG dataset. 
 Firstly, we apply all methods to get feature importances. 
 Then we fit linear model with increasing number of features. 
 For each method the features are sorted by the obtained importances. 
 We show how the described metrics are changed with the increasing feature set size. 
-Figure~\ref{fig:ecog_3_1_metrics} illustrates the results for $k = 1$. 
-Here all metrics values for RelAgg, SymImp, and MaxRel are quite similar. 
-However, MaxMin and MinMax algorithms show worse performance. 
-This behavious is possibly due to unreasonable penalty on the matrix~$\bY$.
-
-The situation changes for predicting several timestamps. 
-In this case the correlation in~$\bY$ matrix is crucial. 
-Figure~\ref{fig:ecog_3_15_metrics} shows algorithms performance for $k = 15$. 
-The test error is minimal for SymImp, MinMax, and MaxRel strategies.  
-The RelAgg strategy shows almost the worst error rate.
+Figure~\ref{fig:ecog_3_30_metrics} illustrates the results for prediction of $k = 30$ timestamps. 
+Here the feature importances threshold $\tau$ are shown by colored ticks. 
+These thresholds are larger for the proposed methods with comparison to the baseline RelAgg strategy. 
+The SymImp strategy has the largest threshold, it does not allow to get the small feature subset for this algorithm.
+However, this strategy shows the best performance in terms of sRMSE on test data.
+The second value of performance is given by AsymImp strategy, followed by MaxRel.
+All proposed algorithms give the less test error compared to the RelAgg strategy. 
+The Stability criteria is5 also increased for the proposed algorithms.
+Here we consider the AsymImp strategy is the best in terms of prediction quality and the size of selected feature subset.
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{figs/ecog_3_30_metrics.pdf}
-	\caption{Metrics values for ECoG data with k = 30}
-	\label{fig:ecog_3_15_metrics}
+	\caption{Feature selection algorithms evaluation for ECoG data, prediction of $k = 30$ timestamps}
+	\label{fig:ecog_3_30_metrics}
 \end{figure}
+
+To compare the structure of the selected feature subsets and investigate the stability of the selection procedure, we use bootstrap approach. 
+First, the bootstrap data are generated. 
+Then for each data we solve the feature selection problem.
+The obtained feature importances are compared. 
+We calculate the average pairwise Spearman correlation coefficient and the $\ell_2$ distance to obtain the measure of the algorithms stability.
+Table~\ref{tbl:stability} shows the average error, the size of the subset and the described statistics for each method. The error was calculated by fitting the model on the $50$ features with the largest importances.
+The MaxRel strategy shows the worst stability.
+AsymImp gives the least error on the test data. 
+The size of selected feature subsets are overestimated using the equal threshold $\tau=10^{-4}$. 
+The value of~$\tau$ should be cross-validated to get the optimal threshold and the feature subset size. 
+
 \begin{table}[]
-	\caption{}
+	\caption{The stability of the selected feature subset}
 	\centering
 	\begin{tabular}{l|ccccc}
 		\hline
-		& RMSE  & $\|\ba\|_0$ & Spearman $\rho$ & $\ell_2$ dist \\ \hline
-		RelAgg & 41.9 $\pm$ 0.1 & 27.0 $\pm$ 2.4 & 0.941 $\pm$ 0.005 & 0.14 $\pm$ 0.02   \\
-		SymImp & 41.1 $\pm$ 0.1 & 198.6 $\pm$ 3.8 & 0.942 $\pm$ 0.008 & 0.03 $\pm$ 0.00   \\
-		MinMax & 41.4 $\pm$ 0.2 & 92.4 $\pm$ 8.2 & 0.933 $\pm$ 0.007 & 0.10 $\pm$ 0.01   \\
-		MaxMin & 41.7 $\pm$ 0.1 & 97.0 $\pm$ 4.4 & 0.950 $\pm$ 0.004 & 0.07 $\pm$ 0.01   \\
-		MaxRel & 41.7 $\pm$ 0.0 & 37.6 $\pm$ 1.6 & 0.893 $\pm$ 0.012 & 0.17 $\pm$ 0.02  \\ \hline
+		& sRMSE  & $\|\ba\|_0$ & Spearman $\rho$ & $\ell_2$ dist \\ \hline
+		RelAgg & 0.965 $\pm$ 0.002 & 26.8 $\pm$ 3.8 & 0.915 $\pm$ 0.016 & 0.145 $\pm$ 0.018   \\
+		SymImp & 0.961 $\pm$ 0.001 & 224.4 $\pm$ 9.0 & 0.910 $\pm$ 0.017 & 0.025 $\pm$ 0.002   \\
+		MinMax & 0.961 $\pm$ 0.002 & 101.0 $\pm$ 2.1& 0.932 $\pm$ 0.009 & 0.059 $\pm$ 0.004   \\
+		MaxRel & 0.958 $\pm$ 0.003 & 41.2 $\pm$ 5.2 & 0.862 $\pm$ 0.027 & 0.178 $\pm$ 0.010   \\
+		AsymImp & 0.955 $\pm$ 0.001 & 85.8 $\pm$ 10.2& 0.926 $\pm$ 0.011 & 0.078 $\pm$ 0.007  \\ \hline
 	\end{tabular}
 	\label{tbl:stability}
 \end{table}
 
+Wer fit the PLS regression model for the data to compare the dimensionality reduction and feature selection. 
+Figure~\ref{fig:ecog_prediction} shows the example of the model prediction. Three solid lines show 3D coordinates of the hand position and the dashed lines are the coordinates predictions.
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figs/ecog_prediction}
-	\caption{}
+	\caption{Example of 3D hand position prediction given by PLS algorithm}
 	\label{fig:ecog_prediction}
+\end{figure}
+
+Figure~\ref{fig:pls_vs_k} demonstrates the scaled RMSE on train and test data with respect to the dimensionality of the latent space~$l$.
+The test error achieves minimum value at hte point $l = 11$.
+PLS regression is more flexible approach compared to the linear model built on the subset of features.
+It leads to the less error, but the model are not sparse.
+
+Figure~\ref{fig:igs/models} compares 3 models: linear regression and PLS regression built on 100 features given by qpfs and PLS regression with all features.
+We do not include linear regression with all features because its results are close to the constant prediction.
+We use the AsymImp strategy for QPFS in this experiment.
+The number of PLS latent dimension is $l = 15$.
+Here PLS regression are significantly better than linear regression with QPFS features.
+It means that the latter model is not flexible enough.
+The best result is given by combination of PLS regression model with QPFS features. 
+This model is sparse since it uses only 100 QPFS features.
+The ability of PLS model to find the optimal latent data representation allows to improve model performance. 
+
+\begin{figure}[h]
+	\begin{minipage}{.5\linewidth}
+		\centering
+		\includegraphics[width=1.\linewidth]{figs/pls_vs_k}
+		\caption{Test scaled RMSE for PLS \\regression model}
+		\label{fig:pls_vs_k}
+	\end{minipage}%
+	\begin{minipage}{.5\linewidth}
+		\centering
+		\includegraphics[width=1.\linewidth]{figs/models}
+		\caption{sRMSE box plots for different \\models}
+		\label{fig:models}
+	\end{minipage}
 \end{figure}
 
 \newpage
