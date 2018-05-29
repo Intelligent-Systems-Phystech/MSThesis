@@ -35,7 +35,7 @@ def shift_spectrum(Q, eps=0.):
     return Q, lamb_min
 
 
-class QPFS:
+class QPFS2:
     def __init__(self, sim='corr'):
         if sim not in ['corr', 'info']:
             raise ValueError('Similarity measure should be "corr" or "info"')
@@ -58,21 +58,24 @@ class QPFS:
                 for y_ in y:
                     self.b += sklfs.mutual_info_regression(X, y_)
         self.Q, self.lamb_min = shift_spectrum(self.Q)
+        
     
     def get_alpha(self):
-        return self.Q.mean() / (self.Q.mean() + self.b.mean())
+        alpha1 = 2 * np.mean(self.b) / (2 * np.mean(self.b) + self.n * np.mean(self.Q))
+        return [alpha1, 1. - alpha1]
 
     def fit(self, X, y):
         self.get_params(X, y)
-        alpha = self.get_alpha()
-        self.solve_problem(alpha)
+        alphas = self.get_alpha()
+        self.solve_problem(alphas)
     
-    def solve_problem(self, alpha):
+    def solve_problem(self, alphas):
+        Q, lamb_min = shift_spectrum(self.Q)
         z = cvx.Variable(self.n)
-        c = np.ones((self.n, 1))
-        objective = cvx.Minimize((1 - alpha) * cvx.quad_form(z, self.Q) - 
-                                 alpha * self.b.T * z)
-        constraints = [z >= 0, c.T * z == 1]
+        
+        objective = cvx.Minimize(alphas[0] * cvx.quad_form(z, self.Q) - 
+                                 alphas[1] * self.b.T * z)
+        constraints = [z >= 0, z <= 1]
         prob = cvx.Problem(objective, constraints)
 
         prob.solve()
@@ -83,9 +86,9 @@ class QPFS:
         
     def get_topk_indices(self, k=10):
         return self.score.argsort()[::-1][:k]
+    
 
-
-class MultivariateQPFS():
+class MultivariateQPFS2:
     def __init__(self):
         pass
     
@@ -96,35 +99,35 @@ class MultivariateQPFS():
         self.Qx = np.abs(get_corr_matrix(X, fill=1))
         self.Qy = np.abs(get_corr_matrix(Y, fill=1))
         self.B = np.abs(get_corr_matrix(X, Y))
-        self.b = self.B.max(axis=0, keepdims=True)
+        self.Bm = self.B.max()
 
-    def get_alpha(self, mode, alpha3=None):
-        if mode in ['SymImp', 'MaxMin', 'MinMax', 'MaxRel', 'MinMax2']:
-            den = (np.mean(self.Qx) * np.mean(self.B)
-                   + np.mean(self.Qx) * np.mean(self.Qy)
-                   + np.mean(self.Qy) * np.mean(self.B))
-            if alpha3 is None:
-                alpha3 = np.mean(self.Qx) * np.mean(self.B) / den
+    def get_alpha(self, mode):
+        
+        if mode in 'SymImp':
+            den = (self.n ** 2 * np.mean(self.Qx) * np.mean(self.B)
+                   + self.n * self.r * np.mean(self.Qx) * np.mean(self.Qy)
+                   + self.r ** 2 * np.mean(self.Qy) * np.mean(self.B))
 
-            alpha1 = (1 - alpha3) * np.mean(self.B) / (np.mean(self.Qx) + np.mean(self.B))
-            alpha2 = (1 - alpha3) * np.mean(self.Qx) / (np.mean(self.Qx) + np.mean(self.B))
-        elif mode == 'AsymImp':
-            den = (np.mean(self.Qx) * (np.mean(self.b) - np.mean(self.B))
-                   + np.mean(self.Qx) * np.mean(self.Qy)
-                   + np.mean(self.Qy) * np.mean(self.B))
-            if alpha3 is None:
-                alpha3 = np.mean(self.Qx) * (np.mean(self.b) - np.mean(self.B)) / den
+            alpha1 = self.r ** 2 * np.mean(self.Qy) * np.mean(self.B) / den
+            alpha2 = self.n * self.r * np.mean(self.Qx) * np.mean(self.Qy) / den
+            alpha3 = self.n ** 2 * np.mean(self.Qx) * np.mean(self.B) / den
+        elif mode in 'AsymImp':
+            den = (self.n ** 2 * np.mean(self.Qx) * np.mean(self.Bm - self.B)
+                   + self.n * self.r * np.mean(self.Qx) * np.mean(self.Qy)
+                   + self.r ** 2 * np.mean(self.Qy) * np.mean(self.Bm + self.B))
 
-            alpha1 = (1 - alpha3) * np.mean(self.B) / (np.mean(self.Qx) + np.mean(self.B))
-            alpha2 = (1 - alpha3) * np.mean(self.Qx) / (np.mean(self.Qx) + np.mean(self.B))
+            alpha1 = self.r ** 2 * np.mean(self.Qy) * np.mean(self.Bm + self.B) / den
+            alpha2 = self.n * self.r * np.mean(self.Qx) * np.mean(self.Qy) / den
+            alpha3 = self.n ** 2 * np.mean(self.Qx) * np.mean(self.Bm - self.B) / den
         else:
-            raise ValueError(f'Unknown mode: {mode}')
+            raise ValueError('Unknown mode')
         return np.array([alpha1, alpha2, alpha3])
 
 
     def fit(self, X, Y, mode='SymImp'):
         self.get_params(X, Y)
         alphas = self.get_alpha(mode)
+        print(alphas)
         self.solve_problem(alphas, mode)
     
     def solve_problem(self, alphas, mode='SymImp'):
@@ -136,25 +139,24 @@ class MultivariateQPFS():
             self._minmax(alphas)
         elif mode == 'MaxRel':
             self._maxrel(alphas)
+        elif mode == 'MinMax2':
+            self._minmax2(alphas)
         elif mode == 'AsymImp':
             self._asymimp(alphas)
         else:
-            raise ValueError(f'Unknown mode: {mode}')
+            raise ValueError('Unknown mode')
     
     def _symimp(self, alphas):
         # Parameters
         Q = np.vstack((np.hstack((alphas[0] * self.Qx, -alphas[1] / 2 * self.B)),
                        np.hstack(( -alphas[1] / 2 * self.B.T, alphas[2] * self.Qy))))
         Q, lamb_min = shift_spectrum(Q)
-        
-        c = np.zeros((2, self.n + self.r))
-        c[0, :self.n] = 1
-        c[1, self.n:] = 1
+        print('l', lamb_min)
         
         # Problem
         z = cvx.Variable(self.n + self.r)
         obj = cvx.Minimize(cvx.quad_form(z, Q))
-        constr = [z >= 0, c * z == 1]
+        constr = [z >= 0, z <= 1]
         prob = cvx.Problem(obj, constr)
         prob.solve()
 
@@ -304,22 +306,17 @@ class MultivariateQPFS():
         # Results
         self.status = prob.status
         self.zx = np.array(zx.value).flatten()
-        self.zy = np.array(zy.value).flatten()
     
     def _asymimp(self, alphas):
         # Parameters
-        Q = np.vstack((np.hstack((alphas[0] * self.Qx, -alphas[1] / 2 * self.B)),
-                       np.hstack((-alphas[1] / 2 * self.B.T, alphas[2] * self.Qy))))
+        Q = np.vstack((np.hstack((alphas[0] * self.Qx, alphas[1] / 2 * (self.Bm - self.B))),
+                       np.hstack((alphas[1] / 2 * (self.Bm - self.B).T, alphas[2] * self.Qy))))
         Q, lamb_min = shift_spectrum(Q)
-        
-        c = np.zeros((2, self.n + self.r))
-        c[0, :self.n] = 1
-        c[1, self.n:] = 1
         
         # Problem
         z = cvx.Variable(self.n + self.r)
-        obj = cvx.Minimize(cvx.quad_form(z, Q) + alphas[1] * self.b * z[self.n:])
-        constr = [z >= 0, c * z == 1]
+        obj = cvx.Minimize(cvx.quad_form(z, Q) - alphas[1] * self.B.sum(axis=1) * z[:self.n])
+        constr = [z >= 0, z <= 1]
         prob = cvx.Problem(obj, constr)
         prob.solve()
 
