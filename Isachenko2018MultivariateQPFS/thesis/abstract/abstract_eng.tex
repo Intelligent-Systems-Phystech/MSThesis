@@ -1,0 +1,83 @@
+\documentclass[12pt,oneside]{article}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext,amsthm}
+\usepackage{a4wide}
+\usepackage[T2A]{fontenc}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\newcommand{\hdir}{.}
+\usepackage{hyperref}       % clickable links
+\usepackage{lineno}
+\usepackage{graphicx,multicol}
+\usepackage{epstopdf}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,shadows}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage{algorithm}
+\usepackage[noend]{algcompatible}
+
+\usepackage{multirow}
+
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{setspace}
+%\onehalfspacing
+\geometry{verbose,a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1.5cm}
+
+\begin{document}
+
+\begin{center}
+	Dimensionality reduction for signal analysis\\ 
+	Roman Isachenko \\[5mm]
+	Submitted to the Skolkovo Institute of Science and Technology 
+	on 01 June 2018 \\[5mm]
+	\textbf{ABSTRACT:} 
+\end{center}
+
+This study is devoted to the problem of signal decoding for Brain Computer Interface~(BCI) modelling. 
+BCI helps disabled people to recover their mobility.
+The goal of the research is to build a model which predicts a limb position by brain signals. 
+The challenge of the investigation is redundancy in data description. 
+High correlation in measurements leads to correlation in input space. 
+Additionally, we consider multivariate case, the target variable is a vector of consequent hand coordinates. 
+In this case the target space are correlated due to dependent consequent hand positions.
+To overcome correlations in feature representation, dimensionality reduction and feature selection are used.
+
+Partial least squares~(PLS) regression is used as a base model for the dimensionality reduction.
+The model projects input and target data into the latent space and maximizes the covariances between the projections.
+The model robustness is reached by exploring dependencies in the input and target spaces.
+
+The dimensionality reduction does not lead to sparse model. Sparsity achieves by feature selection.
+However, the majority of feature selection methods ignore the dependencies in the target space.
+The study suggests a novel approach to feature selection in multivariate regression.
+To take into account the correlations in the target matrix, the proposed approach extend the ideas of the quadratic programming feature selection~(QPFS) algorithm. 
+The QPFS algorithm selects non-correlated features, which are relevant to the targets. The proposed methods weigh the targets by their importances. The idea is to penalize tcorrelated targets and decrease their influence on the feature selection. 
+
+The computational experiment was carried out on the real electrocorticogram (ECOG) dataset. 
+The proposed algorithms were compared by different criteria such as stability and prediction performance.
+The algorithms give significantly better results compared to the baseline strategy.
+The linear regression with QPFS was compared with partial least squares~(PLS) regression.
+The best result is obtained by combination of QPFS and PLS algorithms.\\[5mm]
+Research Advisor: \\
+Name: Maxim Fedorov \\
+Degree: Doctor of Chemical Science \\
+Title: Professor of Skolkovo Institute of Science and Technology \\[5mm]
+Co-advisor: \\
+Name: Vadim Strijov \\
+Degree: Doctor of Physical and Mathematical Sciences  \\
+Title: Professor of Moscow Institute of Physics and Technology
+
+\end{document}
