@@ -91,10 +91,7 @@
 %--------------------------------------------------------------------------------
 \begin{frame}{Signal decoding problem}
 	\begin{block}{Goal}
-		\begin{itemize}
-			\item Investigate dependencies in input and target spaces.
-			\item Build a stable model for signal decoding in the case of multicorrelated object description.
-		\end{itemize}
+		Investigate dependencies in both input and target spaces and build a stable model for signal decoding in the case of multicorrelated object description.
 	\end{block}
 	\begin{block}{Challenge}
 		\begin{itemize}
@@ -147,7 +144,7 @@
 	\]
 	\end{block}
 	The linear dependent columns of the matrix $\bX$ leads to an instable solution. \\
-	To avoid the strong linear dependence, feature selection techniques are used.
+	To avoid the strong linear dependence, dimensionality reduction and feature selection techniques are used.
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Dimensionality reduction}
@@ -249,7 +246,7 @@ where the subscript~$\ba$ indicates the submatrix with the columns for which~$a_
 	\begin{block}{Quadratic programming problem}
 	\vspace{-0.3cm}
 	\[
-	S(\bz' | \bX, \bnu)	= (1 - \alpha) \cdot \underbrace{\bz^{\T} \bQ \bz}_{\text{Sim}(\bX)} - \alpha \cdot \underbrace{\vphantom{()} \mathbf{b}^{\T} \bz}_{\text{Rel}(\bX, \bnu)} \rightarrow \min_{\substack{\bz \geq \bZero_n \\ \bOne_n^{\T} \bz=1}}.
+	S(\bz | \bX, \bnu)	= (1 - \alpha) \cdot \underbrace{\bz^{\T} \bQ \bz}_{\text{Sim}(\bX)} - \alpha \cdot \underbrace{\vphantom{()} \mathbf{b}^{\T} \bz}_{\text{Rel}(\bX, \bnu)} \rightarrow \min_{\substack{\bz \geq \bZero_n \\ \bOne_n^{\T} \bz=1}}.
 	\]
 	\end{block}
 		\begin{itemize}
@@ -289,16 +286,16 @@ where the subscript~$\ba$ indicates the submatrix with the columns for which~$a_
 	\bB =  \left[ \left| \text{corr}(\bchi_i, \bnu_j) \right| \right]_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
 	\]
 	\[
-	\alpha_1 + \alpha_2 + \alpha_3 = 1 \quad \alpha_i \geq 0, \, i = 1, 2, 3.
+	\alpha_1 + \alpha_2 + \alpha_3 = 1, \quad \alpha_i \geq 0.
 	\] 
 \end{block}
 \end{frame}
 %--------------------------------------------------------------------------------
 \begin{frame}{Multivariate QPFS}
-SymImp penalizes targets that are correlated and are not sufficiently explained by the features. 
+SymImp penalizes targets that are correlated and are explained by features to a lesser extent. 
 \[
-\alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T}\mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n, \\ \bOne_n^{\T}\bz_x=1}}; \quad
-\alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T} \mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_y \geq \bZero_r,  \\ \bOne_r^{\T}\bz_y=1}}.
+\alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T}\mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n \\ \bOne_n^{\T}\bz_x=1}}; \quad
+\alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T} \mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_y \geq \bZero_r  \\ \bOne_r^{\T}\bz_y=1}}.
 \]
 \vspace{-0.2cm}
 \begin{block}{Minimax approach (MinMax)}
@@ -334,7 +331,7 @@ Shift spectrum to obtain the convex semidefinite relaxation.
 \end{equation*}
 For $b_j = \max\limits_{i=1, \dots n} [\bB]_{i, j}$ coefficients of~$\bz_y$ in~$\text{Rel}(\bX, \bY)$ are non-negative.
 
-\begin{statement}[Isachenko, 2018]
+\begin{statement}
 	For the univariate case $r=1$ the proposed strategies SymImp, MinMax, MaxRel, AsymImp coincide with the original QPFS algorithm.
 \end{statement}
 \end{block}
@@ -346,7 +343,7 @@ For $b_j = \max\limits_{i=1, \dots n} [\bB]_{i, j}$ coefficients of~$\bz_y$ in~$
 	\footnotesize{
 		\begin{tabular}{c|c|c}
 			\hline
-			Algorithm & Idea & Error function $S(\ba | \bX, \bY)$ \\
+			Algorithm & Problem & Error function $S(\bz | \bX, \bY)$ \\
 			\hline && \\ 
 			RelAgg & $\min \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr] $ & $\min\limits_{\bz_x} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bOne_r \bigr] $ \\ &&\\
 			SymImp & $\begin{aligned} \min \, \bigl[ \text{Sim}(\bX) & - \text{Rel}(\bX, \bY) \\ & + \text{Sim}(\bY) \bigr] \end{aligned}$ & $ \min\limits_{\bz_x, \, \bz_y} \left[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \right] $\\ &&\\ 
@@ -497,7 +494,7 @@ For $b_j = \max\limits_{i=1, \dots n} [\bB]_{i, j}$ coefficients of~$\bz_y$ in~$
 	\item Isachenko R., Strijov V. Metric learning for time series multiclass classification \emph{Informatics and Applications}, 10(2), 2016.
 	\item Isachenko~R. et al. Feature Generation for Physical Activity Classification. \emph{Artificial Intellegence and Decision Making}, 2018, submitted to the journal.
 	\item Isachenko~R., Strijov~V. Quadratic programming optimization for Newton method. \emph{Lobachevskii Journal of Mathematics}, 2018, accepted to the journal.
-	\item Isachenko~R., Vladimirova~M., Strijov~V. Dimensionality reduction for multivariate ECoG-based data. \emph{Chemometrics}, 2018, ready for submission.
+	\item Isachenko~R., Strijov~V. Dimensionality reduction for multivariate ECoG-based data. \emph{Chemometrics}, 2018, ready for submission.
 \end{itemize}
 \end{block}
 \vspace{-0.1cm}
