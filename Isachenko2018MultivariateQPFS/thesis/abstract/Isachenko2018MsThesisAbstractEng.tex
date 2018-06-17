@@ -38,6 +38,7 @@
 \geometry{verbose,a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1.5cm}
 
 \begin{document}
+	\thispagestyle{empty}
 
 \begin{center}
 	Dimensionality reduction for signal analysis\\ 
@@ -64,12 +65,12 @@ The dimensionality reduction does not lead to sparse model. Sparsity achieves by
 However, the majority of feature selection methods ignore the dependencies in the target space.
 The study suggests a novel approach to feature selection in multivariate regression.
 To take into account the correlations in the target matrix, the proposed approach extend the ideas of the quadratic programming feature selection~(QPFS) algorithm. 
-The QPFS algorithm selects non-correlated features, which are relevant to the targets. The proposed methods weigh the targets by their importances. The idea is to penalize tcorrelated targets and decrease their influence on the feature selection. 
+The QPFS algorithm selects non-correlated features, which are relevant to the targets. The proposed methods weigh the targets by their importances. The idea is to penalize correlated targets and decrease their influence on the feature selection. 
 
 The computational experiment was carried out on the real electrocorticogram (ECOG) dataset. 
 The proposed algorithms were compared by different criteria such as stability and prediction performance.
 The algorithms give significantly better results compared to the baseline strategy.
-The linear regression with QPFS was compared with partial least squares~(PLS) regression.
+The linear regression with QPFS was compared with PLS regression.
 The best result is obtained by combination of QPFS and PLS algorithms.\\[5mm]
 Research Advisor: \\
 Name: Maxim Fedorov \\
