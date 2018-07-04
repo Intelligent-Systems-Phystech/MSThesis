@@ -88,7 +88,6 @@
 	V.\,V.~Strijov
 \end{center}
 \textbf{Abstract:} 
-
 This study is devoted to the problem of signal decoding for Brain Computer Interface~(BCI) modelling. 
 The goal of the research is to build a model which predicts a limb position by brain signals. 
 The challenge of the investigation is redundancy in data description. 
@@ -179,13 +178,7 @@ The stability of the proposed methods were investigated.
 The proposed algorithms outperform the baseline algorithm with the same number of features. 
 The combination of the feature selection procedure and the PLS algorithm gives the best performance.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Problem statement}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this section we define the problem of multivariate regression in terms of loss function minimization. 
-Then the dimensionality reduction and feature selection problems are defined. We use PLS regression as algorithm for dimensionality reduction. 
-Finally, we state QPFS algorithm which are the baseline for feature selection.
-\subsection{Multivariate regression}
+\section{Multivariate regression}
 The goal is to forecast a dependent variable $\by \in \bbR^r$ with $r$ targets from an independent input object $\bx \in \bbR^n$ with $n$ features.
 We assume there is a linear dependence
 \begin{equation}
@@ -217,37 +210,8 @@ In this case the matrix~$\bX^{\T} \bX$ is close to singular and not invertible.
 To avoid the strong linear dependence, dimensionality reduction and feature selection are used.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Dimensionality reduction}
+\section{Feature selection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-To eliminate the linear dependence and reduce the dimensionality of the input space, the principal components analysis (PCA) is widely used algorithm. 
-The main disadvantage of the PCA method is its insensitivity to the interrelation between the features and the targets.
-The partial least squares algorithm projects the design matrix~$\bX$ and the target matrix~$\bY$ to the latent space with low dimensionality ($l < n$).
-The PLS algorithm finds the latent space matrices $\bT, \bU \in \mathbb{R}^{m \times l}$ that best describe the original matrices~$\bX$ and~$\bY$.
-
-The design matrix~$\bX$ and the target matrix~$\bY$ are projected into the latent space in the following way:
-\begin{align}
-\label{eq:PLS_X}
-\underset{m \times n}{\vphantom{\bQ}\bX} 
-&= \underset{m \times l}{\vphantom{\bQ}\bT} \cdot \underset{l \times n}{\vphantom{\bQ}\bP^{\T}} + \underset{m \times n}{\vphantom{\bQ}\bF} 
-= \sum_{k=1}^l \underset{m \times 1}{\vphantom{\bp_k^{\T}}\bt_k} \cdot \underset{1 \times n}{\bp_k^{\T}} + \underset{m \times n}{\vphantom{\bp_k^{\T}}\bF},\\
-\label{eq:PLS_Y}
-\underset{m \times r}{\vphantom{\bQ}\bY} 
-&= \underset{m \times l}{\vphantom{\bQ}\bU} \cdot \underset{l \times r}{\bQ^{\T}} + \underset{m \times r}{\vphantom{\bQ}\bE}
-=  \sum_{k=1}^l  \underset{m \times 1}{\vphantom{\bq_k^{\T}}\bu_k} \cdot \underset{1 \times r}{\bq_k^{\T}} +  \underset{m \times r}{\vphantom{\bq_k^{\T}}\bE},
-\end{align}
-where $\bT$, $\bU$ are scores matrices in the latent space; $\bP$, $\bQ$ are loading matrices; $\bE,\ \bF$ are residual matrices. PLS maximizes the linear relation between columns of matrices~$\bT$ and~$\bU$
-\begin{equation*}
-\bU \approx \bT \bB, \quad \bB = \text{diag}(\beta_k), \quad \beta_k = \bu_k^{\T}\bt_k / (\bt_k^{\T}\bt_k).
-\end{equation*}
-
-We use the PLS algorithm as the dimensionality reduction algorithm in this research.
-The theoretical explanation of the PLS algorithm are given in Section~\ref{sec:pls}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature selection}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Feature selection is a special case of dimensionality reduction, where the loading matrices~$\bT$ and $\bU$ are the submatrices of the design matrix $\bX$ and the target matrix~$\bY$.
 
 The feature selection goal is to find the boolean vector~$\ba = \{0, 1\}^n$, which components indicate whether the feature is selected. 
 To obtain the optimal vector~$\ba$ among all possible $2^n - 1$ options, introduce the feature selection error function $S(\ba | \bX, \bY)$. 
@@ -295,174 +259,20 @@ The authors of the original QPFS paper~\cite{rodriguez2010quadratic} suggested t
 \end{equation*}
 where $\overline{\bQ}$, $\overline{\bb}$ are the mean values of~$\bQ$ and $\bb$ respectively. The QPFS parameters are defined as follows:
 \begin{equation}
-\bQ = \left[\text{sim}(\bchi_i, \bchi_j)\right]_{i,j=1}^n, \quad \bb = \left[\text{sim}(\bchi_i, \bnu)\right]_{i=1}^n.
+\bQ = \left[|\text{corr}(\bchi_i, \bchi_j)|\right]_{i,j=1}^n, \quad \bb = \left[|\text{corr}(\bchi_i, \bnu)|\right]_{i=1}^n.
 \label{eq:qpfs_1d_qb}
 \end{equation}
-Here the function~$\text{sim}(\cdot, \cdot)$ is a similarity measure.
-The common ways to define this function are the absolute value of sample Pearson correlation coefficient
+Here~$\text{corr}(\cdot, \cdot)$ is the absolute value of sample Pearson correlation coefficient
 \begin{equation*}
-\text{sim}(\bchi, \bnu) = |\text{corr}(\bchi, \bnu)| = \left|\frac{\sum_{i=1}^m(\bchi_i - \overline{\bchi})( \bnu_i - \overline{\bnu})}{\sqrt{\sum_{i=1}^m(\bchi_i - \overline{\bchi})^2\sum_{i=1}^m(\bnu_i - \overline{\bnu})^2}}\right|,
+|\text{corr}(\bchi, \bnu)| = \left|\frac{\sum_{i=1}^m(\bchi_i - \overline{\bchi})( \bnu_i - \overline{\bnu})}{\sqrt{\sum_{i=1}^m(\bchi_i - \overline{\bchi})^2\sum_{i=1}^m(\bnu_i - \overline{\bnu})^2}}\right|.
 \end{equation*}
-or the sample mutual information coefficient
-\begin{equation*}
-\text{sim}(\bchi, \bnu) = I(\bchi, \bnu) = \int \int p(\bchi, \bnu) \log(\frac{p(\bchi, \bnu)}{p(\bchi)p(\bnu)}) d\bchi d\bnu.
-\end{equation*}
-We use the correlation coefficient as a similarity measure~$\text{sim}(\cdot, \cdot)$.
 The other ways to define $\bQ$ and $\bb$ are considered in~\cite{katrutsa2017comprehensive}.
 
 The problem~\eqref{eq:qpfs_problem} is convex if the matrix~$\bQ$ is positive semidefinite. In general it is not always true.
 To satisfy this condition, the matrix~$\bQ$ spectrum is shifted and the matrix~$\bQ$ is replaced by $\bQ - \lambda_{\text{min}} \mathbf{I}$, where $\lambda_{\text{min}} $ is a minimal eigenvalue of~$\bQ$.
 The original paper~\cite{rodriguez2010quadratic} suggests the way to solve the quadratic problem~\eqref{eq:qpfs_problem} efficiently. In~\cite{prasad2013scaling} the sequential minimal optimization framework is proposed for solving~\eqref{eq:qpfs_problem}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Partial least squares regression}
-\label{sec:pls}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-The pseudocode of the PLS regression algorithm is given in the Algorithm~\ref{PLSR_code}.
-In each of the~$l$ steps the algorithm iteratively calculates columns $\bt_k$, $\bu_k$, $\bp_k$, $\bq_k$ of the matrices $\bT$, $\bU$, $\bP$, $\bQ$, respectively. 
-After the computation of the next set of vectors, the one-rank approximations are subtracted from the matrices~$\bX$,~$\bY$. 
-This step is called a matrix deflation.
-In the first step one has to normalize the columns of the original matrices (subtract the mean and divide by the standard deviation).
-During the test mode we need to normalize test data, compute the model prediction~\eqref{eq:model}, and then perform the reverse normalization.
-
-\begin{algorithm}[h]
-	\caption{PLSR algorithm}
-	\label{PLSR_code}
-	\begin{algorithmic}[1]
-		\REQUIRE $\bX, \bY, l$;
-		\ENSURE $\bT, \bP, \bQ$;
-		\STATE normalize matrices $\bX$ и $\bY$ by columns
-		\STATE initialize $\bu_0$ (the first column of $\bY$)
-		\STATE $\bX_1 = \bX; \bY_1 = \bY$
-		\FOR{$k=1,\dots, l$}
-		\REPEAT
-		\vspace{0.1cm}
-		\STATE $\bw_k := \bX_k^{\T} \bu_{k-1} / (\bu_{k-1}^{\T} \bu_{k-1}); \quad \bw_k: = \frac{\bw_k}{\| \bw_k \|}$
-		\vspace{0.1cm}
-		\STATE $\bt_k := \bX_k \bw_k$
-		\vspace{0.1cm}
-		\STATE $\bc_k := \bY_k^{\T} \bt_k / (\bt_k^{\T} \bt_k); \quad \bc_k: = \frac{\bc_k}{\| \bc_k \|}$
-		\vspace{0.1cm}
-		\STATE $\bu_k := \bY_k \bc_k$
-		\UNTIL{$\bt_k$ stabilizes}
-		\vspace{0.1cm}
-		\STATE $\bp_k:= \bX_k^{\T}\bt_k/(\bt_k^{\T}\bt_k),\ 
-		\bq_k := \bY_k^{\T}\bu_k/(\bu_k^{\T}\bu_k)$
-		\vspace{0.2cm}
-		\STATE $\bX_{k+1} :=  \bX_k - \bt_k \bp_k^{\T}$
-		\vspace{0.2cm}
-		\STATE $\bY_{k + 1} :=  \bY_k - \bu_k \bq_k^{\T} \approx  \bY_k - \bt_k \cdot \left(\frac{\bY^{\T}\bt_k}{\bt_k^{\T}\bt_k}\right)^{\T} $ 
-		\ENDFOR
-	\end{algorithmic}
-\end{algorithm}
-
-The vectors $\bt_k$ and $\bu_k$ from the inner loop of the algorithm~\ref{PLSR_code} contain information about the design matrix $\bX$ and the target matrix $\bY$, respectively. 
-The blocks of steps (6)--(7) and (8)-(9)~are analogues of the PCA algorithm for the matrices~$\bX$ and~$\bY$~\cite{geladi1986partial}. 
-Sequential repetition of the blocks takes into account the interaction between the matrices~$\bX$ and~$\bY$.
-
-The theoretical explanation of the PLS algorithm follows from the statements.
-\begin{proposition}
-	The best description of the matrices $\bX$ and $\bY$ taking into account their interrelation is achieved by maximization of the covariance between the vectors $\bt_k$ and $\bu_k$.
-\end{proposition}
-The statement follows from the equation
-\begin{equation*}
-\text{cov} (\bt_k, \bu_k) = \text{corr} (\bt_k, \bu_k) \cdot \sqrt{\text{var}(\bt_k)} \cdot \sqrt{\text{var}(\bu_k)}.
-\end{equation*}
-Maximization of the vectors $\bt_k$ and $\bu_k$ variances corresponds to keeping information about original matrices, the correlation of these vectors corresponds to interrelation between $\bX$ and~$\bY$. $\blacksquare$
-
-In the inner loop of the Algorithm~\ref{PLSR_code} the normalized weight vectors $\bw_k$ and $\bc_k$ are calculated. 
-These vectors construct the matrices $\bW$ and $\bC$, respectively.
-
-\begin{proposition}
-	The vector $\bw_k$ and $\bc_k$ are eigenvectors of the matrices $\bX_k^{\T} \bY_k \bY_k^{\T} \bX_k$ and $\bY_k^{\T} \bX_k \bX_k^{\T} \bY_k$, corresponding to the maximum eigenvalues.
-	
-	\begin{align*}
-	\bw_k \varpropto \bX_k^{\T} \bu_{k-1} \varpropto \bX_k^{\T} \bY_k \bc_{k-1} \varpropto \bX_k^{\T} \bY_k \bY_k^{\T} \bt_{k-1} \varpropto \bX_k^{\T} \bY_k \bY_k^{\T} \bX_k \bw_{k-1}, \\
-	\bc_k \varpropto \bY_k^{\T} \bt_k \varpropto \bY_k^{\T} \bX_k \bw_k \varpropto \bY_k^{\T} \bX_k \bX_k^{\T} \bu_{k-1} \varpropto \bY_k^{\T} \bX_k \bX_k^{\T} \bY_k \bc_{k-1},
-	\end{align*}
-	where the $\varpropto$ symbol means equality up to a multiplicative constant.
-	\label{st:eig}
-\end{proposition}
-
-The statement follows from the fact that the update rule for vectors~$\bw_k$,~$\bc_k$ coincides with the iteration of the power method for the maximum eigenvalue.
-
-We formulate the power method as follows. Let a matrix~$\mathbf{A}$ be diagonalizable, $\bx$~be some vector, then
-\begin{equation*}
-\lim_{k \rightarrow \infty} \mathbf{A}^k \bx = \lambda_{\max}(\mathbf{A}) \cdot \mathbf{v}_{\max},
-\end{equation*}
-where $\mathbf{v}_{\max}$~is the eigenvector~$\mathbf{A}$, corresponding to the maximum eigenvalue~$ \lambda_{\max} (\mathbf{A})$.
-$\blacksquare$
-
-\begin{proposition}
-	The update rule for the vectors in steps (6)--(9) of the algorithm~\ref{PLSR_code} corresponds to the maximization of the covariance between the vectors $\bt_k$ and $\bu_k$.
-\end{proposition}
-
-The maximum covariance between the vectors $\bt_k$ and $\bu_k$ is equal to the maximum eigenvalue of the matrix $\bX_k^{\T} \bY_k \bY_k^{\T} \bX_k$:
-\begin{multline*}
-\max_{\bt_k, \bu_k}  \text{cov} (\bt_k, \bu_k)^2 = \max_{\substack{\|\bw_k\|=1 \\ \|\bc_k\| = 1}} \text{cov} \left( \bX_k \bw_k, \bY_k \bc_k \right)^2 = \max_{\substack{\|\bw_k\|=1 \\ \|\bc_k\| = 1}} \text{cov} \left(\bc_k^{\T}  \bY_k^{\T} \bX_k \bw_k \right)^2 = \\
-= \max_{\|\bw_k\| = 1} \text{cov} \left\|\bY_k^{\T} \bX_k \bw_k \right\|^2 = \max_{\|\bw_k\| = 1} \bw_k^{\T} \bX_k^{\T} \bY_k \bY_k^{\T} \bX_k \bw_k = \\
-= \lambda_{\max} \left( \bX_k^{\T} \bY_k \bY_k^{\T} \bX_k \right),
-\end{multline*}
-where $ \lambda_{\max} (\mathbf{A})$~is the maximum eigenvalue of~$\mathbf{A}$.
-Using the statement~\ref{st:eig}, we obtain the required result.
-$\blacksquare$
-
-After the inner loop the following step (11:) is to compute vectors $\bp_k$, $\bq_k$ by projection of the matrices $\bX_k$ and $\bY_k$ columns to the vector $\bt_k$. 
-Before proceeding with the next iteration one has to deflate the matrices $\bX_k$ and $\bY_k$ by the one-rank approximations $\bt_k \bp_k^{\T}$ and $\bt_k \bq_k^{\T}$
-\begin{align}
-\bX_{k + 1} &= \bX_{k} - \bt_k \bp_k^{\T} = \bX - \sum_k \bt_k \bp_k^{\T}, 
-\label{eq:deviation_X} \\
-\bY_{k + 1} &= \bY_{k} - \bt_k \bq_k^{\T} = \bY - \sum_k \bt_k \bq_k^{\T}.
-\label{eq:deviation_Y}
-\end{align}
-Each next vector $\bt_{k+1}$ turns out to be orthogonal to all vectors $\bt_i$, $i=1, \dots, k$.
-
-Let assume that the dimension of the input, the target, and the latent spaces are equal to~2 ($n = r = l = 2$).
-Figure~\ref{fig:PLSFigure} shows the result of the PLS algorithm in this case.
-Blue and green dots represent the rows of the matrices~$\bX$ and~$\bY$, respectively. 
-The dots were generated from a normal distribution with zero mean. 
-Contours of the distribution for covariance matrices are shown in red.
-Black contours are unit circles. 
-Red arrows correspond to principal components for this set of points. 
-Black arrows correspond to the vectors of the matrices~$\bW$ and~$\bC$ from the PLS algorithm. 
-The vectors~$\bt_k$ and~$\bu_k$ are equal to the projected matrices~$\bX_k$ and~$\bY_k$ to the vectors~$\bw_k$ and~$\bc_k$, respectively, and are denoted by black pluses. 
-Taking into account the interaction between the matrices~$\bX$ and~$\bY$ the vectors~$\bw_k$ and~$\bc_k$ deviate from the principal components directions. 
-The deviation of the vectors~$\bw_k$ is insignificant. 
-In the first iteration, $\bc_1$ is close to the principal component~$\textit{pc}_1$, but the vectors~$\bc_k$ in the next iterations could strongly correlate. 
-The difference in the vectors~$\bw_k$ and~$\bc_k$ the behaviour is associated with the assymmetric deflation process~\eqref{eq:deviation_X},~\eqref{eq:deviation_Y}. In particular, we subtract from~$\bY$ the one-rank approximation found in the space of the design matrix~$\bX$.
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\linewidth]{figs/PLSFigure.eps}
-	\caption{PLS algorithm example for the case $n = r = l = 2$}.
-	\label{fig:PLSFigure}
-\end{figure}
-
-To obtain the model prediction and find the model parameters, multiply the both hand sides of~\eqref{eq:PLS_X} by the matrix~$\bW$. 
-Since the residual matrix~$\bE$ rows are orthogonal to the columns of~$\bW$, we have
-\begin{equation*}
-\bX \bW = \bT \bP^{\T} \bW.
-\end{equation*}
-The linear transformation between objects in the input and latent spaces is the following
-\begin{equation}
-\bT = \bX \bW^*, \quad \text{where } \bW^* = \bW (\bP^{\T} \bW)^{-1}.
-\label{eq:W*}
-\end{equation}
-The matrix of the model parameters~\eqref{eq:model} could be found from equations~\eqref{eq:PLS_Y},~\eqref{eq:W*}
-\begin{equation}
-\bY = \bU \bQ^{\T} + \bE \approx \bT \bB \bQ^{\T}+ \bE = \bX \bW^* \bB \bQ^{\T} + \bE = \bX \bTheta + \bE.
-\label{eq:pls_model}
-\end{equation}
-Thus, the model parameters~\eqref{eq:model} are equal to
-\begin{equation}
-\bTheta = \bW (\bP^{\T} \bW)^{-1} \bB \bQ^{\T}.
-\label{eq:model_parameters}
-\end{equation}
-
-The final model~\eqref{eq:pls_model} is a linear model which are low-dimensional in the latent space. 
-It reduces the data redundancy and increases the model stability. 
-
-\section{Multivariate QPFS}
+\subsection{Multivariate QPFS}
 
 We are aimed to propose the algorithms which suitable for feature selection in multivariate case. 
 If the target space is multidimensional it prone to redundancy and correlations between the targets. 
@@ -470,9 +280,9 @@ In this section we consider the algorithms that take into account the probable d
 
 \subsection{Relevance aggregation (RelAgg).}
 
-First approach to apply the QPFS algorithm to the multivariate case ($r > 1$) is to aggregate feature relevances through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, the matrix $\bQ$ is defined by~\eqref{eq:qpfs_1d_qb}. The vector $\bb$ is aggregated across all targets and is defined by
+First approach to apply the QPFS algorithm to the multivariate case ($r > 1$) is to aggregate feature relevances through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, the matrix~$\bQ$ is defined by~\eqref{eq:qpfs_1d_qb}. The vector $\bb$ is aggregated across all targets and is defined by
 \begin{equation*}
-\bb = \left[\sum_{k=1}^r\text{sim}(\bchi_i, \bnu_k)\right]_{i=1}^n.
+\bb = \left[\sum_{k=1}^r|\text{sim}(\bchi_i, \bnu_k)|\right]_{i=1}^n.
 \end{equation*}
 
 The drawback of this approach is its insensitivity to the dependencies in the columns of~$\bY$. Observe the following example:
@@ -508,9 +318,9 @@ We add the term~$\text{Sim}(\bY)$ and modify the term $\text{Rel}(\bX, \bY)$ as 
 \end{equation}
 Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR^{r \times r}$, $\bB \in \bbR^{n \times r}$ in the following way
 \begin{equation*}
-\bQ_x = \left[ \text{sim}(\bchi_i, \bchi_j) \right]_{i,j=1}^n, \quad
-\bQ_y = \left[ \text{sim}(\bnu_i, \bnu_j) \right]_{i,j=1}^r, \quad
-\bB =  \left[ \text{sim}(\bchi_i, \bnu_j) \right]_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
+\bQ_x = \left[ |\text{corr}(\bchi_i, \bchi_j)| \right]_{i,j=1}^n, \quad
+\bQ_y = \left[ |\text{corr}(\bnu_i, \bnu_j)| \right]_{i,j=1}^r, \quad
+\bB =  \left[ |\text{corr}(\bchi_i, \bnu_j)| \right]_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
 \end{equation*}
 The vector~$\bz_x$ shows the features importances, while $\bz_y$ is a vector with the targets importances.
 The correlated targets will be penalized by $\text{Sim} (\bY)$ and have the lower importances.
@@ -636,36 +446,6 @@ g(\bz_x, \lambda, \bmu)
 \end{multline}
 It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables.
 
-\subsection{Minimax Relevances (MaxRel).}
-
-The problem~\eqref{eq:dual_maxmin} is not convex. If we shift the spectrum for the matrix of quadratic form~\eqref{eq:dual_quadratic_form}, the optimality is lost and the solutions obtained by min-max and max-min problems are not the same. To overcome this problem, we suggest to drop the term~$\text{Sim}(\bY)$. It brings to the following min-max problem
-
-\begin{equation}
-\min_{\substack{\bz_x \geq \bZero_n \\ \bOne_n^{\T}\bz_x=1}} 	\max_{\substack{\bz_y \geq \bZero_r \\ \bOne_r^{\T}\bz_y=1}} \left[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bz_y \right].
-\label{eq:maxrel}
-\end{equation}
-The Lagrangian for the problem~\eqref{eq:maxrel} with the fixed vector~$\bz_x$ is
-\begin{equation*}
-L(\bz_x, \bz_y, \lambda, \bmu) = (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bz_y + \lambda \cdot  (\bOne_r^{\T} \bz_y - 1) + \bmu^{\T} \bz_y.
-\end{equation*}
-Setting the gradient of the Langrangian $\nabla_{\bz_y} L(\bz_x, \bz_y, \lambda, \bmu)$ to zero, we obtain:
-\begin{equation*}
-\alpha \cdot \bB^{\T} \bz_x = \lambda \cdot \bOne_r + \bmu.
-\end{equation*}
-The dual function is equal to
-\begin{equation*}
-g(\bz_x, \lambda, \bmu) =
-\begin{cases}
-(1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \lambda, & \alpha \cdot \bB^{\T} \bz_x = \lambda \cdot \bOne_r + \bmu;  \\
-+ \infty, & \text{otherwise}.
-\end{cases}
-\end{equation*}
-In this case the feature importances are the solution of~\eqref{eq:dual_maxmin}, which is expressed as follows
-\begin{equation*}
-\min_{\substack{\bz_x \in \mathbb{C}^n, \, \lambda, \, \bmu \geq \bZero_r \\ \alpha \cdot \bB^{\T} \bz_x = \lambda \cdot \bOne_r + \bmu}} \left[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \lambda \right].
-\end{equation*}
-This quadratic problem is convex for the positive definite matrix~$\bQ_x$.
-
 \subsection{Asymmetric Importance (AsymImp)}
 Another way to overcome the problem of SymImp strategy is to add penalty for targets, which are well-explained by the features.
 We add the term~$\bb^{\T} \bz_y$ to the term $\text{Rel}(\bX, \bY)$:
@@ -736,8 +516,7 @@ The ideas in MinMax and AsymImp approaches are the same.
 			\hline && \\ [-.5em]
 			RelAgg & $\min \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr] $ & $\min\limits_{\bz_x} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bOne_r \bigr] $ \\ &&\\[-.5em]
 			SymImp & $\begin{aligned} \min \, \bigl[ \text{Sim}(\bX) & - \text{Rel}(\bX, \bY) \\ & + \text{Sim}(\bY) \bigr] \end{aligned}$ & $ \min\limits_{\bz_x, \, \bz_y} \left[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \right] $\\ &&\\ [-.5em]
-			MinMax & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $	\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$ \\ &&\\ 
-			MaxRel & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) \bigr] \end{aligned}$& $\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bz_y \bigr]$ \\ 		&&\\ [-.5em]
+			MinMax & $\begin{aligned} &\min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]  \\ & \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $	\min\limits_{\bz_x} 	\max\limits_{\bz_y} \bigl[\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$ \\ &&\\ [-.5em]
 			AsymImp & $\begin{aligned} & \min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]\\ &  \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $\min\limits_{\bz_x, \bz_y} \bigl[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \left(\bz_x^{\T} \bB \bz_y - \bb^{\T} \bz_y \right) + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$\\ 
 			\hline
 	\end{tabular}}
@@ -745,7 +524,90 @@ The ideas in MinMax and AsymImp approaches are the same.
 	\label{tbl:summary}
 \end{table}
 
-\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dimensionality reduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To eliminate the linear dependence and reduce the dimensionality of the input space, the principal components analysis (PCA) is widely used algorithm. 
+The main disadvantage of the PCA method is its insensitivity to the interrelation between the features and the targets.
+The partial least squares algorithm projects the design matrix~$\bX$ and the target matrix~$\bY$ to the latent space with low dimensionality ($l < n$).
+The PLS algorithm finds the latent space matrices $\bT, \bU \in \mathbb{R}^{m \times l}$ that best describe the original matrices~$\bX$ and~$\bY$.
+
+The design matrix~$\bX$ and the target matrix~$\bY$ are projected into the latent space in the following way:
+\begin{align}
+\label{eq:PLS_X}
+\underset{m \times n}{\vphantom{\bQ}\bX} 
+&= \underset{m \times l}{\vphantom{\bQ}\bT} \cdot \underset{l \times n}{\vphantom{\bQ}\bP^{\T}} + \underset{m \times n}{\vphantom{\bQ}\bF} 
+= \sum_{k=1}^l \underset{m \times 1}{\vphantom{\bp_k^{\T}}\bt_k} \cdot \underset{1 \times n}{\bp_k^{\T}} + \underset{m \times n}{\vphantom{\bp_k^{\T}}\bF},\\
+\label{eq:PLS_Y}
+\underset{m \times r}{\vphantom{\bQ}\bY} 
+&= \underset{m \times l}{\vphantom{\bQ}\bU} \cdot \underset{l \times r}{\bQ^{\T}} + \underset{m \times r}{\vphantom{\bQ}\bE}
+=  \sum_{k=1}^l  \underset{m \times 1}{\vphantom{\bq_k^{\T}}\bu_k} \cdot \underset{1 \times r}{\bq_k^{\T}} +  \underset{m \times r}{\vphantom{\bq_k^{\T}}\bE},
+\end{align}
+where $\bT$, $\bU$ are scores matrices in the latent space; $\bP$, $\bQ$ are loading matrices; $\bE,\ \bF$ are residual matrices. PLS maximizes the linear relation between columns of matrices~$\bT$ and~$\bU$
+\begin{equation*}
+\bU \approx \bT \bB, \quad \bB = \text{diag}(\beta_k), \quad \beta_k = \bu_k^{\T}\bt_k / (\bt_k^{\T}\bt_k).
+\end{equation*}
+We use the PLS algorithm as the dimensionality reduction algorithm in this research.
+
+The pseudocode of the PLS regression algorithm is given in the Algorithm~\ref{PLSR_code}.
+In each of the~$l$ steps the algorithm iteratively calculates columns $\bt_k$, $\bu_k$, $\bp_k$, $\bq_k$ of the matrices $\bT$, $\bU$, $\bP$, $\bQ$, respectively. 
+After the computation of the next set of vectors, the one-rank approximations are subtracted from the matrices~$\bX$,~$\bY$. 
+\begin{algorithm}[h]
+	\caption{PLSR algorithm}
+	\label{PLSR_code}
+	\begin{algorithmic}[1]
+		\REQUIRE $\bX, \bY, l$;
+		\ENSURE $\bT, \bP, \bQ$;
+		\STATE normalize matrices $\bX$ и $\bY$ by columns
+		\STATE initialize $\bu_0$ (the first column of $\bY$)
+		\STATE $\bX_1 = \bX; \bY_1 = \bY$
+		\FOR{$k=1,\dots, l$}
+		\REPEAT
+		\vspace{0.1cm}
+		\STATE $\bw_k := \bX_k^{\T} \bu_{k-1} / (\bu_{k-1}^{\T} \bu_{k-1}); \quad \bw_k: = \frac{\bw_k}{\| \bw_k \|}$
+		\vspace{0.1cm}
+		\STATE $\bt_k := \bX_k \bw_k$
+		\vspace{0.1cm}
+		\STATE $\bc_k := \bY_k^{\T} \bt_k / (\bt_k^{\T} \bt_k); \quad \bc_k: = \frac{\bc_k}{\| \bc_k \|}$
+		\vspace{0.1cm}
+		\STATE $\bu_k := \bY_k \bc_k$
+		\UNTIL{$\bt_k$ stabilizes}
+		\vspace{0.1cm}
+		\STATE $\bp_k:= \bX_k^{\T}\bt_k/(\bt_k^{\T}\bt_k),\ 
+		\bq_k := \bY_k^{\T}\bu_k/(\bu_k^{\T}\bu_k)$
+		\vspace{0.2cm}
+		\STATE $\bX_{k+1} :=  \bX_k - \bt_k \bp_k^{\T}$
+		\vspace{0.2cm}
+		\STATE $\bY_{k + 1} :=  \bY_k - \bu_k \bq_k^{\T} \approx  \bY_k - \bt_k \cdot \left(\frac{\bY^{\T}\bt_k}{\bt_k^{\T}\bt_k}\right)^{\T} $ 
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+To obtain the model prediction and find the model parameters, multiply the both hand sides of~\eqref{eq:PLS_X} by the matrix~$\bW$. 
+Since the residual matrix~$\bE$ rows are orthogonal to the columns of~$\bW$, we have
+\begin{equation*}
+\bX \bW = \bT \bP^{\T} \bW.
+\end{equation*}
+The linear transformation between objects in the input and latent spaces is the following
+\begin{equation}
+\bT = \bX \bW^*, \quad \text{where } \bW^* = \bW (\bP^{\T} \bW)^{-1}.
+\label{eq:W*}
+\end{equation}
+The matrix of the model parameters~\eqref{eq:model} could be found from equations~\eqref{eq:PLS_Y},~\eqref{eq:W*}
+\begin{equation}
+\bY = \bU \bQ^{\T} + \bE \approx \bT \bB \bQ^{\T}+ \bE = \bX \bW^* \bB \bQ^{\T} + \bE = \bX \bTheta + \bE.
+\label{eq:pls_model}
+\end{equation}
+Thus, the model parameters~\eqref{eq:model} are equal to
+\begin{equation*}
+\bTheta = \bW (\bP^{\T} \bW)^{-1} \bB \bQ^{\T}.
+\end{equation*}
+
+The final model~\eqref{eq:pls_model} is a linear model which are low-dimensional in the latent space. 
+It reduces the data redundancy and increases the model stability. 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiment}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -906,15 +768,6 @@ The value of~$\tau$ should be cross-validated to get the optimal threshold and t
 \end{table}
 
 We fit the PLS regression model for the data to compare the dimensionality reduction and feature selection. 
-Figure~\ref{fig:ecog_prediction} shows the example of the model prediction. Three solid lines show 3D coordinates of the hand position and the dashed lines are the model predictions.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{figs/ecog_prediction}
-	\caption{Example of 3D hand position prediction by PLS regression}
-	\label{fig:ecog_prediction}
-\end{figure}
-
 Figure~\ref{fig:pls_vs_k} demonstrates the scaled RMSE on train and test data with respect to the dimensionality of the latent space~$l$.
 The test error achieves minimum value at hte point $l = 11$.
 PLS regression is more flexible approach compared to the linear model built on the subset of features.
