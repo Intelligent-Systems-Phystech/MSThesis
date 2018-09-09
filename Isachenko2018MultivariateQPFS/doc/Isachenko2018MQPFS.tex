@@ -71,16 +71,12 @@
 \newcommand{\argmin}{\mathop{\arg \min}\limits}
 \newcommand{\argmax}{\mathop{\arg \max}\limits}
 
-\newcommand\undermat[2]{%
-	\makebox[0pt][l]{$\smash{\underbrace{\phantom{%
-					\begin{matrix}#2\end{matrix}}}_{\text{$#1$}}}$}#2}
-
 \begin{document}
 	
 	\linenumbers
 	
 	\title
-{Multivariate Quadratic Programming Feature Selection for signal decoding}
+{Multivariate Quadratic Programming Feature Selection in Signal Decoding}
 \date{}
 \maketitle
 \begin{center}
@@ -88,113 +84,113 @@
 	V.\,V.~Strijov
 \end{center}
 \textbf{Abstract:} 
-The paper is devoted to the problem of dimensionality reduction for signal decoding.
-The challenge of the investigation is redundancy in data description. 
-High correlation in measurements leads to correlation in input space. 
-The study considers multivariate case, the target variable is a vector.
-In this case the correlations occur in both input and target spaces.
+This paper is devoted to the dimensionality reduction problem in signal decoding.
+The challenge of this investigation is the redundancy in the data description. 
+High correlations among measurements lead to correlations in the input space. 
+This study considers the multivariate problem, and the target variable is a vector.
+In this case, the correlations occur in both the input and target spaces.
 Dimensionality reduction and feature selection are used to build simple and stable model.
 
-Partial least squares~(PLS) regression is used as a base model for the dimensionality reduction.
-The model projects input and target data into the joint latent space and maximizes the covariances between the projections.
-To obrain the sparse model the feature selection is applied.
+The partial least squares~(PLS) regression is used as the base model for the dimensionality reduction.
+The model projects the input and target data into the joint latent space and maximizes the covariances between the projections.
+To obtain the sparse model, the feature selection is applied.
 The majority of feature selection methods ignore the dependencies in the target space.
-The study suggests a novel approach to feature selection in multivariate regression.
+The study suggests a novel approach to feature selection using a multivariate regression.
 The proposed approach extends the ideas of the quadratic programming feature selection~(QPFS) algorithm. 
-The QPFS algorithm selects non-correlated features, which are relevant to the targets. 
-The proposed methods take into account the dependencies in the target space and select features which are informative to all targets jointly.
+The QPFS algorithm selects the noncorrelated features that are relevant to the targets. 
+The proposed methods take into account the dependencies in the target space and select the features that are informative to all targets jointly.
 
-The computational experiment was carried out on the electrocorticogram (ECOG) and NIR spectrometry data. 
-The proposed algorithms were compared by different criteria such as stability and their prediction performance.
+The computational experiment was carried out using the electrocorticogram (ECOG) dataset. 
+The proposed algorithms were compared using different criteria such as their stability and predictive performance.
 The algorithms give significantly better results compared to the baseline strategy.
-The linear regression with QPFS was compared with partial least squares~(PLS) regression.
-The best result is obtained by combination of QPFS and PLS algorithms.
+The QPFS approach was compared with the partial least squares~(PLS) regression.
+The best result is obtained by a combination of the QPFS and PLS algorithms.
 
 \bigskip
-\textbf{Keywords}: multivariate regression, quadratic programming feature selection, signal decoding
+\textbf{Keywords}: partial least squares, quadratic programming feature selection, signal decoding
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Initial data in the fields of chemometrics~\cite{karimi2014leukemia,lin2016equivalence} and signal decoding~\cite{eliseyev2014stable,eliseyev2012l1} are high-dimensional and extremely redundant.
-The model which are built on such data are instable. 
-In addition, the redundant data description requires excess computations which lead to real-time delay. 
-To overcome this problem dimensionality reduction~\cite{chun2010sparse,mehmood2012review} and feature selection~\cite{katrutsa2015stress,li2017feature} methods are used  for high-dimensional data modelling. 
+The initial data in the fields of chemometrics~\cite{karimi2014leukemia,lin2016equivalence} and signal decoding~\cite{eliseyev2014stable,eliseyev2012l1} are high-dimensional and extremely redundant.
+The models that are built on such data are instable. 
+In addition, the redundant data description requires excessive computations, which lead to extended analisys times. 
+To overcome this problem, dimensionality reduction~\cite{chun2010sparse,mehmood2012review} and feature selection~\cite{katrutsa2015stress,li2017feature} methods are used  for high-dimensional data modeling. 
 
-Partial least squares~(PLS) are widely used algorithm for dimensionality reduction~\cite{lauzon2018sequential,engel2017kernel,biancolillo2017extension,hervas2018sparse}. 
-PLS finds the optimal combinations of the initial features and use these combinations as the model features. 
-The algorithm projects the features and the targets onto the joint latent space and maximizes the covariances between projected vectors. 
-It allows to save information about initial input and target matrices and find their relations. 
-The dimensionality of latent space is much less than the size of initial data description. It leads to a stable linear model built on the small number of features. 
-The overview of advances in PLS regression is given in~\cite{rosipal2006overview,rosipal2011nonlinear}.
-For this model we obtain the linear model with small latent dimension.
-However, the final model use the whole range of the initial features and it does not allow to remove useless features. 
+The partial least squares~(PLS) is a widely used algorithm for dimensionality reduction~\cite{lauzon2018sequential,engel2017kernel,biancolillo2017extension,hervas2018sparse}. 
+The PLS finds the optimal combinations of the initial features and uses these combinations as the model features. 
+The algorithm projects the features and the targets onto the joint latent space and maximizes the covariances between the projected vectors. 
+It allows researchers to save the information about the initial input and target matrices and find their relations. 
+The dimensionality of the latent space is much less than the size of the initial data description. 
+It leads to a stable linear model built on a small number of features. 
+An overview of the advances in the PLS regression is given in~\cite{rosipal2006overview,rosipal2011nonlinear}.
+For this model, we obtain the linear model with a small latent dimension.
+However, the final model uses the whole range of the initial features, and it does not allow for the removal of useless features. 
 
-Feature selection is a special case of dimensionality reduction when the latent representation is a subset of initial data description. 
-Here the model are built on the subset of the features. 
-One of the approach to feature selection is to maximize feature relevances and minimize pairwise feature redundancy. 
+Feature selection is a special case of dimensionality reduction when the latent representation is a subset of the initial data description. 
+Here, the model is built on the subsets of the features. 
+One of the approaches to feature selection is to maximize the feature relevances and minimize the pairwise feature redundancy. 
 This approach was recently proposed and investigated in~\cite{ding2005minimum,yamada2014high}.
-Quadratic programmic feature selection~(QPFS)~\cite{rodriguez2010quadratic} uses this approach to construct the optimization problem. It was shown in~\cite{katrutsa2017comprehensive} that QPFS algorithm outperforms many existing feature selection methods for the univariate regression problem. 
+Quadratic programmic feature selection~(QPFS)~\cite{rodriguez2010quadratic} uses this approach to construct the optimization problem. It was shown in~\cite{katrutsa2017comprehensive} that the QPFS algorithm outperforms many existing feature selection methods for the univariate regression problem. 
 The QPFS algorithm introduces two functions: $\text{Sim}$ and $\text{Rel}$.
-$\text{Sim}$ estimates the redundancy between features, $\text{Rel}$ contains relevances between each feature and the target vector.
-QPFS minimizes the function Sim and maximizes the function Rel simultaneously.
-The algorithm solves the following optimization problem
+$\text{Sim}$ estimates the redundancy between features, and $\text{Rel}$ contains the relevances between each feature and the target vector.
+QPFS minimizes the Sim function and maximizes the Rel function simultaneously.
+The algorithm solves the following optimization problem:
 \begin{equation}
-(1 - \alpha) \cdot \underbrace{\bz^{\T} \bQ \bz}_{\text{Sim}(\bX)} - \alpha \cdot \underbrace{\vphantom{()} \bb^{\T} \bz}_{\text{Rel} (\bX, \bnu)} \rightarrow \min_{\substack{\bz \geq \bZero_n \\ \bOne_n^{\T} \bz=1}}.
+(1 - \alpha) \cdot \underbrace{\bz^{\T} \bQ \bz}_{\text{Sim}(\bX)} - \alpha \cdot \underbrace{ \bb^{\T} \bz}_{\text{Rel} (\bX, \bnu)} \rightarrow \min_{\substack{\bz \geq \bZero_n \\ \bOne_n^{\T} \bz=1}}.
 \label{eq:qpfs_problem}
 \end{equation}
-Here columns of the matrix~$\bX$ are the features, and~$\bnu$ is the target vector. 
+Here, the columns of matrix~$\bX$ are the features, and~$\bnu$ is the target vector. 
 The matrix~$\bQ \in \bbR^{n \times n}$ entries measure the pairwise similarities between features.
 The vector $\bb \in \bbR^n$ expresses the similarities between each feature and the target vector.
 The normalized vector~$\bz$ shows the importance of each feature.
-The function~\eqref{eq:qpfs_problem} penalizes the dependent features by the function Sim and encourages features relevant to the target by the function Rel.
-The parameter~$\alpha$ controls the trade-off between Sim and the Rel.
-To measure similarity the authors use the absolute value of sample correlation coefficient between pairs of features for the function Sim, and between the features and the target vector for the function Rel.
+Function~\eqref{eq:qpfs_problem} penalizes the dependent features using the Sim function and promotes the features that are relevant to the target using the Rel function.
+The parameter~$\alpha$ controls the trade-off between Sim and Rel.
+To measure the similarity, the authors of~\cite{rodriguez2010quadratic} use the absolute value of the sample correlation coefficient between pairs of features for the Sim function, and between the features and the target vector for the Rel function.
 
-The paper~\cite{motrenko2018multi} proposes a multi-way version of the QPFS algorithm for tensor ECoG-based data. 
-It was shown that QPFS is an appropriate feature selection method for signal decoding problem.
+Paper~\cite{motrenko2018multi} proposes a multiway version of the QPFS algorithm for tensor ECoG-based data. 
+It was shown that QPFS is an appropriate feature selection method for the signal decoding problem.
 We consider the multivariate problem, where the dependent variable is a vector. 
 It leads to correlations in the model targets. 
-In this situation feature selection algorithms do not take into account these dependencies.
-Hence, the selected feature subset is not optimal in terms of prediction.
-We propose methods which take into account the dependencies in both input and target spaces. 
-It allows to get the stable sparse model.
-We refer to the original QPFS algortihm as our baseline for the computational experiment.
+In this situation, feature selection algorithms do not take into account these dependencies.
+Hence, the selected feature subset is not optimal in terms of its prediction.
+We propose methods that take into account the dependencies in both the input and target spaces. 
+It allows us to form a stable sparse model.
+We refer to the original QPFS algorithm as our baseline for the computational experiment.
 
-The main drawback of QPFS algorithm is computational cost. However, the original paper~\cite{rodriguez2010quadratic} suggests the way to solve the quadratic problem~\eqref{eq:qpfs_problem} efficiently. Additionally, in~\cite{prasad2013scaling} the sequential minimal optimization framework is proposed for solving~\eqref{eq:qpfs_problem}.
+The main drawback of the QPFS algorithm is its computational costs. However, the original paper~\cite{rodriguez2010quadratic} suggests a way to solve the quadratic problem~\eqref{eq:qpfs_problem} efficiently. Additionally, in~\cite{prasad2013scaling}, the sequential minimal optimization framework is proposed for solving~\eqref{eq:qpfs_problem}.
 
-The experiments were carried out for ECoG dataset.
-We compared the proposed methods for multivariate feature selection with the baseline strategy and with PLS algorithm. 
-The stability of the proposed methods were investigated by measuring how the feature selection solution changes with data bootstraping.
-The proposed algorithms outperform the baseline algorithm with the same number of features. 
+The experiments were carried out using the ECoG dataset~\cite{shimoda2012decoding}.
+We compared the proposed methods for multivariate feature selection with the baseline strategy and the PLS algorithm. 
+The stability of the proposed methods was investigated by measuring how the feature selection solution changes with data bootstrapping.
+The proposed algorithms outperform the baseline algorithm given the same number of features. 
 The combination of the feature selection procedure and the PLS algorithm gives the best performance.
 
-The main contributions of this paper are:
+The main contributions of this paper are as follows:
 \begin{itemize}
-	\item addressing the dimensionality reduction problem for high-dimensional data;
-	\item proposing new feature selection methods for multivariate regression
-	\item comparing the proposed methods on real ECoG dataset, and showing that the proposed methods give the better feature subsets than the baseline method.
+	\item addressing the dimensionality reduction problem for high-dimensional data,
+	\item proposing new feature selection methods for multivariate regression with the analysis of the input and target spaces structures,
+	\item comparing the proposed methods using a real ECoG dataset, and showing that the proposed methods give better feature subsets than the baseline method.
 \end{itemize}
 
 \section{Multivariate regression}
 
 The goal is to forecast a dependent variable $\by \in \bbR^r$ with $r$ targets from an independent input object $\bx \in \bbR^n$ with $n$ features.
-We assume there is a linear dependence
+We assume that there is a linear dependence between the object $\bx$ and the target variable $\by$ as
 \begin{equation}
-\by = \bTheta \bx+ \boldsymbol{\varepsilon}
+\by = \bTheta \bx+ \boldsymbol{\varepsilon},
 \label{eq:model}
 \end{equation}
-between the object $\bx$ and the target variable $\by$,
-where $\bTheta \in \bbR^{r \times n}$ is a matrix of model parameters, $\boldsymbol{\varepsilon} \in \bbR^{r}$ is a residual vector.
-One has to find the matrix of the model parameters~$\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix, $\bY \in \bbR^{m \times r}$ is a target matrix
+where $\bTheta \in \bbR^{r \times n}$ is the matrix of the model parameters, and $\boldsymbol{\varepsilon} \in \bbR^{r}$ is a residual vector.
+One has to find the matrix of the model parameters~$\bTheta$ given a dataset $\left( \bX, \bY \right)$, where $\bX \in \bbR^{m \times n}$ is a design matrix and $\bY \in \bbR^{m \times r}$ is a target matrix:
 \begin{equation*}
 \bX = [\bx_1, \dots, \bx_m]^{\T} =  [\bchi_1, \dots, \bchi_n]; \quad \bY = [\by_1, \dots, \by_m]^{\T} =  [\bnu_1, \dots, \bnu_r].
 \end{equation*}
-The columns~$\bchi_j$ of~$\bX$ respond to the object features, the columns~$\bnu_j$ of~$\bY$ respond to the targets.
+The columns~$\bchi_j$ of~$\bX$ correspond to the object features, and the columns~$\bnu_j$ of~$\bY$ correspond to the targets.
 
-The optimal parameters are determined by minimization of an error function.
-Define the quadratic loss function:
+The optimal parameters are determined by the minimization of an error function.
+We define the quadratic loss function as follows:
 \begin{equation}
 \mathcal{L}(\bTheta | \bX, \bY) = {\left\| \underset{m \times r}{\mathbf{Y}}  - \underset{m \times n}{\bX} \cdot \underset{r \times n}{\bTheta}^{\T} \right\| }_2^2 \rightarrow\min_{\bTheta}.
 \label{eq:loss_function}
@@ -204,32 +200,32 @@ The solution of~\eqref{eq:loss_function} is given by
 \bTheta = \bY^{\T} \bX (\bX^{\T} \bX)^{-1}.
 \end{equation*}
 
-The linear dependent columns of~$\bX$ leads to an instable solution for the optimization problem~\eqref{eq:loss_function}.
+The linear dependent columns of~$\bX$ lead to an instable solution for the optimization problem~\eqref{eq:loss_function}.
 If there is a vector $\boldsymbol{\alpha} \neq \bZero_n$ such that $\bX \boldsymbol{\alpha}= \bZero_m$, then adding~$\boldsymbol{\alpha}$ to any column of~$\bTheta$ does not change the value of the loss function $\mathcal{L}(\bTheta | \bX, \bY)$.
-In this case the matrix~$\bX^{\T} \bX$ is close to singular and not invertible.
-To avoid the strong linear dependence, dimensionality reduction and feature selection are used.
+In this case, the matrix~$\bX^{\T} \bX$ is close to singular and is not invertible.
+To avoid strong linear dependence, dimensionality reduction and feature selection are used.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature selection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The feature selection goal is to find the boolean vector~$\ba = \{0, 1\}^n$, which components indicate whether the feature is selected. 
-To obtain the optimal vector~$\ba$ among all possible $2^n - 1$ options, introduce the feature selection error function $S(\ba | \bX, \bY)$. 
-We state the feature selection problem as follows 
+The feature selection goal is to find the boolean vector~$\ba = \{0, 1\}^n$ in which the components indicate whether the feature is selected. 
+To obtain the optimal vector~$\ba$ among all possible $2^n - 1$ options, we introduce the feature selection error function $S(\ba | \bX, \bY)$. 
+We state the feature selection problem as follows:
 \begin{equation}
 \ba = \argmin_{\ba' \in \{0, 1\}^n} S(\ba' | \bX, \bY).
 \label{eq:feature_selection}
 \end{equation}
-The goal of feature selection is to construct the appropriate function~$S(\ba | \bX, \bY)$. The particular examples for the considered feature selection algorithms are given below and summarized in the Table~\ref{tbl:summary}.
+The goal of feature selection is to construct the appropriate function~$S(\ba | \bX, \bY)$. The particular examples for the considered feature selection algorithms are given below and summarized in Table~\ref{tbl:summary}.
 
-The problem~\eqref{eq:feature_selection} are hard to solve due to discrete binary domain~$\{0, 1\}^n$. We relax the problem~\eqref{eq:feature_selection} to the continuous domain~$[0, 1]^n$. The relaxed feature selection problem is
+Problem~\eqref{eq:feature_selection} is hard to solve due to the discrete binary domain~$\{0, 1\}^n$. We relax problem~\eqref{eq:feature_selection} to the continuous domain~$[0, 1]^n$. The relaxed feature selection problem is
 \begin{equation}
 \bz = \argmin_{\bz' \in [0, 1]^n} S(\bz' | \bX, \bY).
 \label{eq:relaxed_feature_selection}
 \end{equation}
-Here the vector~$\bz$ entries are normalized feature importances.
-Firstly, solve the problem~\eqref{eq:relaxed_feature_selection} to obtain the feature importances~$\bz$. 
-Then the solution of~\eqref{eq:feature_selection} is recovered by thresholding:
+Here, the vector~$\bz$ entries are the normalized feature importances.
+First, we solve problem~\eqref{eq:relaxed_feature_selection} to obtain the feature importances~$\bz$. 
+Then, the solution of~\eqref{eq:feature_selection} is recovered by thresholding as follows:
 \begin{equation*}
 \ba = [a_j]_{j=1}^n, \quad 
 a_j = \begin{cases}
@@ -237,49 +233,49 @@ a_j = \begin{cases}
 0, & \text{otherwise}.
 \end{cases}
 \end{equation*}
-Here the value~$\tau$ is a hyperparameter which is defined manually or choosen by cross-validation. 
+$\tau$ is a hyperparameter that is defined manually or chosen by cross-validation. 
 
-Once the solution~$\ba$ of~\eqref{eq:feature_selection} is known, the problem~\eqref{eq:loss_function} becomes
+Once the solution~$\ba$ of~\eqref{eq:feature_selection} is known, problem~\eqref{eq:loss_function} becomes
 \begin{equation*}
 \mathcal{L}(\bTheta_{\ba} | \bX_{\ba}, \bY) = {\left\| \mathbf{Y} - \bX_{\ba}\bTheta^{\T}_{\ba} \right\| }_2^2 \rightarrow\min_{\bTheta_{\ba}},
 \end{equation*}
-where the subscript~$\ba$ indicates the submatrix with the columns for which components of~$\ba$ equal 1.
+where subscript~$\ba$ indicates the sub matrix with the columns in which the components of~$\ba$ equal 1.
 
 \subsection{Quadratic Programming Feature Selection}
-Our base algorithm for feature selection is quadratic programming feature selection algorithm. 
-The paper~\cite{katrutsa2017comprehensive} shows that QPFS outperforms many existing feature selection algorithms in different criteria.
-The QPFS algorithm selects non-correlated features, which are relevant to the target vector~$\bnu$ for the linear regression problem with~$r=1$
+
+Paper~\cite{katrutsa2017comprehensive} shows that QPFS outperforms many existing feature selection algorithms using different quality criteria.
+The QPFS algorithm selects the noncorrelated features that are relevant to the target vector~$\bnu$ for the linear regression problem where~$r=1$ as follows:
 \begin{equation*}
 \| \bnu - \bX \btheta\|_2^2 \rightarrow\min_{\btheta \in \bbR^{n}}.
 \end{equation*}
 
-The authors of the original QPFS paper~\cite{rodriguez2010quadratic} suggested the way to select~$\alpha$ for~\eqref{eq:qpfs_problem} and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ impacts the same:
+The authors of the original QPFS paper~\cite{rodriguez2010quadratic} suggested the following way to select~$\alpha$ for~\eqref{eq:qpfs_problem} and make $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bnu)$ have the same impacts:
 \begin{equation*}
-\alpha = \frac{\overline{\bQ}}{\overline{\bQ} + \overline{\bb}},
+\alpha = \frac{\overline{\bQ}}{\overline{\bQ} + \overline{\bb}}, \quad \overline{\bQ} = \text{mean} (\bQ), \,\,\, \overline{\bb}= \text{mean} (\bb).
 \end{equation*}
-where $\overline{\bQ}$, $\overline{\bb}$ are the mean values of~$\bQ$ and $\bb$ respectively. The QPFS parameters are defined as follows:
+The QPFS parameters are defined as follows:
 \begin{equation}
 \bQ = \left[|\text{corr}(\bchi_i, \bchi_j)|\right]_{i,j=1}^n, \quad \bb = \left[|\text{corr}(\bchi_i, \bnu)|\right]_{i=1}^n.
 \label{eq:qpfs_1d_qb}
 \end{equation}
-Here~$\text{corr}(\cdot, \cdot)$ is the absolute value of sample Pearson correlation coefficient
+Here~$\text{corr}(\cdot, \cdot)$, is the absolute value of the sample Pearson correlation coefficient:
 \begin{equation*}
-|\text{corr}(\bchi, \bnu)| = \left|\frac{\sum_{i=1}^m(\bchi_i - \overline{\bchi})( \bnu_i - \overline{\bnu})}{\sqrt{\sum_{i=1}^m(\bchi_i - \overline{\bchi})^2\sum_{i=1}^m(\bnu_i - \overline{\bnu})^2}}\right|.
+\text{corr}(\bchi, \bnu) = \frac{\sum_{i=1}^m(\bchi_i - \overline{\bchi})( \bnu_i - \overline{\bnu})}{\sqrt{\sum_{i=1}^m(\bchi_i - \overline{\bchi})^2\sum_{i=1}^m(\bnu_i - \overline{\bnu})^2}}.
 \end{equation*}
-The other ways to define $\bQ$ and $\bb$ are considered in~\cite{katrutsa2017comprehensive}.
+Other ways to define $\bQ$ and $\bb$ are considered in~\cite{katrutsa2017comprehensive}.
 
-The problem~\eqref{eq:qpfs_problem} is convex if the matrix~$\bQ$ is positive semidefinite. In general it is not always true.
-To satisfy this condition, the matrix~$\bQ$ spectrum is shifted and the matrix~$\bQ$ is replaced by $\bQ - \lambda_{\text{min}} \mathbf{I}$, where $\lambda_{\text{min}} $ is a minimal eigenvalue of~$\bQ$.
+Problem~\eqref{eq:qpfs_problem} is convex if the matrix~$\bQ$ is positive semidefinite. In general, this is not always true.
+To satisfy this condition, the matrix~$\bQ$ spectrum is shifted and matrix~$\bQ$ is replaced by $\bQ - \lambda_{\text{min}} \mathbf{I}$, where $\lambda_{\text{min}} $ is the minimum eigenvalue of~$\bQ$.
 
 \subsection{Multivariate QPFS}
 
-We are aimed to propose the algorithms, which are suitable for feature selection in the multivariate case. 
-If the target space is multidimensional it prone to redundancy and correlations between the targets. 
-In this section the algorithms that take into account dependencies in both input and target spaces are proposed.
+Here, we propose the algorithms for feature selection in the multivariate case. 
+If the target space is multidimensional, it is prone to redundancy and correlations between the targets. 
+In this section, we propose the algorithms that take into account the dependencies in both the input and target spaces.
 
 \subsection{Relevance aggregation (RelAgg).}
 
-In~\cite{motrenko2018multi} to apply QPFS algorithm for the multivariate case ($r > 1$) feature relevances are aggregated through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, the matrix~$\bQ$ is defined by~\eqref{eq:qpfs_1d_qb}. The vector $\bb$ is aggregated across all targets and is defined by
+In~\cite{motrenko2018multi}, in order to apply the QPFS algorithm to the multivariate case ($r > 1$), feature relevances are aggregated through all $r$ components. The term $\text{Sim}(\bX)$ is still the same, and matrix~$\bQ$ is defined by~\eqref{eq:qpfs_1d_qb}. The vector $\bb$ is aggregated across all targets and is defined as
 \begin{equation*}
 \bb = \left[\sum_{k=1}^r|\text{corr}(\bchi_i, \bnu_k)|\right]_{i=1}^n.
 \end{equation*}
@@ -287,43 +283,43 @@ The drawback of this approach is its insensitivity to the dependencies in the co
 \begin{equation*}
 \bX = [\bchi_1, \bchi_2, \bchi_3], \quad \bY = [\underbrace{\bnu_1, \bnu_1, \dots, \bnu_1}_{r-1}, \bnu_2].
 \end{equation*}
-We have 3 features and $r$ targets, where first $r-1$ targets are identical.
-The pairwise features similarities are given by the matrix $\bQ$.
-The matrix $\bB$ entries show pairwise features relevances to the targets.
-The vector $\bb$ is obtained by summation of the matrix $\bB$ over the columns
+We have 3 features and $r$ targets, where the first $r-1$ targets are identical.
+The pairwise features similarities are given by matrix~$\bQ$.
+Matrix $\bB$ entries five the pairwise features relevances to the targets.
+Vector $\bb$ is obtained by the summation of matrix~$\bB$ over the columns
 \begin{equation}
 \bQ = \begin{bmatrix} 1 & 0 & 0\\ 0 & 1 & 0.8 \\ 0 & 0.8 & 1 \end{bmatrix}, \quad
-\bB = \begin{bmatrix} 0.4 & \dots & 0.4 & 0 \\ 0.5 & \dots & 0.5 & 0.8 \\ \undermat{r-1}{0.8 & \dots & 0.8} & 0.1 \end{bmatrix}, \quad
+\bB = \begin{bmatrix} 0.4 & \dots & 0.4 & 0 \\ 0.5 & \dots & 0.5 & 0.8 \\ 0.8 & \dots & 0.8 & 0.1 \end{bmatrix}, \quad
 \bb = \begin{bmatrix} (r-1) \cdot 0.4 + 0 \\ (r-1) \cdot 0.5 + 0.8 \\ (r-1) \cdot 0.8 + 0.1 \end{bmatrix}.
 \label{eq:qpfs_example}
 \end{equation}
 \vspace{0.5cm} \\
 We would like to select only two features.
-For such configuration the best feature subset is~$[\bchi_1, \bchi_2]$.
-The feature~$\bchi_2$ predicts the second target~$\bnu_2$ and the combination of features~$\bchi_1, \bchi_2$ predicts the first component.
+For such a configuration, the best feature subset is~$[\bchi_1, \bchi_2]$.
+Feature~$\bchi_2$ predicts the second target~$\bnu_2$ and the combination of features~$\bchi_1, \bchi_2$ predicts the first component.
 The QPFS algorithm for~$r=2$ gives the solution~$\bz = [0.37,	0.61,	0.02]$. It coincides with our knowledge.
-However, if we add the collinear columns to the matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\bz = [0.40,	0.17, 0.43]$.
-Here we lose the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
-The following subsections propose the extension of the QPFS algorithm which are overcome the challenge of this example.
+However, if we add the collinear columns to matrix~$\bY$ and increase~$r$ to 5, the QPFS solution will be~$\bz = [0.40,	0.17, 0.43]$.
+Here, we lose the relevant feature~$\bchi_2$ and select the redundant feature~$\bchi_3$.
+The following subsections propose extensions to the QPFS algorithm that overcome the challenge of this example.
 
 \subsection{Symmetric importances (SymImp).}
 
-To take into account the dependencies in the columns of the matrix $\bY$ we extend the QPFS function~\eqref{eq:qpfs_problem} to the multivariate case.
-We add the term~$\text{Sim}(\bY)$ and modify the term $\text{Rel}(\bX, \bY)$ as follows
+To take into account the dependencies in the columns of matrix $\bY$, we extend the QPFS function~\eqref{eq:qpfs_problem} to the multivariate case.
+We add the term~$\text{Sim}(\bY)$ and modify the term $\text{Rel}(\bX, \bY)$ as follows:
 \begin{equation}
 \alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\bz_x^{\T} \bB \bz_y}_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n, \, \bOne_n^{\T}\bz_x=1 \\ \bz_y \geq \bZero_r, \, \bOne_r^{\T}\bz_y=1}}.
 \label{eq:symimp}
 \end{equation}
-Determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR^{r \times r}$, $\bB \in \bbR^{n \times r}$ in the following way
+We determine the entries of matrices $\bQ_x \in \bbR^{n \times n}$, $\bQ_y \in \bbR^{r \times r}$, and $\bB \in \bbR^{n \times r}$ in the following way:
 \begin{equation*}
 \bQ_x = \left[ |\text{corr}(\bchi_i, \bchi_j)| \right]_{i,j=1}^n, \quad
 \bQ_y = \left[ |\text{corr}(\bnu_i, \bnu_j)| \right]_{i,j=1}^r, \quad
 \bB =  \left[ |\text{corr}(\bchi_i, \bnu_j)| \right]_{\substack{i=1, \dots, n \\ j=1, \dots, r}}.
 \end{equation*}
-The vector~$\bz_x$ shows the features importances, while $\bz_y$ is a vector with the targets importances.
-The correlated targets will be penalized by $\text{Sim} (\bY)$ and have the lower importances.
+Vector~$\bz_x$ shows the features' importances, while $\bz_y$ is a vector of the targets importances.
+The correlated targets will be penalized by $\text{Sim} (\bY)$ and have lower importances.
 
-The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term on the function~\eqref{eq:symimp} and satisfy the conditions:
+The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of each term on function~\eqref{eq:symimp} and satisfy the following conditions:
 \begin{equation*}
 \alpha_1 + \alpha_2 + \alpha_3 = 1, \quad \alpha_i \geq 0, \, i = 1, 2, 3.
 \end{equation*}
@@ -335,18 +331,17 @@ The coefficients $\alpha_1$, $\alpha_2$, and $\alpha_3$ control the influence of
 	\alpha_3  \propto \overline{\bQ}_x \overline{\bB}.
 	\label{eq:alpha_3}
 	\end{equation}
-	Here $\overline{\bQ}_x$, $\overline{\bB}$, $\overline{\bQ}_y$ are mean values of~$\bQ_x$, $\bB$, and $\bQ_y$, respectively.
 	
 \end{proposition}
 \begin{proof}
-	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solving of the following equations
+	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solving of the following equations:
 	\begin{align*}
 	&\alpha_1 + \alpha_2 + \alpha_3 = 1; \\
 	&\alpha_1 \overline{\bQ}_x = \alpha_2 \overline{\bB} = \alpha_3 \overline{\bQ}_y.
 	\end{align*}
-	Here, the mean values~$\overline{\bQ}_x$, $\overline{\bB}$, and $\overline{\bQ}_y$ of the corresponding matrices ~$\bQ_x$, $\bB$, and $\bQ_y$ are the mean values of the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Sim}(\bY)$.
+	Here, the mean values~$\overline{\bQ}_x$, $\overline{\bB}$, and $\overline{\bQ}_y$ of the corresponding matrices~$\bQ_x$, $\bB$, and $\bQ_y$ are the mean values of the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Sim}(\bY)$.
 \end{proof}
-To investigate the impact of the term $\text{Sim}(\bY)$ on the function~\eqref{eq:symimp}, we balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the proportion between~$\alpha_1$ and $\alpha_2$:
+To investigate the impact of~$\text{Sim}(\bY)$ on function~\eqref{eq:symimp}, we balance the terms $\text{Sim}(\bX)$ and $\text{Rel}(\bX, \bY)$ by fixing the proportion between~$\alpha_1$ and $\alpha_2$:
 \begin{equation}
 \alpha_1 = \frac{(1 - \alpha_3)\overline{\bB}}{\overline{\bQ}_x + \overline{\bB}}; \quad
 \alpha_2 = \frac{(1 - \alpha_3)\overline{\bQ}_x}{\overline{\bQ}_x + \overline{\bB}}; \quad
@@ -355,35 +350,35 @@ To investigate the impact of the term $\text{Sim}(\bY)$ on the function~\eqref{e
 \end{equation}
 
 We apply the proposed algorithm to the discussed example~\eqref{eq:qpfs_example}.
-The given matrix~$\bQ$ corresponds to the matrix~$\bQ_x$.
-We additionally define the matrix~$\bQ_y$ by setting $\text{corr}(\bnu_1, \bnu_2) = 0.2$ and all others entries to one.
-Figure~\ref{fig:features_vs_alpha} shows the importances of features~$\bz_x$ and targets~$\bz_y$ with respect to~$\alpha_3$ coefficient.
-If~$\alpha_3$ is small, the impact of all targets are almost identical and the feature~$\bchi_3$ dominates the feature~$\bchi_2$. When~$\alpha_3$ becomes larger than~$0.2$, the importance~$\bz_{y,5}$ of the target~$\bnu_5$ grows up along with the importance of the feature~$\bchi_2$.
+The given matrix~$\bQ$ corresponds to matrix~$\bQ_x$.
+We additionally define matrix~$\bQ_y$ by setting $\text{corr}(\bnu_1, \bnu_2) = 0.2$ and all others entries to one.
+Figure~\ref{fig:features_vs_alpha} shows the importances of features~$\bz_x$ and targets~$\bz_y$ with respect to~$\alpha_3$.
+If~$\alpha_3$ is small, the impacts of all targets are almost identical and feature~$\bchi_3$ dominates feature~$\bchi_2$. When~$\alpha_3$ becomes larger than~$0.2$, the importance~$\bz_{y,5}$ of target~$\bnu_5$ increases along with the importance of feature~$\bchi_2$.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figs/features_vs_alpha.pdf}
-	\caption{Feature importances $\bz_x$ and $\bz_y$ w.r.t.~$\alpha_3$ for the considered example}
+	\caption{Feature importances $\bz_x$ and $\bz_y$ with respect to~$\alpha_3$ for the considered example}
 	\label{fig:features_vs_alpha}
 \end{figure}
 
-\subsection{Minimax QPFS (MinMax and MaxMin).}
-The function~\eqref{eq:symimp} is symmetric with respect to~$\bz_x$ and $\bz_y$.
-It penalizes the features that are correlated and are not relevant to the targets.
-At the same time it penalizes the targets that are correlated and are not sufficiently explained by the features.
-It leads to small importances for the targets which are difficult to predict by the features and large importances for the targets which are strongly correlated with the features.
-It contradicts with the intuition.
-Our goal is to predict all targets, especially which are difficult to explain, by selected relevant and non-correlated the features. We express this into two related problems:
+\subsection{Minimax QPFS (MinMax).}
+Function~\eqref{eq:symimp} is symmetric with respect to~$\bz_x$ and $\bz_y$.
+It penalizes the features that are correlated and irrelevant to the targets.
+In addition, it penalizes the targets that are correlated and are not sufficiently explained by the features.
+It leads to small importances for the targets that are weakly correlated with the features and large importances for the targets that are strongly correlated with the features.
+This result contradicts the intuition.
+Our goal is to predict all targets, especially those that are difficult to explain, using the selected relevant and noncorrelated features. We express this as two related problems:
 \begin{align}
-\alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T}\mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n, \\ \bOne_n^{\T}\bz_x=1}};
+\alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{ \bz_x^{\T}\mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n, \\ \bOne_n^{\T}\bz_x=1}};
 \label{eq:x_qpfs}\\
-\alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{\vphantom{()} \bz_x^{\T} \mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_y \geq \bZero_r,  \\ \bOne_r^{\T}\bz_y=1}}.
+\alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} + \alpha_2 \cdot \underbrace{ \bz_x^{\T} \mathbf{B} \bz_y}_{\text{Rel}(\bX, \bY)} \rightarrow \min_{\substack{\bz_y \geq \bZero_r,  \\ \bOne_r^{\T}\bz_y=1}}.
 \label{eq:y_qpfs}
 \end{align}
 The difference between~\eqref{eq:x_qpfs} and~\eqref{eq:y_qpfs} is the sign of Rel.
-In feature space the non-relevant components should have smaller importances.
+In the input space, the nonrelevant components should have smaller importances.
 Meanwhile, the targets that are not relevant to the features should have larger importances.
-The problems~\eqref{eq:x_qpfs} and \eqref{eq:y_qpfs} are merged into the joint min-max or max-min formulation
+Problems~\eqref{eq:x_qpfs} and \eqref{eq:y_qpfs} are merged into the joint min-max or max-min formulation
 \begin{equation}
 \min_{\substack{\bz_x \geq \bZero_n \\ \bOne_n^{\T}\bz_x=1}} 	\max_{\substack{\bz_y \geq \bZero_r \\ \bOne_r^{\T}\bz_y=1}} f(\bz_x, \bz_y), \quad \left(\text {or} \, \max_{\substack{\bz_y \geq \bZero_r \\ \bOne_r^{\T}\bz_y=1}} \min_{\substack{\bz_x \geq \bZero_n \\ \bOne_n^{\T}\bz_x=1}} f(\bz_x, \bz_y)\right),
 \label{eq:minmax}
@@ -393,22 +388,22 @@ where
 f(\bz_x, \bz_y) = \alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot \underbrace{\bz_x^{\T} \bB \bz_y}_{\text{Rel}(\bX, \bY)} - \alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)}.
 \end{equation*}
 \begin{theorem}
-	For positive definite matrices $\bQ_x$ and $\bQ_y$ the max-min and min-max problems~\eqref{eq:minmax} have the same optimal value.
+	For positive definite matrices $\bQ_x$ and $\bQ_y$, the max-min and min-max problems~\eqref{eq:minmax} have the same optimal value.
 \end{theorem}
 \begin{proof}
-	Denote
+	We denote the following:
 	\begin{equation*}
 	\mathbb{C}^n = \{\bz : \bz \geq \bZero_n, \, \bOne_n^{\T}\bz=1\}, \quad \mathbb{C}^r = \{\bz : \bz \geq \bZero_r, \, \bOne_r^{\T}\bz=1\}.
 	\end{equation*}
-	The sets $\mathbb{C}^n$ and $\mathbb{C}^r$ are compact and convex. The function $f: \mathbb{C}^n \times \mathbb{C}^r \rightarrow \bbR$ is a continuous function. If $\bQ_x$ and $\bQ_y$ are positive definite matrices, the function~$f$ is convex-concave, i.e.
-	$f(\cdot, \bz_y): \mathbb{C}^n \rightarrow \bbR$ is convex for fixed~$\bz_y$, and $f(\bz_x, \cdot): \mathbb{C}^r \rightarrow \bbR$ is concave for fixed~$\bz_x$.
-	In this case Neumann's minimax theorem states
+	The sets $\mathbb{C}^n$ and $\mathbb{C}^r$ are compact and convex. The function $f: \mathbb{C}^n \times \mathbb{C}^r \rightarrow \bbR$ is a continuous function. If $\bQ_x$ and $\bQ_y$ are positive definite matrices, function~$f$ is convex-concave. I.e.,
+	$f(\cdot, \bz_y): \mathbb{C}^n \rightarrow \bbR$ is convex for a fixed~$\bz_y$, and $f(\bz_x, \cdot): \mathbb{C}^r \rightarrow \bbR$ is concave for a fixed~$\bz_x$.
+	In this case, Neumann's minimax theorem states that
 	\begin{equation*}
 	\min_{\bz_x \in \mathbb{C}^n} \max_{\bz_y \in \mathbb{C}^r} f(\bz_x, \bz_y) = \max_{\bz_y \in \mathbb{C}^r} \min_{\bz_x\in \mathbb{C}^n} f(\bz_x, \bz_y).
 	\end{equation*}
 \end{proof}
 
-To solve the min-max problem~\eqref{eq:minmax}, fix some~$\bz_x \in \mathbb{C}^n$. For fixed vector~$\bz_x$ we solve the problem
+To solve the min-max problem~\eqref{eq:minmax}, we fix some~$\bz_x \in \mathbb{C}^n$. For a fixed vector~$\bz_x$, we solve the problem
 \begin{equation}
 \max_{\bz_y \in \mathbb{C}_r} f(\bz_x, \bz_y) = \max_{\substack{\bz_y \geq \bZero_r \\ \bOne_r^{\T}\bz_y=1}} \bigl[\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr].
 \label{eq:fixed_ax}
@@ -417,20 +412,20 @@ The Lagrangian for this problem is
 \begin{equation*}
 L(\bz_x, \bz_y, \lambda, \bmu) = \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y - \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y + \lambda \cdot  (\bOne_r^{\T} \bz_y - 1) + \bmu^{\T} \bz_y.
 \end{equation*}
-Here the Lagrange multipliers $\bmu$, corresponding to the inequality constraints $\bz_y \geq \bZero_r$, are restricted to be non-negative.
+Here, the Lagrange multipliers $\bmu$ that correspond to the inequality constraints $\bz_y \geq \bZero_r$ are restricted to being nonnegative.
 The dual problem is
 \begin{equation}
 \min_{\lambda, \, \bmu \geq \bZero_r} g(\bz_x, \lambda, \bmu) = \min_{\lambda, \, \bmu \geq \bZero_r}  \left[\max_{\bz_y \in \bbR^r} L(\bz_x, \bz_y, \lambda, \bmu) \right].
 \label{eq:dual}
 \end{equation}
-The strong duality holds for quadratic problem~\eqref{eq:fixed_ax} with positive definite matrices~$\bQ_x$ and~$\bQ_y$. Therefore, the optimal value for~\eqref{eq:fixed_ax} equals the optimal value for~\eqref{eq:dual}. It allows to solve the problem
+The strong duality holds for quadratic problem~\eqref{eq:fixed_ax} with the positive definite matrices~$\bQ_x$ and~$\bQ_y$. Therefore, the optimal value for~\eqref{eq:fixed_ax} equals the optimal value for~\eqref{eq:dual}. It allows us to solve the problem
 \begin{equation}
 \min_{\bz_x \in \mathbb{C}^n, \, \lambda, \, \bmu \geq \bZero_r} g(\bz_y, \lambda, \bmu)
 \label{eq:dual_maxmin}
 \end{equation}
 instead of~\eqref{eq:minmax}.
 
-Setting the gradient of the Langrangian $\nabla_{\bz_y} L(\bz_x, \bz_y, \lambda, \bmu)$ to zero, we obtain an optimal value~$\bz_y$:
+By setting the gradient of the Langrangian $\nabla_{\bz_y} L(\bz_x, \bz_y, \lambda, \bmu)$ equal to zero, we obtain an optimal value for~$\bz_y$:
 \begin{equation}
 \bz_y = \frac{1}{2\alpha_3} \bQ_y^{-1} \left( - \alpha_2 \cdot \bB^{\T} \bz_x +\lambda \cdot \bOne_r + \bmu \right).
 \label{eq:ax}
@@ -442,30 +437,30 @@ g(\bz_x, \lambda, \bmu)
 \bz_x^{\T} \left( - \frac{\alpha_2^2}{4\alpha_3} \cdot \bB \bQ_y^{-1} \bB^{\T} - \alpha_1 \cdot \bQ_x\right) \bz_x \\ - \frac{1}{4 \alpha_3} \lambda^2 \cdot \bOne_r^{\T} \bQ_y^{-1} \bOne_r - \frac{1}{4 \alpha_3} \cdot \bmu^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bB^{\T} \bz_x \\ - \frac{1}{2 \alpha_3} \lambda \cdot \bOne_r^{\T} \bQ_y^{-1} \bmu + \frac{\alpha_2}{2 \alpha_3} \cdot \bmu^{\T} \bQ_y^{-1} \bB^{\T} \bz_x + \lambda.
 \label{eq:dual_quadratic_form}
 \end{multline}
-It brings to the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables.
+It represents the quadratic problem~\eqref{eq:dual_maxmin} with~$n + r + 1$ variables.
 
 \subsection{Asymmetric Importance (AsymImp)}
-Another way to overcome the problem of SymImp strategy is to add penalty for targets, which are well-explained by the features.
-We add the term~$\bb^{\T} \bz_y$ to the term $\text{Rel}(\bX, \bY)$:
+The natural way to overcome the problem of the SymImp strategy is to add penalties for targets that are correlated with features.
+We add the term~$\bb^{\T} \bz_y$ to the term $\text{Rel}(\bX, \bY)$ as follows:
 \begin{equation}
 \alpha_1 \cdot \underbrace{\bz_x^{\T} \bQ_x \bz_x}_{\text{Sim}(\bX)} - \alpha_2 \cdot  \underbrace{\left(\bz_x^{\T} \bB \bz_y - \bb^{\T} \bz_y \right) }_{\text{Rel}(\bX, \bY)} + \alpha_3 \cdot \underbrace{\bz_y^{\T} \bQ_y \bz_y}_{\text{Sim}(\bY)} \rightarrow \min_{\substack{\bz_x \geq \bZero_n, \, \bOne_n^{\T}\bz_x=1 \\ \bz_y \geq \bZero_r, \, \bOne_r^{\T}\bz_y=1}}.
 \label{eq:asymimp}
 \end{equation}
 \begin{proposition}
-	Let the vector $\bb$ equal
+	Let vector $\bb$ equal
 	\begin{equation*}
 	b_j = \max_{i=1, \dots n} [\bB]_{i, j}.
 	\end{equation*}
-	Then the importances coefficients for the vector~$\bz_y$ will be nonnegative in term~$\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:asymimp}.
+	Then, the importance coefficients for vector~$\bz_y$ will be nonnegative in~$\text{Rel}(\bX, \bY)$ for problem~\eqref{eq:asymimp}.
 \end{proposition}
 \begin{proof}
-	The proposition follows from the fact 
+	The proposition follows from the fact that
 	\[
 	\sum_{i=1}^n  z_i b_{ij} \leq \left(\sum_{i=1}^n z_i \right)\max_{i=1, \dots n} b_{ij} = \max_{i=1, \dots n} b_{ij},
 	\]
 	where $z_i \geq 0$ and $\sum_{i=1}^nz_i = 1$.
 \end{proof}
-Hence, the function~\eqref{eq:asymimp} encourages the features which are relevant to the targets and encourages the targets that are not sufficiently correlated with the features. 
+Hence, function~\eqref{eq:asymimp} encourages the features that are relevant to the targets and encourages the targets that are not sufficiently correlated with the features. 
 \begin{proposition}
 	The balance between the terms~$\text{Sim}(\bX)$, $\text{Rel}(\bX, \bY)$, and $\text{Rel}(\bX, \bY)$ for the problem~\eqref{eq:asymimp} is achieved by the following coefficients:
 	\begin{equation*}
@@ -475,41 +470,41 @@ Hence, the function~\eqref{eq:asymimp} encourages the features which are relevan
 	\end{equation*}
 \end{proposition}
 \begin{proof}
-	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by solution of the following equations
+	The desired values of $\alpha_1$, $\alpha_2$, and $\alpha_3$ are given by the solutions to the following equations:
 	\begin{align}
 	&\alpha_1 + \alpha_2 + \alpha_3 = 1; \\
 	&\alpha_1 \overline{\bQ}_x = \alpha_2 \overline{\bB}; \label{eq:asymimp_balance1}\\
 	&\alpha_2 \left(\overline{\bb} - \overline{\bB} \right) = \alpha_3 \overline{\bQ}_y.
 	\label{eq:asymimp_balance2}
 	\end{align}
-	Here we balance $\text{Sim}(\bX)$ with the first term of~$\text{Rel}(\bX, \bY)$ by~\eqref{eq:asymimp_balance1} and $\text{Sim}(\bY)$ with the full~$\text{Rel}(\bX, \bY)$ by~\eqref{eq:asymimp_balance2}.
+	Here, we balance $\text{Sim}(\bX)$ with the first term of~$\text{Rel}(\bX, \bY)$ using~\eqref{eq:asymimp_balance1} and $\text{Sim}(\bY)$ with the full~$\text{Rel}(\bX, \bY)$ using~\eqref{eq:asymimp_balance2}.
 \end{proof}
 \begin{proposition}
-	For the case $r=1$ the proposed functions~\eqref{eq:symimp},~\eqref{eq:minmax}, ~\eqref{eq:maxrel}, and ~\eqref{eq:asymimp} coincide with the original QPFS algorithm~\eqref{eq:qpfs_problem}.
+	For the case of $r=1$, the proposed functions~\eqref{eq:symimp},~\eqref{eq:minmax}, and~\eqref{eq:asymimp} coincide with the original QPFS algorithm~\eqref{eq:qpfs_problem}.
 	
 	\begin{proof}
-		If $r$ is equal to 1, then $\bQ_y = q_y$ is a scalar, $\bz_y = 1$, $\bB = \bb$. It reduces the problems~\eqref{eq:symimp},~\eqref{eq:minmax}, and~\eqref{eq:asymimp} to
+		If $r$ is equal to 1, then $\bQ_y = q_y$ is a scalar, $\bz_y = 1$, and $\bB = \bb$. It reduces problems~\eqref{eq:symimp},~\eqref{eq:minmax}, and~\eqref{eq:asymimp} to
 		\begin{equation*}
 		\alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bb \rightarrow \min_{\bz_x \geq \bZero_n, \, \bOne_n^{\T}\bz_x=1} .
 		\end{equation*}
-		Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ brings to the original QPFS problem~\eqref{eq:qpfs_problem}.
+		Setting $\alpha = \frac{\alpha_2}{\alpha_1 + \alpha_2}$ represents the original QPFS problem~\eqref{eq:qpfs_problem}.
 	\end{proof}
 \end{proposition}
 
-To summarize all proposed strategies for multivariate feature selection, Table~\ref{tbl:summary} shows the core ideas and error functions for each method. 
-RelAgg is the baseline strategy, which does not consider the target space correlations.
+Table~\ref{tbl:summary} shows the core ideas and error functions for each method and summarizes all the proposed strategies for multivariate feature selection. 
+RelAgg is the baseline strategy, and it does not consider the target space correlations.
 SymImp penalizes the pairwise target correlations.
-MinMax more sensitive to the targets which are difficult for prediction.
-AsymImp strategy add the term to the SymImp function to make the features and targets influence asymmetric. 
-The ideas in MinMax and AsymImp approaches are the same. 
+MinMax are more sensitive to the targets that are difficult to predict.
+The AsymImp strategy adds the term to the SymImp function to make the features and targets have asymmetric influences. 
 
 
 \begin{table}
 	\centering
+	\caption{Overview of the proposed multivariate QPFS algorithms}
 	\small{
 		\begin{tabular}{c|c|c}
 			\hline
-			Algorithm & Idea & Error function $S(\ba | \bX, \bY)$ \\
+			Algorithm & Idea & Error function $S(\bz | \bX, \bY)$ \\
 			\hline && \\ [-.5em]
 			RelAgg & $\min \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr] $ & $\min\limits_{\bz_x} \bigl[ (1 - \alpha) \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha \cdot \bz_x^{\T} \bB \bOne_r \bigr] $ \\ &&\\[-.5em]
 			SymImp & $\begin{aligned} \min \, \bigl[ \text{Sim}(\bX) & - \text{Rel}(\bX, \bY) \\ & + \text{Sim}(\bY) \bigr] \end{aligned}$ & $ \min\limits_{\bz_x, \, \bz_y} \left[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \bz_x^{\T} \bB \bz_y + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \right] $\\ &&\\ [-.5em]
@@ -517,7 +512,6 @@ The ideas in MinMax and AsymImp approaches are the same.
 			AsymImp & $\begin{aligned} & \min \, \bigl[ \text{Sim}(\bX) - \text{Rel}(\bX, \bY) \bigr]\\ &  \max \bigl[\text{Rel}(\bX, \bY) + \text{Sim}(\bY) \bigr] \end{aligned}$ & $\min\limits_{\bz_x, \bz_y} \bigl[ \alpha_1 \cdot \bz_x^{\T} \bQ_x \bz_x - \alpha_2 \cdot \left(\bz_x^{\T} \bB \bz_y - \bb^{\T} \bz_y \right) + \alpha_3 \cdot \bz_y^{\T} \bQ_y \bz_y \bigr]$\\ 
 			\hline
 	\end{tabular}}
-	\caption{Overview of the proposed multivariate QPFS algorithms}
 	\label{tbl:summary}
 \end{table}
 
@@ -525,29 +519,29 @@ The ideas in MinMax and AsymImp approaches are the same.
 \subsection{Dimensionality reduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To eliminate the linear dependence and reduce the dimensionality of the input space, the principal components analysis (PCA) is widely used algorithm. 
-The main disadvantage of the PCA method is its insensitivity to the interrelation between the features and the targets.
+To eliminate the linear dependence and reduce the dimensionality of the input space, principal components analysis (PCA) is a widely used algorithm. 
+The main disadvantage of the PCA method is that it is insensitive to the interrelation between the features and the targets.
 The partial least squares algorithm projects the design matrix~$\bX$ and the target matrix~$\bY$ to the latent space with low dimensionality ($l < n$).
 The PLS algorithm finds the latent space matrices $\bT, \bU \in \mathbb{R}^{m \times l}$ that best describe the original matrices~$\bX$ and~$\bY$.
 
 The design matrix~$\bX$ and the target matrix~$\bY$ are projected into the latent space in the following way:
 \begin{align}
 \label{eq:PLS_X}
-\underset{m \times n}{\vphantom{\bQ}\bX} 
-&= \underset{m \times l}{\vphantom{\bQ}\bT} \cdot \underset{l \times n}{\vphantom{\bQ}\bP^{\T}} + \underset{m \times n}{\vphantom{\bQ}\bF} 
-= \sum_{k=1}^l \underset{m \times 1}{\vphantom{\bp_k^{\T}}\bt_k} \cdot \underset{1 \times n}{\bp_k^{\T}} + \underset{m \times n}{\vphantom{\bp_k^{\T}}\bF},\\
+\underset{m \times n}{\bX} 
+&= \underset{m \times l}{\bT} \cdot \underset{l \times n}{\bP^{\T}} + \underset{m \times n}{\bF} 
+= \sum_{k=1}^l \underset{m \times 1}{\bt_k} \cdot \underset{1 \times n}{\bp_k^{\T}} + \underset{m \times n}{\bF},\\
 \label{eq:PLS_Y}
-\underset{m \times r}{\vphantom{\bQ}\bY} 
-&= \underset{m \times l}{\vphantom{\bQ}\bU} \cdot \underset{l \times r}{\bQ^{\T}} + \underset{m \times r}{\vphantom{\bQ}\bE}
-=  \sum_{k=1}^l  \underset{m \times 1}{\vphantom{\bq_k^{\T}}\bu_k} \cdot \underset{1 \times r}{\bq_k^{\T}} +  \underset{m \times r}{\vphantom{\bq_k^{\T}}\bE},
+\underset{m \times r}{\bY} 
+&= \underset{m \times l}{\bU} \cdot \underset{l \times r}{\bQ^{\T}} + \underset{m \times r}{\bE}
+=  \sum_{k=1}^l  \underset{m \times 1}{\bu_k} \cdot \underset{1 \times r}{\bq_k^{\T}} +  \underset{m \times r}{\bE},
 \end{align}
-where $\bT$, $\bU$ are scores matrices in the latent space; $\bP$, $\bQ$ are loading matrices; $\bE,\ \bF$ are residual matrices. PLS maximizes the linear relation between columns of matrices~$\bT$ and~$\bU$
+where $\bT$ and $\bU$ are the scores matrices in the latent space, $\bP$ and $\bQ$ are the loading matrices, $\bE$ and $\bF$ are residual matrices. The PLS maximizes the linear relation between the columns of matrices~$\bT$ and~$\bU$ as
 \begin{equation*}
 \bU \approx \bT \bB, \quad \bB = \text{diag}(\beta_k), \quad \beta_k = \bu_k^{\T}\bt_k / (\bt_k^{\T}\bt_k).
 \end{equation*}
 We use the PLS algorithm as the dimensionality reduction algorithm in this research.
 
-To obtain the model prediction and find the model parameters, multiply the both hand sides of~\eqref{eq:PLS_X} by the matrix~$\bW$. 
+To obtain the model prediction and find the model parameters, we multiply both sides of~\eqref{eq:PLS_X} by~$\bW$. 
 Since the residual matrix~$\bE$ rows are orthogonal to the columns of~$\bW$, we have
 \begin{equation*}
 \bX \bW = \bT \bP^{\T} \bW.
@@ -557,7 +551,7 @@ The linear transformation between objects in the input and latent spaces is the 
 \bT = \bX \bW^*, \quad \text{where } \bW^* = \bW (\bP^{\T} \bW)^{-1}.
 \label{eq:W*}
 \end{equation}
-The matrix of the model parameters~\eqref{eq:model} could be found from equations~\eqref{eq:PLS_Y},~\eqref{eq:W*}
+The matrix of the model parameters~\eqref{eq:model} could be found from equations~\eqref{eq:PLS_Y} and~\eqref{eq:W*} as
 \begin{equation}
 \bY = \bU \bQ^{\T} + \bE \approx \bT \bB \bQ^{\T}+ \bE = \bX \bW^* \bB \bQ^{\T} + \bE = \bX \bTheta + \bE.
 \label{eq:pls_model}
@@ -567,53 +561,51 @@ Thus, the model parameters~\eqref{eq:model} are equal to
 \bTheta = \bW (\bP^{\T} \bW)^{-1} \bB \bQ^{\T}.
 \end{equation*}
 
-The final model~\eqref{eq:pls_model} is a linear model which are low-dimensional in the latent space. 
+The final model~\eqref{eq:pls_model} is a linear model that are low-dimensional in the latent space. 
 It reduces the data redundancy and increases the model stability. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiment}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To evaluate the selected feature subset we introduce criteria that estimate the quality of feature selection.
-We measure multicorrelation by mean value of miltiple correlation coefficient as follows
+To evaluate the selected feature subset, we introduce criteria that estimate the quality of feature selection.
+We measure the smulticorrelation using the mean value of miltiple correlation coefficient as follows:
 \begin{equation*}
 R^2 = \frac{1}{r} \text{tr} \left( \bC^{\T} \mathbf{R}^{-1} \bC \right); \quad \text{where }\bC = [ \text{corr}(\bchi_i, \bnu_j)]_{\substack{i=1, \dots, n \\ j=1, \dots, r}}, \, \mathbf{R} = [ \text{corr}(\bchi_i, \bchi_j)]_{i, j = 1}^n.
 \end{equation*}
-This coefficient lies between 0 and 1. The bigger $R^2$ means the better feature subset we have.
+This coefficient lies between 0 and 1. A bigger $R^2$ means that we have a better feature subset.
 
-The model stability is given by the logarithmic ratio between minimal eigenvalue~$\lambda_{\min}$ and maximum eigenvalue~$\lambda_{\max}$ of the matrix~$\bX^{\T} \bX$:
+The model stability is given by the logarithmic ratio between the minimum eigenvalue~$\lambda_{\min}$ and maximum eigenvalue~$\lambda_{\max}$ of matrix~$\bX^{\T} \bX$:
 \begin{equation*}
 \text{Stability} = \ln \frac{\lambda_{\min}}{\lambda_{\max}}.
 \end{equation*}
-A smaller value of Stability indicates less multicollinearity in the matrix~$\bX$.
+A smaller Stability value indicates less multicollinearity in matrix~$\bX$.
 
-The scaled Root Mean Squared Error (sRMSE) shows the quality of the model prediction. We estimate sRMSE on train and test data.
+The scaled Root Mean Squared Error (sRMSE) shows the quality of the model prediction. We estimate the sRMSE using train and test data.
 \begin{equation*}
 \text{sRMSE}(\bY, \widehat{\bY}_{\ba}) = \sqrt{\frac{\text{MSE} (\bY, \widehat{\bY}_{\ba})}{\text{MSE} (\bY, \overline{\bY})}} =  \frac{\| \bY - \widehat{\bY}_{\ba} \|_2}{\| \bY - \overline{\bY} \|_2}.
 \end{equation*}
-Here $\widehat{\bY}_{\ba} = \bX_{\ba} \bTheta_{\ba}^{\T}$ is a model prediction and $\overline{\bY}$ is a constant prediction obtained by averaging the targets across all objects.
-The error on the test set should be as minimal as possible.
+Here, $\widehat{\bY}_{\ba} = \bX_{\ba} \bTheta_{\ba}^{\T}$ is the model prediction and $\overline{\bY}$ is the constant prediction obtained by averaging the targets across all objects.
+The error on the test set should be as small as possible.
 
-Bayesian Information Criteria (BIC) is a trade-off between prediction quality and the size of selected subset~$\|\ba\|_0$:
+The Bayesian Information Criteria (BIC) incorporates a trade-off between the prediction quality and the size of selected subset~$\|\ba\|_0 = \#\{j: a_j \neq 0\}= \sum_{j=1}^n a_j$:
 \begin{equation*}
 \text{BIC} = m \ln \left( \text{MSE} ( \bY, \widehat{\bY}_{\ba})\right) + \| \ba \|_0 \cdot \ln m,
 \end{equation*}
-where $\|\ba\|_0 = \#\{j: a_j \neq 0\}= \sum_{j=1}^n a_j$.
-The less value of BIC means the better feature subset.
+A smaller value of BIC means a better feature subset.
 
 \subsection{Data}
 
-We carried out computational experiment with ECoG data from the NeuroTycho project~\cite{shimoda2012decoding}.
-ECoG data consists of brain voltage signals recorded from 32 channels.
-The goal is to predict 3D hand position in the next moments given the input signal.
-The example of input signals and the 3D wrist coordinates are shown in Figure~\ref{fig:ecog_data}.
-The initial voltage signals are transformed to the spatial-temporal representation using wavelet transformation with Morlet mother wavelet.
-The procedure of extracting feature representation from the raw data are described in details in~\cite{chao2010long,eliseyev2016penalized}.
-We unfold the data and feature description at each time moment has dimension equals to 32 (channels) $\times$ 27 (frequencies) = 864.
-Each object is the representation of local history time segment with duration $\Delta t = 1s$. The time step between objects is $\delta t =  0.05s$.
-The final matrices are $\bX \in \bbR^{18900 \times 864}$ and $\bY \in \bbR^{18900 \times 3k}$, where $k$ is a number of timestamps that we predict.
+We conducted a computational experiment with the ECoG data from the NeuroTycho project~\cite{shimoda2012decoding}.
+The ECoG data consist of brain voltage signals recorded over 32 channels.
+The goal is to predict 3D hand positions in subsequent moments given the input signal.
+The initial voltage signals are transformed to the spatial-temporal representation using the wavelet transformation with the Morlet mother wavelet.
+The procedure of extracting the feature representation from the raw data is described in detail in~\cite{chao2010long,eliseyev2016penalized}.
+We unfold the data and feature description at each time moment has dimension of size 32 (channels) $\times$ 27 (frequencies) = 864.
+Each object is the representation of the local historical time segment with duration $\Delta t = 1s$. The time step between objects is $\delta t =  0.05s$.
+The final matrices are $\bX \in \bbR^{18900 \times 864}$ and $\bY \in \bbR^{18900 \times 3k}$, where $k$ is the number of timestamps that we predict.
 We split our data into train and test parts with the ratio 0.67. 
-The example of initial brain signals and corresponding hand outcome are shown in Figure~\ref{fig:ecog_data}.
+Example of the initial brain signals and the corresponding hand trajectory is shown in Figure~\ref{fig:ecog_data}.
 
 \begin{figure}
 	\centering
@@ -626,23 +618,22 @@ The example of initial brain signals and corresponding hand outcome are shown in
 \subsection{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure~\ref{fig:corr_matrix} shows the dependencies in the matrices~$\bX$ and~$\bY$ for ECoG data. Frequencies in the matrix~$\bX$ are highly correlated. 
-The frequencies are choosen in logarithmic scale, the closer the frequencies are the higher the correlations.
-In the target matrix~$\bY$ the correlations between axes are not significant in comparison with the correlations between consequent moments and these correlations decay with time.
+Figure~\ref{fig:corr_matrix} shows the dependencies in the matrices~$\bX$ and~$\bY$ for the ECoG data. The frequencies in the matrix~$\bX$ are highly correlated. 
+In the target matrix~$\bY$, the correlations between axes are not significant in comparison with the correlations between consequent moments and these correlations decay with time.
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{figs/corr_matrix.eps}
 	\caption{Correlation matrices for $\bX$ and $\bY$}
 	\label{fig:corr_matrix}
 \end{figure}
 
-We apply the QPFS algorithm with SymImp strategy for different values of~$\alpha_3$ coefficient according to formulas~\eqref{eq:alphas3}.
-The dependence between target importances~$\bz_y$ with respect to~$\alpha_3$ for different values of~$k$ is shown in Figure~\ref{fig:features_vs_alpha_ecog}.
-If we predict wrist coordinates only for one timestamp $k = 1$, targets importances are almost the same.
-It tells about the independence between $x$, $y$, and $z$ coordinates.
-For $k = 2$ and $k = 3$ the importances of some targets become zero when~$\alpha_3$ increases.
-The vertical lines correspond to the optimal value of coefficient~$\alpha_3$ obtained by~\eqref{eq:alpha_3}. 
-The importances~$\bz_y$ for this value of~$\alpha_3$ are similar. 
-It means that the algorithm does not distinguish the targets for $k=1, 2, 3$.
+We apply the QPFS algorithm with the SymImp strategy for different values of~$\alpha_3$ according to formula~\eqref{eq:alphas3}.
+The dependencies between target importances~$\bz_y$ with respect to~$\alpha_3$ for different values of~$k$ are shown in Figure~\ref{fig:features_vs_alpha_ecog}.
+The targets importances are almost the same for the predicted wrist coordinates with only one timestamp $k = 1$, 
+which reflects the independence between the $x$, $y$, and $z$ coordinates.
+For $k = 2$ and $k = 3$, the importances of some targets become zero when~$\alpha_3$ increases.
+The vertical lines correspond to the optimal value of~$\alpha_3$ obtained by~\eqref{eq:alpha_3}. 
+The target importances~$\bz_y$ for this value of~$\alpha_3$ are similar. 
+Thus, the algorithm does not distinguish the targets for $k=1, 2, 3$.
 
 \begin{figure}[h]
 	\begin{minipage}{.5\linewidth}
@@ -660,36 +651,36 @@ It means that the algorithm does not distinguish the targets for $k=1, 2, 3$.
 	\label{fig:features_vs_alpha_ecog}
 \end{figure}
 
-We compare the proposed strategies of multivariate QPFS that are given in Table~\ref{tbl:summary} for the ECoG dataset. 
-Firstly, we apply all methods to get feature importances. 
-Then we fit linear regression model with increasing number of features. 
-For each method the features are sorted by the obtained importances. 
-We show how the described metrics are changed with the increasing feature set size. 
-Figure~\ref{fig:ecog_3_30_metrics} illustrates the results for prediction of $k = 30$ timestamps. 
-Here the feature importances threshold $\tau$ are shown by colored ticks. 
-These thresholds are larger for the proposed methods with comparison to the baseline RelAgg strategy. 
-The SymImp strategy has the largest threshold, it does not allow to get the small feature subset.
-However, this strategy shows the best performance in terms of sRMSE on test data.
-The second value of performance is given by AsymImp.
-All proposed algorithms give the less test error compared to the RelAgg strategy. 
+We compare the proposed strategies of the multivariate QPFS that are given in Table~\ref{tbl:summary} for the ECoG dataset. 
+First, we apply all the methods to obtain the feature importances. 
+Then, we fit a linear model with an increasing number of features. 
+For each method, the features are sorted by their obtained importances. 
+We show how the described quality criteria change with the increasing feature set size. 
+Figure~\ref{fig:ecog_3_30_metrics} illustrates the results for the prediction of $k = 30$ timestamps. 
+Here, the feature importance threshold $\tau$ is represented by colored ticks. 
+These thresholds are larger for the proposed methods in comparison to the baseline RelAgg strategy. 
+The SymImp strategy has the largest threshold, and it does not allow one to obtain a small feature subset.
+However, this strategy shows the best performance in terms of the sRMSE using the test data.
+The second performance is given by AsymImp.
+All proposed algorithms give smaller test errors compared to the RelAgg strategy. 
 The Stability criteria is also increased for the proposed algorithms.
-Here we consider the AsymImp strategy as the best in terms of prediction quality and the size of selected feature subset.
+Here, we consider the AsymImp strategy as the best in terms of the predictive quality and the size of selected feature subset.
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{figs/ecog_3_30_metrics.pdf}
-	\caption{Feature selection algorithms evaluation for ECoG data, prediction of $k = 30$ timestamps}
+	\caption{Feature selection algorithms evaluation for the ECoG data and the prediction of $k = 30$ timestamps}
 	\label{fig:ecog_3_30_metrics}
 \end{figure}
 
-To compare the structure of the selected feature subsets and investigate the stability of the selection procedure, we use bootstrap approach. 
+To compare the structure of the selected feature subsets and investigate the stability of the selection procedure, we use the bootstrap approach. 
 First, the bootstrap data are generated. 
-Then solve the feature selection problem for each pair of the design and the target matrices.
+Then, we solve the feature selection problem for each pair of the design and target matrices.
 The obtained feature importances are compared. 
-We calculate the average pairwise Spearman correlation coefficient and the $\ell_2$ distance to obtain the measure of the algorithms stability.
-Table~\ref{tbl:stability} shows the average error, the size of the subset and the described statistics for each method. The error was calculated by fitting the linear regression model on the $50$ features with the largest importances.
+We calculate the average pairwise Spearman correlation coefficient and the $\ell_2$ distance as the measures of the algorithms stability.
+Table~\ref{tbl:stability} shows the average error, the size of the subset and the described statistics for each method. The error was calculated by fitting the linear model using the $50$ features with the largest importances.
 AsymImp gives the least error on the test data. 
-The size of selected feature subsets are overestimated using the equal threshold $\tau=10^{-4}$. 
-The value of~$\tau$ should be cross-validated to get the optimal threshold and the feature subset size. 
+The size of the selected feature subsets is overestimated using the threshold $\tau=10^{-4}$. 
+The value of~$\tau$ could be cross-validated to get the optimal threshold and feature subset size. 
 
 \begin{table}[]
 	\caption{The stability of the selected feature subset}
@@ -705,27 +696,27 @@ The value of~$\tau$ should be cross-validated to get the optimal threshold and t
 	\label{tbl:stability}
 \end{table}
 
-We fit the PLS regression model for the data to compare the dimensionality reduction and feature selection. 
-Figure~\ref{fig:pls_vs_k} demonstrates the scaled RMSE on train and test data with respect to the dimensionality of the latent space~$l$.
-The test error achieves minimum value at hte point $l = 11$.
-PLS regression is more flexible approach compared to the linear model built on the subset of features.
-It leads to the less error, but the model are not sparse.
+We fit the PLS regression model to the data to compare the dimensionality reduction and feature selection. 
+Figure~\ref{fig:pls_vs_k} demonstrates the scaled RMSE on the train and test data with respect to the dimensionality of the latent space~$l$.
+The test error reaches its minimum at $l = 11$.
+The PLS regression is a more flexible approach compared to the linear model built on the subset of features.
+It results in the smallest error, but the model is not sparse.
 
-Figure~\ref{fig:models} compares 3 models: linear regression and PLS regression built on 100 features given by qpfs and PLS regression with all features.
-We do not include linear regression with all features because its results are close to the constant prediction. It also provides the result for Lasso and Elastic Net algorithms that are widely used for feature selection.
+Figure~\ref{fig:models} compares 3 models: the linear regression and the PLS regression built on 100 features given QPFS and the PLS regression with all features.
+We do not include the linear regression with all features because its results are close to the constant prediction. It also provides the result for the Lasso and Elastic Net algorithms that are widely used for feature selection.
 We use the AsymImp strategy for QPFS in this experiment.
 The number of PLS latent dimension is $l = 15$.
-Here PLS regression are significantly better than linear regression with QPFS features.
+Here, the PLS regression is significantly better than the linear regression with the QPFS features.
 It means that the latter model is not flexible enough.
-However, the best result is obtained by combination of PLS regression model with QPFS features. 
+However, the best result is by the PLS regression model combined with the QPFS features. 
 This model is sparse since it uses only 100 QPFS features.
-The ability of the PLS model to find the optimal latent data representation allows to improve model performance. 
+The ability of the PLS model to find the optimal latent data representation improves the model performance. 
 
 \begin{figure}[h]
 	\begin{minipage}{.43\linewidth}
 		\centering
 		\includegraphics[width=1.\linewidth]{figs/pls_vs_k}
-		\caption{Test scaled RMSE for PLS \\regression model}
+		\caption{Test scaled RMSE for PLS \\regression models}
 		\label{fig:pls_vs_k}
 	\end{minipage}%
 	\begin{minipage}{.57\linewidth}
@@ -737,19 +728,18 @@ The ability of the PLS model to find the optimal latent data representation allo
 \end{figure}
 
 \section{Conclusion}
-The study investigates the problem of signal decoding. 
-The data are highly redundant.
-To build a stable edequate model, it was proposed to reduce dimensionality of the problem using the dependencies in both input and target spaces.
-The PLS regression is considered as linear model for dimensionality reduction.
-The quadratic programming approach is investigated as feature selection algorithm.
+The study investigates the problem of signal decoding in which the data are highly redundant.
+To build a stable, adequate model, we reduced the dimensionality of the problem using the dependencies in both the input and target spaces.
+The PLS regression is considered as a linear model for dimensionality reduction.
+The quadratic programming approach is investigated as a feature selection algorithm.
 The algorithm solves feature selection in a single quadratic programming optimization problem.
 The multivariate extensions for the QPFS algorithms are proposed.
-The resulting feature subset includes non-correlated features which are relevant to the most difficult targets.
+The resulting feature subset includes noncorrelated features that are relevant to the most difficult targets.
 
-The computational experiments were carried out on the ECoG data. 
-The resulting model predicts the limb position of an exoskeleton by brain signals.
-The proposed algorithms outperforms the baseline algorithm and reduce the problem dimension significantly.
-The combination of feature selection for sparsifying the model and the dimensionality reduction for increasing model stability give the best result.
+The computational experiments were carried out using the ECoG data. 
+The resulting model predicts the limb position of an exoskeleton using brain signals.
+The proposed algorithms outperform the baseline algorithm and reduce the problem dimension significantly.
+The combination of feature selection for sparsifying the model and the dimensionality reduction for increasing the model stability give the best result.
 
 \bibliographystyle{unsrt}
 \bibliography{papers_qpfs}
