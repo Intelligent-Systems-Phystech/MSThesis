@@ -1,0 +1,79 @@
+\documentclass[12pt,oneside]{article}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext,amsthm}
+\usepackage{a4wide}
+\usepackage[T2A]{fontenc}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\newcommand{\hdir}{.}
+\usepackage{hyperref}       % clickable links
+\usepackage{lineno}
+\usepackage{graphicx,multicol}
+\usepackage{epstopdf}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,shadows}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage{algorithm}
+\usepackage[noend]{algcompatible}
+
+\usepackage{multirow}
+
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{setspace}
+%\onehalfspacing
+\geometry{verbose,a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1.5cm}
+
+\begin{document}
+	\thispagestyle{empty}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.38\linewidth]{sk_logo}
+	\end{figure}
+	\noindent {\bf University:} Skolkovo Institute of Science and Technology (Skoltech) \\
+	{\bf Student Full Name:} Roman Isachenko \\
+	{\bf Master Thesis Topic:} Dimensionality reduction for signal analysis \\
+
+
+The goal of this Master Thesis is to investigate the dependencies in input and target spaces, as well as to build a stable model for time series decoding in the case of correlated data description.
+The model should adequately describe both input and target spaces with high dimensions.
+To take into account the dependencies simultaneously the author proposesto reduce the dimensionality using latent space.
+The feature selection method for multidimensional regression problem are proposed.
+A combination of feature selection and dimensionality reduction is investigated.
+The model for signal prediction in the high-dimensional space is introduced.
+The proposed feature selection algorithms deliver stable and adequate solutions in correlated spaces.
+
+The Master Thesis consists of 6 chapters.
+The introduction provides a literature review and a brief description of the study.
+The second section is devoted to the problem of reducing the space dimension.
+The third section describes the PLS regression with proof of its optimality.
+In section 4 the feature selection algorithms are proposed for the problem of multivariate regression. 
+The statements with the justification of the proposed algorithms are proved.
+Section 5 is devoted to the computational experiments with analysis of results and discussion of algorithm properties.
+In conclusion the results of the study and the author's contribution are described.
+The experiments were conducted correctly, the conclusions were competently formulated.
+
+The main disadvantage of the work is the study restriction to the linear case. Further development of the work may be aimed at consideration of nonlinear models.
+
+The study is an actual research, the reviewed work meets the requirements for the diploma works at the Skoltech. 
+Presented Master’s Thesis may be considered as complete qualification paper for a Master’s student. \\[4mm]
+{\bf Recommended grade for the Master’s Thesis is A}\\[4mm]
+Reviewer status:  co-advisor \\[2mm]
+Full Name: Vadim Strijov\\[2mm]
+University/Organization: Moscow Institute of Physics and Technology\\[4mm]
+Signature: \hspace{7cm}Date:
+
+\end{document}

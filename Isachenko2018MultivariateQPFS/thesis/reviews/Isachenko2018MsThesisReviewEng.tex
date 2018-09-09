@@ -1,0 +1,78 @@
+\documentclass[12pt,oneside]{article}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext,amsthm}
+\usepackage{a4wide}
+\usepackage[T2A]{fontenc}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\newcommand{\hdir}{.}
+\usepackage{hyperref}       % clickable links
+\usepackage{lineno}
+\usepackage{graphicx,multicol}
+\usepackage{epstopdf}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,mathrsfs,mathtext}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,shadows}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage{algorithm}
+\usepackage[noend]{algcompatible}
+
+\usepackage{multirow}
+
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{setspace}
+%\onehalfspacing
+\geometry{verbose,a4paper,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1.5cm}
+
+\begin{document}
+	\thispagestyle{empty}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.38\linewidth]{sk_logo}
+	\end{figure}
+	\noindent {\bf University:} Skolkovo Institute of Science and Technology (Skoltech) \\
+	{\bf Student Full Name:} Roman Isachenko \\
+	{\bf Master Thesis Topic:} Dimensionality reduction for signal analysis \\
+
+The Master Thesis considers the dimensionality reduction problem in the case of correlated data representation. 
+The challenge is to incorporate the dependencies in both input and target spaces.
+The author proposes the algorithms to extend the existing feature selection methods to the multivariate case.
+The Brain Computer Interface problem is investigated as an potential application of research. 
+The experiment compares the proposed algorithms with the existing ones.
+
+The presented Master Thesis is a 33 page document, consisting of 6 chapters.
+First chapter is an introduction with explained research motivation, literature review and description of current state of the field. 
+Section 2 states the problems of multivariate regression, dimensionality reduction and feature selection. 
+In Section 3 the PLS algorithm is described in details. 
+Section 4 contains the proposed new algorithms for the multivariate feature selection. 
+Each subsection is devoted to the particular method with the problem statement and the description of method properties. 
+The statements with justification for the proposed algorithms are proven.
+Section 5 is devoted to the computational experiments with the comprehensive analysis and discussion of the results.
+The last section concludes the research.
+
+The drawback of the thesis is consideration of only linear models. 
+The possible development of the research is an investigation of non-linear models. 
+Additionally, the computational experiment it would be preferable to carry out with the different application for proposed algorithms. 
+
+Despite the noted shortcomings, the reviewed work meets the requirements for the diploma works at the Skoltech.
+Presented Master’s Thesis may be considered as complete qualification paper for a Master’s student. \\[4mm]
+{\bf Recommended grade for the Master’s Thesis is A}\\[4mm]
+Reviewer status:    EXTERNAL REVIEWER     or     RESEARCH ADVISOR\\[2mm]
+Full Name: Alexander Dyakonov\\[2mm]
+University/Organization: Moscow State University\\[4mm]
+Signature: \hspace{7cm}Date:
+
+\end{document}
