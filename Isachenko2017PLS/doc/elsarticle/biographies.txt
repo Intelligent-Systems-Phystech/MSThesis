@@ -1,0 +1,6 @@
+Roman Isachenko received the B.S. degree from Moscow Institute of Physics and Technology (MIPT) in 2016. He is currently studying at the joint program with MIPT and Skolkovo Institute of Physics and Techology. His research interests include the dimensionality reduction in large-scale problems.
+
+Maria Vladimirova received the B.S. degree from Moscow Institute of Physics and Technology (MIPT) in 2017. She is currently studying at the joint program with MIPT and University Grenoble Alpes. Her research interests include the models with latent variables and model ensembling.
+
+Vadim V. Strijov obtained Ph.D. in Physics and Mathematics from the Computing Centre of the Russian Academy of Sciences in 2002 with a thesis on Mathematical Modelling and Data Analysis and M.S. in System Analysis and Computer-Aided Design from Ufa Aircraft Institute in 1992. He is the author of the Expert estimation concordance theory. Field of research: Machine Learning, Data Analysis, Model Selection, Structure Learning, Preference Learning. Current duties: Principal Investigator at the Computing Center of the Russian Academy of Sciences, Associate Professor at the Moscow Institute of Physics and Technology, Editor in chief of the Journal of Machine Learning and Data Analysis. 
+
